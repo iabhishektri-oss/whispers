@@ -1142,8 +1142,36 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
         </div>
       </div>
 
-      <textarea class="gmta" id="g-txt" placeholder="Tell them something they should know. About themselves, about you, about this moment..." oninput="gChk()"></textarea>
-      <div style="text-align:right;font-size:0.68rem;color:var(--dim);margin-bottom:1.25rem"><span id="g-cc">0</span> / 1000</div>
+      <!-- Write panel -->
+      <div id="gp-write-panel">
+        <textarea class="gmta" id="g-txt" placeholder="Tell them something they should know. About themselves, about you, about this moment..." oninput="gChk()"></textarea>
+        <div style="text-align:right;font-size:0.68rem;color:var(--dim);margin-bottom:1.25rem"><span id="g-cc">0</span> / 1000</div>
+      </div>
+
+      <!-- Voice panel -->
+      <div id="gp-voice-panel" style="display:none;text-align:center;padding:1.5rem 0;margin-bottom:1.25rem">
+        <div style="position:relative;width:90px;height:90px;margin:0 auto 1rem">
+          <div style="position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(200,144,12,0.1);animation:breathe 3s ease-in-out infinite"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;border:1px solid rgba(200,144,12,0.18)"></div>
+          <div id="g-rec-btn" style="position:absolute;inset:8px;border-radius:50%;background:linear-gradient(145deg,rgba(200,144,12,0.35),rgba(120,70,0,0.2));border:1.5px solid rgba(200,144,12,0.45);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(200,144,12,0.15)" onclick="giverToggleRec()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" fill="rgba(240,184,48,0.2)" stroke="#f0b830" stroke-width="1.5"/><path d="M5 10a7 7 0 0014 0" stroke="#f0b830" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="#f0b830" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--body)" id="g-rec-label">Tap to record</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--dim);margin-top:0.15rem">Up to 3 minutes</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--gold);margin-top:0.5rem" id="g-rec-time"></div>
+      </div>
+
+      <!-- Photo panel -->
+      <div id="gp-photo-panel" style="display:none;margin-bottom:1.25rem">
+        <div onclick="document.getElementById('g-photo-input').click()" style="width:100%;aspect-ratio:4/3;max-height:200px;border-radius:16px;border:1.5px dashed rgba(200,144,12,0.2);background:rgba(200,144,12,0.03);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.65rem;cursor:pointer">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style="opacity:0.4"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#c8900c" stroke-width="1.5"/><circle cx="12" cy="13" r="4" stroke="#c8900c" stroke-width="1.5"/></svg>
+          <span style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--body)">Tap to choose a photo</span>
+          <span style="font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--dim)">Up to 10MB</span>
+        </div>
+        <input type="file" id="g-photo-input" accept="image/*" style="display:none" onchange="giverPhotoSelected(this)">
+        <div id="g-photo-preview" style="display:none;margin-top:0.75rem;border-radius:14px;overflow:hidden;max-height:200px"></div>
+      </div>
 
       <button class="gbtn" id="g-save" onclick="gS('gp2')" disabled>Save this whisper <span class="arr">&#8594;</span></button>
 
@@ -2136,6 +2164,11 @@ function gS(id){
   document.getElementById('v-giver').scrollTop=0;
 }
 let giverFmt = 'write';
+let giverRecording = false;
+let giverRecSeconds = 0;
+let giverRecInterval = null;
+let giverPhotoFile = null;
+
 function giverFormat(fmt){
   giverFmt = fmt;
   ['write','voice','photo'].forEach(f => {
@@ -2145,18 +2178,65 @@ function giverFormat(fmt){
       tab.style.background = f === fmt ? 'rgba(200,144,12,0.08)' : 'var(--input-bg)';
       tab.style.color = f === fmt ? 'var(--gold-hi)' : 'var(--dim)';
     }
+    const panel = document.getElementById('gp-' + f + '-panel');
+    if(panel) panel.style.display = f === fmt ? '' : 'none';
   });
-  const txt = document.getElementById('g-txt');
-  if(txt) txt.style.display = fmt === 'write' ? '' : 'none';
   gChk();
 }
 
+async function giverToggleRec(){
+  if(giverRecording){
+    giverRecording = false;
+    clearInterval(giverRecInterval);
+    stopRealRecording();
+    document.getElementById('g-rec-label').textContent = 'Recording saved';
+    document.getElementById('g-rec-btn').style.background = 'rgba(200,144,12,0.15)';
+    gChk();
+  } else {
+    const ok = await startRealRecording();
+    if(!ok) return;
+    giverRecording = true;
+    giverRecSeconds = 0;
+    document.getElementById('g-rec-label').textContent = 'Recording...';
+    document.getElementById('g-rec-btn').style.background = 'linear-gradient(145deg,rgba(180,40,40,0.5),rgba(120,30,30,0.3))';
+    giverRecInterval = setInterval(() => {
+      giverRecSeconds++;
+      const mins = Math.floor(giverRecSeconds / 60);
+      const secs = giverRecSeconds % 60;
+      document.getElementById('g-rec-time').textContent = `${mins}:${String(secs).padStart(2,'0')}`;
+      if(giverRecSeconds === 150) document.getElementById('g-rec-label').textContent = '30 seconds left';
+      if(giverRecSeconds === 175) document.getElementById('g-rec-label').textContent = 'Finishing up...';
+      if(giverRecSeconds >= 180) giverToggleRec();
+    }, 1000);
+    gChk();
+  }
+}
+
+function giverPhotoSelected(input){
+  if(input.files && input.files[0]){
+    giverPhotoFile = input.files[0];
+    const preview = document.getElementById('g-photo-preview');
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(giverPhotoFile);
+    img.style.cssText = 'width:100%;max-height:200px;object-fit:cover;border-radius:14px';
+    preview.innerHTML = '';
+    preview.appendChild(img);
+    preview.style.display = 'block';
+    gChk();
+  }
+}
+
 function gChk(){
-  const v=document.getElementById('g-txt').value.trim();
-  document.getElementById('g-cc').textContent=v.length;
-  const ready=v.length>10;
-  document.getElementById('g-save').disabled=!ready;
-  document.getElementById('g-seal-btn').disabled=!ready;
+  const v = document.getElementById('g-txt');
+  const txt = v ? v.value.trim() : '';
+  const cc = document.getElementById('g-cc');
+  if(cc) cc.textContent = txt.length;
+  let ready = false;
+  if(giverFmt === 'write') ready = txt.length > 10;
+  else if(giverFmt === 'voice') ready = audioBlob !== null;
+  else if(giverFmt === 'photo') ready = giverPhotoFile !== null;
+  document.getElementById('g-save').disabled = !ready;
+  document.getElementById('g-seal-btn').disabled = !ready;
 }
 
 
