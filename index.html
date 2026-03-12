@@ -738,9 +738,6 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
     <div class="ktop">
       <span class="wordmark">Whispers</span>
       <div class="ktop-icons">
-        <div class="kicon" onclick="G('v-letters')" title="All whispers">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="#6a5e52" stroke-width="1.5"/><path d="M2 8l10 7 10-7" stroke="#6a5e52" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </div>
         <div class="kicon" onclick="kMode('child')" title="Switch to child mode" id="k-child-avt" style="background:linear-gradient(135deg,rgba(200,144,12,0.3),rgba(200,144,12,0.08));border-color:rgba(200,144,12,0.3);font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:600;color:var(--gold-hi)">A</div>
       </div>
     </div>
@@ -1175,8 +1172,8 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
       <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:2rem;line-height:1.2;color:var(--white);margin-bottom:0.75rem">It's in<br>their whispers.</div>
       <div id="gp2-seal" style="display:none;margin-bottom:1rem;padding:0.5rem 1rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.2);border-radius:100px;font-size:0.78rem;color:var(--gold)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;vertical-align:middle"><path d="M5 3h14M5 21h14M7 3v3a5 5 0 0010 0V3M7 21v-3a5 5 0 0110 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Sealed · opens at <span id="gp2-age">18</span></div>
       <div style="font-size:0.88rem;color:var(--body);line-height:1.65;margin-bottom:2rem"><strong style="color:var(--white)" id="gp2-name">your child</strong> will carry this with them.<br>When the time comes, they will open it and hear you.</div>
-      <button class="gbtn" onclick="gS('gp1')" style="width:auto;padding:1rem 2rem">Leave another whisper</button>
-      <span style="font-size:0.78rem;color:var(--dim);margin-top:1rem;cursor:pointer">I am done</span>
+      <button class="gbtn" onclick="_origG('v-giver');gS('gp1')" style="width:auto;padding:1rem 2rem">Leave another whisper</button>
+      <span style="font-size:0.78rem;color:var(--dim);margin-top:1.25rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="giverDone()">I am done</span>
     </div>
   </div>
 
@@ -2631,20 +2628,33 @@ async function loadContributors(){
     if(empty) empty.style.display = 'block';
     return;
   }
-  const { data } = await sb.from('contributors')
+  // Load contributors
+  const { data: contributors } = await sb.from('contributors')
     .select('*')
     .eq('child_id', childId)
     .order('created_at', { ascending: false });
-  if(data && data.length > 0){
+  // Load whisper counts per contributor
+  const { data: whispers } = await sb.from('whispers')
+    .select('contributor_id, created_at')
+    .eq('child_id', childId)
+    .not('contributor_id', 'is', null);
+  // Build count map
+  const countMap = {};
+  const lastMap = {};
+  if(whispers) whispers.forEach(w => {
+    countMap[w.contributor_id] = (countMap[w.contributor_id] || 0) + 1;
+    if(!lastMap[w.contributor_id] || w.created_at > lastMap[w.contributor_id]) lastMap[w.contributor_id] = w.created_at;
+  });
+  if(contributors && contributors.length > 0){
     if(empty) empty.style.display = 'none';
-    if(list) renderContributors(data, list);
+    if(list) renderContributors(contributors, list, countMap, lastMap);
   } else {
     if(list) list.innerHTML = '';
     if(empty) empty.style.display = 'block';
   }
 }
 
-function renderContributors(contributors, container){
+function renderContributors(contributors, container, countMap, lastMap){
   container.innerHTML = '';
   const count = contributors.length;
   const sub = document.createElement('div');
@@ -2653,13 +2663,41 @@ function renderContributors(contributors, container){
   container.appendChild(sub);
   contributors.forEach(c => {
     const initial = c.nickname ? c.nickname[0].toUpperCase() : '?';
-    const ago = c.last_whisper_at ? timeAgo(c.last_whisper_at) : 'no whispers yet';
-    const wc = c.whisper_count || 0;
+    const wc = countMap[c.id] || 0;
+    const ago = lastMap[c.id] ? timeAgo(lastMap[c.id]) : 'no whispers yet';
     const card = document.createElement('div');
     card.className = 'ccard';
     card.innerHTML = `<div class="cavt">${initial}</div><div><span class="cname">${escHtml(c.nickname)}</span><span class="crel">${escHtml(c.relationship || '')}</span></div><div class="ccount">${wc} ${wc === 1 ? 'whisper' : 'whispers'}<br><span style="color:var(--dim)">${ago}</span></div>`;
     container.appendChild(card);
   });
+}
+
+function giverDone(){
+  const n = W.name || 'your child';
+  // Replace the gp2 content with a warm goodbye
+  const gp2 = document.getElementById('gp2');
+  if(gp2){
+    gp2.querySelector('div').innerHTML = `
+      <div style="margin-bottom:2rem">
+        <span class="wordmark" style="font-size:1.2rem">Whispers</span>
+      </div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:2rem;line-height:1.2;color:var(--white);margin-bottom:1rem">Thank you.</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--body);line-height:1.65;margin-bottom:2rem">${escHtml(n)} will hear your voice one day.<br>That matters more than you know.</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:0.75rem;color:var(--dim)">You can close this tab now.</div>
+    `;
+  }
+}
+
+async function updateContributorCount(contributorId){
+  if(!sb || !contributorId) return;
+  // Increment whisper_count and update last_whisper_at
+  const { error } = await sb.rpc('increment_whisper_count', { cid: contributorId });
+  // If RPC doesn't exist, try direct update
+  if(error){
+    await sb.from('contributors')
+      .update({ whisper_count: 1, last_whisper_at: new Date().toISOString() })
+      .eq('id', contributorId);
+  }
 }
 
 async function addContributorAndShare(){
@@ -2826,6 +2864,9 @@ async function saveWhisper(opts){
 
   const { error } = await sb.from('whispers').insert(row);
   if(error){ console.error('Save failed:', error); return { success: false, error: 'Could not save. Check your connection and try again.' }; }
+
+  // Update contributor whisper count if this is from a contributor
+  if(opts.contributorId) await updateContributorCount(opts.contributorId);
 
   await loadWhispers();
   return { success: true };
