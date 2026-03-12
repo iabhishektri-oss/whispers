@@ -1237,7 +1237,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
         </div>
       </div>
     </div>
-    <button class="btn off" id="c-add-btn" onclick="cS('cs2')">Generate their link <span class="arr">&#8594;</span></button>
+    <button class="btn off" id="c-add-btn" onclick="addContributorAndShare()">Generate their link <span class="arr">&#8594;</span></button>
   </div>
 
   <div class="cs" id="cs2">
@@ -2511,6 +2511,31 @@ function renderContributors(contributors, container){
     card.innerHTML = `<div class="cavt">${initial}</div><div><span class="cname">${escHtml(c.nickname)}</span><span class="crel">${escHtml(c.relationship || '')}</span></div><div class="ccount">${wc} ${wc === 1 ? 'whisper' : 'whispers'}<br><span style="color:var(--dim)">${ago}</span></div>`;
     container.appendChild(card);
   });
+}
+
+async function addContributorAndShare(){
+  const nick = document.getElementById('cn-nick') ? document.getElementById('cn-nick').value.trim() : '';
+  const relEl = document.querySelector('#v-contributors .chip.on');
+  const rel = relEl ? relEl.textContent.trim() : '';
+  if(!nick) return;
+
+  if(sb && childId){
+    const { data, error } = await sb.from('contributors').insert({
+      child_id: childId,
+      nickname: nick,
+      relationship: rel
+    }).select().single();
+    if(error){ console.error('Add contributor failed:', error); }
+    if(data && data.invite_token){
+      const url = `${window.location.origin}?token=${data.invite_token}`;
+      const el = document.getElementById('cs2url');
+      if(el) el.textContent = url;
+    }
+  } else {
+    const el = document.getElementById('cs2url');
+    if(el) el.textContent = `${window.location.origin}?invite=${nick.toLowerCase().replace(/\s+/g,'-')}`;
+  }
+  cS('cs2');
 }
 
 function escHtml(s){
