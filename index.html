@@ -1782,7 +1782,7 @@ function giverPath(from){
   const avt = document.getElementById('g-from-avt');
   const sub = document.getElementById('g-sub');
   const n = W.name || 'your child';
-  const k = W.keeper || 'them';
+  const k = W.keeper || 'Their family';
   if(from === 'anika'){
     avt.textContent = n[0].toUpperCase();
     txt.innerHTML = `<strong style="color:var(--white)">${n}</strong> is asking you to leave them a whisper`;
@@ -2275,6 +2275,7 @@ function initSupabase(){
 
 async function checkAuth(){
   if(!sb) return;
+  if(isGiverMode) return; // Don't interfere with giver flow
   const { data } = await sb.auth.getSession();
   if(data.session){
     authUser = data.session.user;
@@ -2783,33 +2784,66 @@ async function generateInviteLink(){
 }
 
 // ── Check for giver token on load ──
+let isGiverMode = false;
+
 function checkGiverToken(){
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token');
   if(token){
-    // Load contributor + child data from token
+    isGiverMode = true;
+    // Hide all non-giver UI immediately
+    document.querySelectorAll('.bnav').forEach(el => el.style.display = 'none');
     loadGiverData(token);
+    return true;
   }
+  return false;
 }
 
 async function loadGiverData(token){
   if(!sb) return;
-  const { data } = await sb.from('contributors')
+  const { data, error } = await sb.from('contributors')
     .select('*, children(*)')
     .eq('invite_token', token)
     .single();
+  if(error) console.error('loadGiverData error:', error);
   if(data && data.children){
     W.name = data.children.name;
     childId = data.children.id;
+    W.giverContributorId = data.id;
+    // Try to load keeper name (may fail due to RLS, that's OK)
+    try {
+      const { data: profile } = await sb.from('profiles')
+        .select('name')
+        .eq('id', data.children.keeper_id)
+        .maybeSingle();
+      W.keeper = (profile && profile.name) ? profile.name : '';
+    } catch(e){
+      W.keeper = '';
+    }
     syncName();
     giverPath('keeper');
-    G('v-giver');
+    _origG('v-giver');
+    console.log('Giver mode:', W.name, 'keeper:', W.keeper);
+  } else {
+    console.error('Giver token not found or children null');
+    isGiverMode = false;
+    _origG('v-story');
   }
 }
 
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
+
+// Override G (router) in giver mode to prevent navigation away from giver view
+const _origG = G;
+G = function(id){
+  if(isGiverMode && id !== 'v-giver'){
+    console.log('Blocked navigation to', id, '(giver mode)');
+    return;
+  }
+  _origG(id);
+};
 
 initSupabase();
 checkGiverToken();
