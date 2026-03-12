@@ -790,37 +790,12 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
       <div style="font-family:'DM Sans',sans-serif;font-size:0.68rem;color:var(--dim);text-align:center;letter-spacing:0.1em;text-transform:uppercase;margin-top:0.5rem">0 whispers · 0 contributors</div>
     </div>
 
-    <!-- FEED STATE (has whispers) — toggle with k-empty via JS -->
+    <!-- FEED STATE (populated dynamically) -->
     <div id="k-feed-wrap" style="display:none">
-      <div class="hb">
-        <div class="hb-top">
-          <div>
-            <span class="hb-name" id="k-hb-name">Their whispers</span>
-            <div class="hb-pulse"><strong>2 whispers</strong> arrived this week</div>
-          </div>
-          <div class="hb-stats">
-            <div class="hb-stat"><span class="hb-num">14</span><span class="hb-lbl">Whispers</span></div>
-            <div class="hb-stat"><span class="hb-num">4</span><span class="hb-lbl">Writers</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sec" id="k-feed-title">Recent whispers</div>
-
-      <div class="frow">
-        <div class="fchip on" onclick="kF('all',this)">All</div>
-        <div class="fchip" onclick="kF('me',this)"><div class="favt">P</div>Me</div>
-        <div class="fchip" onclick="kF('nani',this)"><div class="favt">N</div>Nani</div>
-        <div class="fchip" onclick="kF('dada',this)"><div class="favt">D</div>Dada</div>
-        <div class="fchip" onclick="kF('maasi',this)"><div class="favt">M</div>Maasi</div>
-      </div>
-
-      <div id="k-feed">
-      <div class="lcard" data-a="nani"><div class="lmeta"><div class="lavt">N</div><span class="lfrom">Nani</span><span class="ltime">2 days ago</span></div><div class="lbody">I still remember the moment your mum called to say you had arrived. I was in the kitchen making chai and I dropped everything. The world stopped for a second, and then became more beautiful.</div></div>
-      <div class="lcard" data-a="dada"><div class="lmeta"><div class="lavt">D</div><span class="lfrom">Dada</span><span class="ltime">5 days ago</span></div><div class="lbody">You have your great-grandfather's eyes. He was a quiet man but when he laughed the whole room lit up. I see him in you every day.</div></div>
-      <div class="lcard" data-a="me"><div class="lmeta"><div class="lavt">P</div><span class="lfrom">Me</span><span class="ltime">1 week ago</span></div><div class="lbody">You said "daddy stop it" today in the most serious voice I have ever heard from a seven-year-old. Your dad was trying to tickle you during dinner. I nearly cried laughing.</div></div>
-      <div class="lcard" data-a="maasi"><div class="lmeta"><div class="lavt">M</div><span class="lfrom">Maasi</span><span class="ltime">2 weeks ago</span></div><div class="lbody">Your mum doesn't know I'm writing this but she has given up so much for you and she would never say it. Just know that.</div><div class="lseal"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M5 3h14M5 21h14M7 3v3a5 5 0 0010 0V3M7 21v-3a5 5 0 0110 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Sealed · opens when you turn 18</div></div>
-    </div>
+      <div id="k-hb-card"></div>
+      <div class="sec">Recent whispers</div>
+      <div id="k-filter-chips" class="frow"></div>
+      <div id="k-feed"></div>
     </div><!-- /k-feed-wrap -->
   </div><!-- /ks0 -->
 
@@ -893,11 +868,13 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
         <div style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--dim);margin-top:0.3rem">From the people who love you.</div>
       </div>
 
-      <!-- Incoming whispers (empty state for new user) -->
+      <!-- Incoming whispers -->
       <div style="font-family:'DM Sans',sans-serif;font-size:0.68rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim);margin-bottom:0.75rem">Whispers for you</div>
 
-      <div style="text-align:center;padding:1.5rem 1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(200,191,180,0.1);border-radius:20px;margin-bottom:1.25rem">
-        <div style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--dim);line-height:1.6">No whispers yet. When someone leaves you a whisper, it will appear here.</div>
+      <div id="kc-whispers">
+        <div style="text-align:center;padding:1.5rem 1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(200,191,180,0.1);border-radius:20px;margin-bottom:1.25rem">
+          <div style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--dim);line-height:1.6">No whispers yet. When someone leaves you a whisper, it will appear here.</div>
+        </div>
       </div>
 
       <!-- Save something section — camera first -->
@@ -2397,6 +2374,7 @@ async function checkAuth(){
       // Just came back from magic link
       restoreOnboardingState();
       await saveOnboardingData();
+      await saveFirstWhisper();
       localStorage.removeItem('whispers_onboarding');
       G('v-s7');
     } else {
@@ -2413,6 +2391,7 @@ async function checkAuth(){
       if(hasOnboarding){
         restoreOnboardingState();
         await saveOnboardingData();
+        await saveFirstWhisper();
         localStorage.removeItem('whispers_onboarding');
         G('v-s7');
       } else {
@@ -2446,6 +2425,19 @@ function restoreOnboardingState(){
       syncName();
     }
   } catch(e){ console.error('Could not restore onboarding state:', e); }
+}
+
+async function saveFirstWhisper(){
+  const raw = localStorage.getItem('whispers_first_whisper');
+  if(!raw || !sb || !childId) return;
+  try {
+    const fw = JSON.parse(raw);
+    if(fw.format === 'write' && fw.content){
+      await saveWhisper({ format: 'write', content: fw.content });
+      console.log('First whisper saved:', fw.content.substring(0, 30));
+    }
+    localStorage.removeItem('whispers_first_whisper');
+  } catch(e){ console.error('Could not save first whisper:', e); }
 }
 
 // ── Auth: Magic Link ──
@@ -2528,35 +2520,61 @@ async function loadChildData(){
 // ── Load whispers ──
 async function loadWhispers(){
   if(!sb || !childId) return;
-  const { data } = await sb.from('whispers')
+  const { data, error } = await sb.from('whispers')
     .select('*, contributors(nickname)')
     .eq('child_id', childId)
     .order('created_at', { ascending: false });
+  if(error) console.error('loadWhispers error:', error);
   if(data && data.length > 0){
-    // Show feed state, hide empty state
     const empty = document.getElementById('k-empty');
     const feed = document.getElementById('k-feed-wrap');
     if(empty) empty.style.display = 'none';
     if(feed) feed.style.display = 'block';
     renderWhispers(data);
+    // Also update child mode whispers
+    renderChildWhispers(data);
   }
 }
 
 function renderWhispers(whispers){
+  const n = W.name || 'your child';
+  // Build heartbeat card
+  const hb = document.getElementById('k-hb-card');
+  if(hb){
+    const total = whispers.length;
+    const writers = new Set(whispers.map(w => w.contributors ? w.contributors.nickname : 'Me')).size;
+    const weekAgo = Date.now() - 7*24*60*60*1000;
+    const recent = whispers.filter(w => new Date(w.created_at).getTime() > weekAgo).length;
+    hb.innerHTML = `<div class="hb"><div class="hb-top"><div><span class="hb-name">${escHtml(n)}'s whispers</span><div class="hb-pulse"><strong>${recent} ${recent === 1 ? 'whisper' : 'whispers'}</strong> this week</div></div><div class="hb-stats"><div class="hb-stat"><span class="hb-num">${total}</span><span class="hb-lbl">Whispers</span></div><div class="hb-stat"><span class="hb-num">${writers}</span><span class="hb-lbl">Writers</span></div></div></div></div>`;
+  }
+  // Build filter chips
+  const chips = document.getElementById('k-filter-chips');
+  if(chips){
+    const names = [];
+    whispers.forEach(w => {
+      const name = w.contributors ? w.contributors.nickname : 'Me';
+      if(!names.includes(name)) names.push(name);
+    });
+    let html = '<div class="fchip on" onclick="kF(\'all\',this)">All</div>';
+    names.forEach(name => {
+      const key = name.toLowerCase().replace(/\s+/g,'');
+      const initial = name[0].toUpperCase();
+      html += `<div class="fchip" onclick="kF('${key}',this)"><div class="favt">${initial}</div>${escHtml(name)}</div>`;
+    });
+    chips.innerHTML = html;
+  }
+  // Build feed
   const feed = document.getElementById('k-feed');
   if(!feed) return;
   feed.innerHTML = '';
   whispers.forEach(w => {
-    const name = w.contributors ? w.contributors.nickname : (w.contributor_id ? 'Someone' : 'Me');
+    const name = w.contributors ? w.contributors.nickname : 'Me';
+    const key = name.toLowerCase().replace(/\s+/g,'');
     const initial = name[0].toUpperCase();
     const ago = timeAgo(w.created_at);
     let body = '';
     if(w.format === 'voice' && w.audio_url){
-      body = `<div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.3rem">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" stroke="var(--gold)" stroke-width="2"/><path d="M5 10a7 7 0 0014 0" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/></svg>
-        <span style="font-size:0.78rem;color:var(--gold)">Voice note</span>
-        <audio src="${w.audio_url}" style="display:none" id="audio-${w.id}"></audio>
-      </div>`;
+      body = `<div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.3rem"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" stroke="var(--gold)" stroke-width="2"/><path d="M5 10a7 7 0 0014 0" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/></svg><span style="font-size:0.78rem;color:var(--gold)">Voice note</span></div>`;
     } else if(w.content){
       body = `<div class="lbody">${escHtml(w.content)}</div>`;
     }
@@ -2567,7 +2585,26 @@ function renderWhispers(whispers){
     if(w.sealed){
       seal = `<div class="lseal"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M5 3h14M5 21h14M7 3v3a5 5 0 0010 0V3M7 21v-3a5 5 0 0110 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Sealed · opens at ${w.seal_value}</div>`;
     }
-    feed.innerHTML += `<div class="lcard"><div class="lmeta"><div class="lavt">${initial}</div><span class="lfrom">${escHtml(name)}</span><span class="ltime">${ago}</span></div>${body}${seal}</div>`;
+    feed.innerHTML += `<div class="lcard" data-a="${key}"><div class="lmeta"><div class="lavt">${initial}</div><span class="lfrom">${escHtml(name)}</span><span class="ltime">${ago}</span></div>${body}${seal}</div>`;
+  });
+}
+
+// Render whispers in child mode
+function renderChildWhispers(whispers){
+  const container = document.getElementById('kc-whispers');
+  if(!container) return;
+  const unsealed = whispers.filter(w => !w.sealed);
+  if(unsealed.length === 0) return;
+  container.innerHTML = '';
+  unsealed.forEach(w => {
+    const name = w.contributors ? w.contributors.nickname : 'Mum/Dad';
+    const initial = name[0].toUpperCase();
+    let body = '';
+    if(w.content) body = `<div style="font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--body);line-height:1.65">${escHtml(w.content)}</div>`;
+    if(w.format === 'voice' && w.audio_url){
+      body += `<div style="display:flex;align-items:center;gap:0.65rem;padding:0.55rem 0.85rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.15);border-radius:12px;margin-top:0.65rem"><div style="width:26px;height:26px;border-radius:50%;background:rgba(200,144,12,0.2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer"><div style="width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:7px solid var(--gold-hi);margin-left:2px"></div></div><div style="flex:1;height:2px;background:rgba(200,144,12,0.15);border-radius:1px"></div><span style="font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--dim)">Voice</span></div>`;
+    }
+    container.innerHTML += `<div style="padding:1rem 1.25rem;background:rgba(255,255,255,0.03);border:1px solid rgba(200,191,180,0.1);border-radius:20px;margin-bottom:0.65rem"><div style="display:flex;align-items:center;gap:0.65rem;margin-bottom:0.55rem"><div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--gold-hi);font-weight:500">${initial}</div><div><span style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--white);font-weight:500">${escHtml(name)}</span><span style="font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--dim);display:block">${timeAgo(w.created_at)}</span></div></div>${body}</div>`;
   });
 }
 
@@ -2839,35 +2876,51 @@ kSheetSave = async function(){
 // ── Wire first whisper save ──
 const _origFlSave = flSave;
 flSave = async function(){
-  if(audioBlob){
-    await saveWhisper({ format: 'voice', audioBlob });
-  }
+  // At this point user is not authenticated yet
+  // Store the whisper in localStorage, save to DB after auth completes
   const txt = document.getElementById('fl-txt');
-  if(txt && txt.value.trim().length > 10){
-    await saveWhisper({ format: 'write', content: txt.value.trim() });
+  const content = txt ? txt.value.trim() : '';
+  const format = flFormat; // voice, write, or photo
+  
+  if(format === 'write' && content.length > 0){
+    localStorage.setItem('whispers_first_whisper', JSON.stringify({ format: 'write', content }));
+  } else if(format === 'voice' && audioBlob){
+    // Can't store blob in localStorage, but we note that a recording was made
+    // The actual audio will be lost on page reload, so save what we can
+    localStorage.setItem('whispers_first_whisper', JSON.stringify({ format: 'voice', note: 'Voice recording made during onboarding' }));
   }
+  audioBlob = null; audioUrl = null;
   _origFlSave();
 };
 
 // ── Wire giver save ──
 const _origGiverSave = gS;
-// Giver save is triggered by gS('gp2')
-// We intercept the gS function when navigating to gp2
 const __gS = gS;
-gS = function(id){
+gS = async function(id){
   if(id === 'gp2'){
-    // Save giver whisper
+    const btn = document.getElementById('g-save');
+    if(btn){ btn.innerHTML = 'Saving...'; btn.disabled = true; }
+    
     const txt = document.getElementById('g-txt');
-    if(txt && txt.value.trim()){
-      const token = new URLSearchParams(window.location.search).get('token');
-      saveWhisper({
-        format: 'write',
-        content: txt.value.trim(),
-        sealed: sealSealAge && sealCaller === 'giver',
-        sealValue: sealSealAge ? String(sealSealAge) : null,
-        sealType: sealSealAge ? 'age' : null
-      });
+    const content = txt ? txt.value.trim() : '';
+    
+    const result = await saveWhisper({
+      format: giverFmt,
+      content: content || null,
+      audioBlob: (giverFmt === 'voice') ? audioBlob : null,
+      photoFile: (giverFmt === 'photo') ? giverPhotoFile : null,
+      contributorId: W.giverContributorId || null,
+      sealed: sealSealAge && sealCaller === 'giver',
+      sealValue: sealSealAge ? String(sealSealAge) : null,
+      sealType: sealSealAge ? 'age' : null
+    });
+    
+    if(!result.success){
+      console.error('Giver save failed:', result.error);
+      if(btn){ btn.innerHTML = 'Save this whisper <span class="arr">&#8594;</span>'; btn.disabled = false; }
+      return;
     }
+    audioBlob = null; giverPhotoFile = null;
   }
   __gS(id);
 };
