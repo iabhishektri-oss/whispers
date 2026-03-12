@@ -658,11 +658,11 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 <!-- ═══════════════════════════
      KEEPER — DAILY LOOP
 ════════════════════════════ -->
-<div class="view" id="v-keeper">
+<div class="view" id="v-keeper" style="display:flex;flex-direction:column">
 <style>
 #v-keeper .ks{display:none}
 #v-keeper .ks.on{display:block}
-#v-keeper .kshell{max-width:420px;margin:0 auto;padding:0 1.5rem 4.5rem;min-height:100dvh;min-height:100vh}
+#v-keeper .kshell{max-width:420px;margin:0 auto;padding:0 1.5rem 1.5rem;flex:1}
 #v-keeper .ktop{display:flex;align-items:center;justify-content:space-between;padding:3.5rem 0 1.5rem}
 #v-keeper .ktop-icons{display:flex;gap:0.5rem}
 #v-keeper .kicon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--input-bd);border-radius:10px;background:var(--input-bg);cursor:pointer;transition:all 0.2s}
@@ -724,7 +724,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-keeper .age-chip:hover{border-color:var(--border)}
 #v-keeper .age-chip.on{border-color:var(--gold);color:var(--gold-hi);background:rgba(200,144,12,0.1)}
 /* Bottom nav */
-#v-keeper .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(13,11,9,0.98);border-top:1px solid rgba(200,191,180,0.07);display:flex;padding:0.7rem 0 calc(0.7rem + env(safe-area-inset-bottom, 0px));z-index:100}
+#v-keeper .bnav{position:sticky;bottom:0;width:100%;max-width:420px;margin:0 auto;background:rgba(13,11,9,0.98);border-top:1px solid rgba(200,191,180,0.07);display:flex;padding:0.7rem 0 calc(0.7rem + env(safe-area-inset-bottom, 0px));z-index:100}
 #v-keeper .bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:0.28rem;cursor:pointer;padding:0.2rem 0}
 #v-keeper .bni svg{opacity:0.35;transition:opacity 0.2s}
 #v-keeper .bni.on svg{opacity:1}
