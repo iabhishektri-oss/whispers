@@ -941,7 +941,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 
 </div><!-- /kshell -->
 
-<div class="bnav" style="justify-content:center;gap:0;position:relative">
+<div class="bnav" style="justify-content:center;gap:0">
   <div class="bni on" onclick="kS('ks0');kBN(0)" style="flex:1">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#f0b830" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
@@ -949,7 +949,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
   <div onclick="kCompose()" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.5),rgba(200,144,12,0.2));border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:none;flex-shrink:0;margin:0 1.5rem">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" fill="rgba(240,184,48,0.2)" stroke="#f0b830" stroke-width="1.5"/><path d="M5 10a7 7 0 0014 0" stroke="#f0b830" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="#f0b830" stroke-width="1.5" stroke-linecap="round"/></svg>
   </div>
-  <div class="bni" onclick="G('v-contributors');kBN(1)" style="flex:1">
+  <div class="bni" onclick="loadContributors();G('v-contributors');kBN(1)" style="flex:1">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="#6a5e52" stroke-width="1.5"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="#6a5e52" stroke-width="1.5" stroke-linecap="round"/><path d="M19 8v6M16 11h6" stroke="#6a5e52" stroke-width="1.5" stroke-linecap="round"/></svg>
   </div>
 </div>
@@ -1193,8 +1193,11 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
       <div class="ctitle">Their family</div>
     </div>
 
-    <!-- Empty state -->
-    <div style="text-align:center;padding:2rem 0.5rem 1.5rem">
+    <!-- Dynamic contributor list -->
+    <div id="contrib-list"></div>
+
+    <!-- Empty state (shown when no contributors) -->
+    <div id="contrib-empty" style="text-align:center;padding:2rem 0.5rem 1.5rem">
       <div style="width:64px;height:64px;border-radius:50%;border:1px solid var(--input-bd);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="opacity:0.3"><circle cx="9" cy="7" r="4" stroke="#c8bfb4" stroke-width="1.5"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="#c8bfb4" stroke-width="1.5" stroke-linecap="round"/><path d="M19 8v6M16 11h6" stroke="#c8bfb4" stroke-width="1.5" stroke-linecap="round"/></svg>
       </div>
@@ -2255,7 +2258,6 @@ syncName();
 
 const SUPABASE_URL = 'https://kxrpvmpoehmwcsszwpzt.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4cnB2bXBvZWhtd2Nzc3p3cHp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMDU5MTEsImV4cCI6MjA4ODc4MTkxMX0.BEnkm2XSyRUiLPWpKPu5AuTW-JFmYB1NQvXHubD2hVI';
-// REPLACE the above with your real anon key
 
 let sb = null;
 let authUser = null;
@@ -2368,13 +2370,15 @@ function showInlineError(afterId, msg, isSuccess){
 
 // ── Save onboarding data ──
 async function saveOnboardingData(){
-  if(!sb || !authUser) return;
+  if(!sb || !authUser){ console.error('saveOnboarding: no sb or authUser'); return; }
   // Upsert profile
-  await sb.from('profiles').upsert({
+  const { error: profErr } = await sb.from('profiles').upsert({
     id: authUser.id,
     email: W.email || authUser.email,
     name: W.keeper
   });
+  if(profErr) console.error('Profile upsert failed:', profErr);
+  else console.log('Profile saved');
   // Insert child
   const { data, error } = await sb.from('children').insert({
     keeper_id: authUser.id,
@@ -2382,26 +2386,30 @@ async function saveOnboardingData(){
     dob: W.dob || null,
     pronoun: W.pronoun || 'they'
   }).select().single();
-  if(data) childId = data.id;
-  console.log('Onboarding saved. Child ID:', childId);
+  if(error) console.error('Child insert failed:', error);
+  if(data){ childId = data.id; console.log('Child saved. ID:', childId); }
 }
 
 // ── Load child data ──
 async function loadChildData(){
-  if(!sb || !authUser) return;
-  const { data } = await sb.from('children')
+  if(!sb || !authUser){ console.log('loadChildData: no sb or authUser'); return; }
+  const { data, error } = await sb.from('children')
     .select('*')
     .eq('keeper_id', authUser.id)
     .order('created_at', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
+  if(error) console.error('loadChildData error:', error);
   if(data){
     childId = data.id;
     W.name = data.name || '';
     W.dob = data.dob || '';
     W.pronoun = data.pronoun || 'they';
     syncName();
+    console.log('Child loaded:', data.name, 'ID:', childId);
     await loadWhispers();
+  } else {
+    console.log('No child data found for this user');
   }
 }
 
@@ -2452,6 +2460,46 @@ function renderWhispers(whispers){
 }
 
 function timeAgo(ts){
+
+// ── Load and render contributors ──
+async function loadContributors(){
+  const list = document.getElementById('contrib-list');
+  const empty = document.getElementById('contrib-empty');
+  if(!sb || !childId){
+    if(list) list.innerHTML = '';
+    if(empty) empty.style.display = 'block';
+    return;
+  }
+  const { data } = await sb.from('contributors')
+    .select('*')
+    .eq('child_id', childId)
+    .order('created_at', { ascending: false });
+  if(data && data.length > 0){
+    if(empty) empty.style.display = 'none';
+    if(list) renderContributors(data, list);
+  } else {
+    if(list) list.innerHTML = '';
+    if(empty) empty.style.display = 'block';
+  }
+}
+
+function renderContributors(contributors, container){
+  container.innerHTML = '';
+  const count = contributors.length;
+  const sub = document.createElement('div');
+  sub.style.cssText = 'font-size:0.82rem;color:var(--dim);margin-bottom:1.25rem';
+  sub.textContent = `${count} ${count === 1 ? 'person is' : 'people are'} leaving whispers for them.`;
+  container.appendChild(sub);
+  contributors.forEach(c => {
+    const initial = c.nickname ? c.nickname[0].toUpperCase() : '?';
+    const ago = c.last_whisper_at ? timeAgo(c.last_whisper_at) : 'no whispers yet';
+    const wc = c.whisper_count || 0;
+    const card = document.createElement('div');
+    card.className = 'ccard';
+    card.innerHTML = `<div class="cavt">${initial}</div><div><span class="cname">${escHtml(c.nickname)}</span><span class="crel">${escHtml(c.relationship || '')}</span></div><div class="ccount">${wc} ${wc === 1 ? 'whisper' : 'whispers'}<br><span style="color:var(--dim)">${ago}</span></div>`;
+    container.appendChild(card);
+  });
+}
   const diff = Date.now() - new Date(ts).getTime();
   const mins = Math.floor(diff/60000);
   if(mins < 1) return 'just now';
