@@ -1122,9 +1122,24 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
       </div>
 
       <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:12px;margin-bottom:1.25rem">
-        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--gold-hi);font-weight:500">N</div>
-        <div style="flex:1"><span style="font-size:0.68rem;color:var(--dim);display:block">This whisper is from</span><span style="font-size:0.88rem;color:var(--white);font-weight:500">Gran · their grandmother</span></div>
-        <span style="font-size:0.72rem;color:var(--gold);border-bottom:1px solid rgba(200,144,12,0.3);cursor:pointer">Edit</span>
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--gold-hi);font-weight:500" id="gp1-avt">N</div>
+        <div style="flex:1"><span style="font-size:0.68rem;color:var(--dim);display:block">This whisper is from</span><span style="font-size:0.88rem;color:var(--white);font-weight:500" id="gp1-from-info">You</span></div>
+      </div>
+
+      <!-- Giver format tabs -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1.25rem">
+        <div class="mtab on" id="gm-write" onclick="giverFormat('write')" style="padding:0.65rem;border-radius:12px;border:1px solid var(--border);background:rgba(200,144,12,0.08);display:flex;flex-direction:column;align-items:center;gap:0.3rem;cursor:pointer;font-size:0.68rem;color:var(--gold-hi)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Write
+        </div>
+        <div class="mtab" id="gm-voice" onclick="giverFormat('voice')" style="padding:0.65rem;border-radius:12px;border:1px solid var(--input-bd);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;gap:0.3rem;cursor:pointer;font-size:0.68rem;color:var(--dim)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M5 10a7 7 0 0014 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Voice
+        </div>
+        <div class="mtab" id="gm-photo" onclick="giverFormat('photo')" style="padding:0.65rem;border-radius:12px;border:1px solid var(--input-bd);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;gap:0.3rem;cursor:pointer;font-size:0.68rem;color:var(--dim)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+          Photo
+        </div>
       </div>
 
       <textarea class="gmta" id="g-txt" placeholder="Tell them something they should know. About themselves, about you, about this moment..." oninput="gChk()"></textarea>
@@ -2120,6 +2135,22 @@ function gS(id){
   document.getElementById(id).classList.add('on');
   document.getElementById('v-giver').scrollTop=0;
 }
+let giverFmt = 'write';
+function giverFormat(fmt){
+  giverFmt = fmt;
+  ['write','voice','photo'].forEach(f => {
+    const tab = document.getElementById('gm-' + f);
+    if(tab){
+      tab.style.borderColor = f === fmt ? 'var(--border)' : 'var(--input-bd)';
+      tab.style.background = f === fmt ? 'rgba(200,144,12,0.08)' : 'var(--input-bg)';
+      tab.style.color = f === fmt ? 'var(--gold-hi)' : 'var(--dim)';
+    }
+  });
+  const txt = document.getElementById('g-txt');
+  if(txt) txt.style.display = fmt === 'write' ? '' : 'none';
+  gChk();
+}
+
 function gChk(){
   const v=document.getElementById('g-txt').value.trim();
   document.getElementById('g-cc').textContent=v.length;
@@ -2810,6 +2841,13 @@ async function loadGiverData(token){
     W.name = data.children.name;
     childId = data.children.id;
     W.giverContributorId = data.id;
+    W.giverNickname = data.nickname || '';
+    W.giverRelationship = data.relationship || '';
+    // Populate giver compose screen with contributor info
+    const fromInfo = document.getElementById('gp1-from-info');
+    if(fromInfo) fromInfo.textContent = `${data.nickname}${data.relationship ? ' · ' + data.relationship : ''}`;
+    const fromAvt = document.getElementById('gp1-avt');
+    if(fromAvt) fromAvt.textContent = data.nickname ? data.nickname[0].toUpperCase() : '?';
     // Try to load keeper name (may fail due to RLS, that's OK)
     try {
       const { data: profile } = await sb.from('profiles')
