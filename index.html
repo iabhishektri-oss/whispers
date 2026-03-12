@@ -64,11 +64,6 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 .wordmark{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:1rem;color:var(--gold-hi)}
 
 /* ── DEV NAV ── */
-#dev-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(13,11,9,0.97);border-top:1px solid rgba(200,144,12,0.12);padding:0 0.6rem;display:flex;align-items:center;gap:0.35rem;flex-wrap:nowrap;overflow-x:auto;z-index:9999;font-size:0.58rem;height:30px;scrollbar-width:none}
-#dev-nav::-webkit-scrollbar{display:none}
-#dev-nav span{color:var(--dim);letter-spacing:0.08em;flex-shrink:0}
-.db{padding:0.2rem 0.5rem;background:rgba(200,144,12,0.07);border:1px solid rgba(200,144,12,0.18);border-radius:5px;color:var(--body);font-size:0.58rem;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all 0.15s;flex-shrink:0}
-.db:hover,.db.cur{background:rgba(200,144,12,0.18);color:var(--gold-hi);border-color:var(--gold)}
 
 /* ── Seal screen option rows ── */
 .seal-opt{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;background:var(--input-bg);border:1.5px solid var(--input-bd);border-radius:16px;cursor:pointer;transition:all 0.2s;gap:1rem}
@@ -729,7 +724,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-keeper .age-chip:hover{border-color:var(--border)}
 #v-keeper .age-chip.on{border-color:var(--gold);color:var(--gold-hi);background:rgba(200,144,12,0.1)}
 /* Bottom nav */
-#v-keeper .bnav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(13,11,9,0.97);border-top:1px solid rgba(200,191,180,0.07);display:flex;padding:0.7rem 0 1rem;z-index:100}
+#v-keeper .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(13,11,9,0.97);border-top:1px solid rgba(200,191,180,0.07);display:flex;padding:0.7rem 0 1rem;z-index:100}
 #v-keeper .bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:0.28rem;cursor:pointer;padding:0.2rem 0}
 #v-keeper .bni svg{opacity:0.35;transition:opacity 0.2s}
 #v-keeper .bni.on svg{opacity:1}
@@ -1568,29 +1563,6 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 </div>
 </div>
 
-<div id="dev-nav">
-  <span>Jump:</span>
-  <div class="db" onclick="G('v-story')">Story</div>
-  <div class="db" onclick="G('v-first-letter');setFormat('voice')">1st Letter</div>
-  <div class="db" onclick="G('v-s1')">S1</div>
-  <div class="db" onclick="G('v-s2')">S2</div>
-  <div class="db" onclick="G('v-s3')">S3</div>
-  <div class="db" onclick="G('v-s4')">S4</div>
-  <div class="db" onclick="G('v-s5')">S5</div>
-  <div class="db" onclick="G('v-s6')">S6</div>
-  <div class="db" onclick="G('v-s7')">S7 Ceremony</div>
-  <div class="db" onclick="G('v-s8')">S8 Invite</div>
-  <div class="db" onclick="G('v-s9')">S9 Share</div>
-  <div class="db" onclick="G('v-keeper')">Keeper</div>
-  <div class="db" onclick="G('v-letters')">Whispers</div>
-  <div class="db" onclick="giverPath('keeper');G('v-giver')">Giver (A)</div>
-  <div class="db" onclick="giverPath('anika');G('v-giver')">Giver (B)</div>
-  <div class="db" onclick="G('v-contributors')">Family</div>
-  <div class="db" onclick="G('v-ceremony')">Ceremony</div>
-  <div class="db" onclick="G('v-child-letters')">Child View</div>
-  <div class="db" onclick="G('v-paywall')">Paywall</div>
-
-</div>
 
 <script>
 // ── Global state ──
