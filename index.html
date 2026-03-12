@@ -2206,17 +2206,61 @@ async function checkAuth(){
   if(data.session){
     authUser = data.session.user;
     console.log('Authenticated:', authUser.email);
-    await loadChildData();
+    // Returning user with existing data
+    const hasOnboarding = sessionStorage.getItem('whispers_onboarding');
+    if(hasOnboarding){
+      // Just came back from magic link
+      restoreOnboardingState();
+      await saveOnboardingData();
+      sessionStorage.removeItem('whispers_onboarding');
+      G('v-s7');
+    } else {
+      // Returning user, load their data
+      await loadChildData();
+      if(childId) G('v-keeper');
+    }
   }
   // Listen for auth changes (magic link callback)
   sb.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session){
       authUser = session.user;
-      await saveOnboardingData();
-      await loadChildData();
-      G('v-s7');
+      const hasOnboarding = sessionStorage.getItem('whispers_onboarding');
+      if(hasOnboarding){
+        restoreOnboardingState();
+        await saveOnboardingData();
+        sessionStorage.removeItem('whispers_onboarding');
+        G('v-s7');
+      } else {
+        await loadChildData();
+        if(childId) G('v-keeper');
+      }
     }
   });
+}
+
+// Save onboarding state before magic link redirect
+function saveOnboardingState(){
+  sessionStorage.setItem('whispers_onboarding', JSON.stringify({
+    name: W.name,
+    dob: W.dob,
+    pronoun: W.pronoun,
+    keeper: W.keeper,
+    email: W.email
+  }));
+}
+
+function restoreOnboardingState(){
+  try {
+    const data = JSON.parse(sessionStorage.getItem('whispers_onboarding'));
+    if(data){
+      W.name = data.name || '';
+      W.dob = data.dob || '';
+      W.pronoun = data.pronoun || 'they';
+      W.keeper = data.keeper || '';
+      W.email = data.email || '';
+      syncName();
+    }
+  } catch(e){ console.error('Could not restore onboarding state:', e); }
 }
 
 // ── Auth: Magic Link ──
@@ -2224,6 +2268,7 @@ async function sendMagicLink(){
   const email = document.getElementById('s6e').value.trim();
   if(!email || !sb) return;
   W.email = email;
+  saveOnboardingState();
   const btn = document.getElementById('s6b');
   btn.innerHTML = 'Sending... <span class="arr">&#8594;</span>';
   btn.classList.add('off');
