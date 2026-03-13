@@ -28,6 +28,19 @@ export async function saveWhisper(opts: SaveOptions): Promise<SaveResult> {
       return { success: false, error: 'No child selected.' }
     }
 
+    // Validate content length
+    if (opts.content && opts.content.length > 1000) {
+      return { success: false, error: 'Content is too long (max 1000 characters).' }
+    }
+
+    // Validate file sizes client-side
+    if (opts.audioBlob && opts.audioBlob.size > 10 * 1024 * 1024) {
+      return { success: false, error: 'Recording is too large (max 10 MB).' }
+    }
+    if (opts.photoFile && opts.photoFile.size > 5 * 1024 * 1024) {
+      return { success: false, error: 'Photo is too large (max 5 MB).' }
+    }
+
     const row: Record<string, unknown> = {
       child_id: childId,
       format: opts.format,
