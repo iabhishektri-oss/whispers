@@ -69,7 +69,37 @@ ON CONFLICT (id) DO UPDATE SET
   file_size_limit = 5242880,
   allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'image/webp'];
 -- ============================================================
--- STEP 3: Storage policies
+-- STEP 3: SECURITY DEFINER helper functions
+-- Must be created BEFORE the policies that reference them.
+-- These allow RLS policy subqueries to check tables that
+-- anon cannot SELECT directly. Without these, anon INSERT
+-- policies that reference children/contributors will always
+-- fail because the EXISTS subquery returns 0 rows under anon.
+-- ============================================================
+CREATE OR REPLACE FUNCTION public.check_child_exists(p_child_id_text text)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.children WHERE id::text = p_child_id_text
+  );
+$$;
+
+CREATE OR REPLACE FUNCTION public.check_contributor_child(p_contributor_id uuid, p_child_id uuid)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.contributors
+    WHERE id = p_contributor_id AND child_id = p_child_id
+  );
+$$;
+-- ============================================================
+-- STEP 4: Storage policies
 -- ============================================================
 -- Public read (needed for playback/display of voice notes and photos)
 CREATE POLICY "Public read voice-notes"
@@ -110,44 +140,14 @@ WITH CHECK (
   AND public.check_child_exists((storage.foldername(name))[1])
 );
 -- ============================================================
--- STEP 3b: SECURITY DEFINER helper functions
--- These allow RLS policy subqueries to check tables that
--- anon cannot SELECT directly. Without these, anon INSERT
--- policies that reference children/contributors will always
--- fail because the EXISTS subquery returns 0 rows under anon.
--- ============================================================
-CREATE OR REPLACE FUNCTION public.check_child_exists(p_child_id_text text)
-RETURNS boolean
-LANGUAGE sql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM public.children WHERE id::text = p_child_id_text
-  );
-$$;
-
-CREATE OR REPLACE FUNCTION public.check_contributor_child(p_contributor_id uuid, p_child_id uuid)
-RETURNS boolean
-LANGUAGE sql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM public.contributors
-    WHERE id = p_contributor_id AND child_id = p_child_id
-  );
-$$;
-
--- ============================================================
--- STEP 4: Enable RLS on all tables
+-- STEP 5: Enable RLS on all tables
 -- ============================================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.children ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contributors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.whispers ENABLE ROW LEVEL SECURITY;
 -- ============================================================
--- STEP 5: profiles (LOCKED DOWN - no anon access)
+-- STEP 6: profiles (LOCKED DOWN - no anon access)
 -- ============================================================
 CREATE POLICY "Keepers read own profile"
 ON public.profiles FOR SELECT TO authenticated
@@ -160,7 +160,7 @@ ON public.profiles FOR UPDATE TO authenticated
 USING (id = auth.uid());
 -- NO anon read. Edge Function uses service role key.
 -- ============================================================
--- STEP 6: children (LOCKED DOWN - no anon access)
+-- STEP 7: children (LOCKED DOWN - no anon access)
 -- ============================================================
 CREATE POLICY "Keepers read own children"
 ON public.children FOR SELECT TO authenticated
@@ -170,7 +170,7 @@ ON public.children FOR INSERT TO authenticated
 WITH CHECK (keeper_id = auth.uid());
 -- NO anon read. Edge Function uses service role key.
 -- ============================================================
--- STEP 7: contributors (LOCKED DOWN - no anon read)
+-- STEP 8: contributors (LOCKED DOWN - no anon read)
 -- ============================================================
 CREATE POLICY "Keepers read own contributors"
 ON public.contributors FOR SELECT TO authenticated
@@ -184,7 +184,7 @@ WITH CHECK (
 );
 -- NO anon read. Edge Function uses service role key.
 -- ============================================================
--- STEP 8: whispers
+-- STEP 9: whispers
 -- ============================================================
 -- Keepers see whispers for their children
 CREATE POLICY "Keepers read own whispers"
