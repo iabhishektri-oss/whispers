@@ -144,49 +144,52 @@ async function saveFirstWhisper(): Promise<void> {
 }
 
 async function loadGiverData(token: string): Promise<void> {
-  const sb = getSupabase()
+  try {
+    const response = await fetch(
+      'https://kxrpvmpoehmwcsszwpzt.supabase.co/functions/v1/resolve-invite',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      }
+    )
 
-  const { data, error } = await sb
-    .from('contributors')
-    .select('*, children(*)')
-    .eq('invite_token', token)
-    .single()
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}))
+      console.error('Giver token invalid:', err.error || response.status)
+      setState({ isGiverMode: false })
+      initStory()
+      initOnboarding()
+      initKeeper()
+      initContributors()
+      initChildMode()
+      navigate('v-story')
+      return
+    }
 
-  if (error || !data?.children) {
-    console.error('Giver token invalid:', error)
+    const data = await response.json()
+
+    setState({
+      name: data.childName,
+      childId: data.childId,
+      dob: data.childDob || '',
+      keeper: data.keeperName,
+      giverContributorId: data.contributorId,
+      giverNickname: data.contributorNickname,
+      giverRelationship: data.contributorRelationship || '',
+    })
+
+    navigate('v-giver')
+  } catch (e) {
+    console.error('Giver load failed:', e)
     setState({ isGiverMode: false })
-    // Init all screens so normal navigation works
     initStory()
     initOnboarding()
     initKeeper()
     initContributors()
     initChildMode()
     navigate('v-story')
-    return
   }
-
-  // Load keeper name
-  let keeperNameVal = ''
-  try {
-    const { data: profile } = await sb
-      .from('profiles')
-      .select('name')
-      .eq('id', data.children.keeper_id)
-      .maybeSingle()
-    keeperNameVal = profile?.name || ''
-  } catch { /* RLS may block, that's fine */ }
-
-  setState({
-    name: data.children.name,
-    childId: data.children.id,
-    dob: data.children.dob || '',
-    keeper: keeperNameVal,
-    giverContributorId: data.id,
-    giverNickname: data.nickname,
-    giverRelationship: data.relationship || '',
-  })
-
-  navigate('v-giver')
 }
 
 // Boot
