@@ -238,15 +238,17 @@ export function initGiver(): void {
   done.id = 'v-giver-done'
   done.className = 'view'
   done.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;align-items:center;gap:1.25rem">
-        <div style="color:var(--gold-hi)">${iconCheck(56)}</div>
-        <div class="headline" style="font-size:var(--text-display-lg);line-height:1.25">Whisper saved</div>
-        <p style="color:var(--body);font-size:var(--text-body);line-height:var(--lh-body)">
-          <span id="gvd-childname"></span> will hear this one day. Thank you for being part of their story.
-        </p>
+    <div class="shell" style="display:flex;flex-direction:column;align-items:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center">
+        <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;align-items:center;gap:1.25rem">
+          <div style="color:var(--gold-hi)">${iconCheck(56)}</div>
+          <div class="headline" style="font-size:var(--text-display-lg);line-height:1.25">Whisper saved</div>
+          <p style="color:var(--body);font-size:var(--text-body);line-height:var(--lh-body)">
+            <span id="gvd-childname"></span> will hear this one day. Thank you for being part of their story.
+          </p>
+        </div>
       </div>
-      <div style="position:absolute;bottom:2.75rem;left:1.5rem;right:1.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem">
+      <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:0.75rem;padding-top:1.5rem">
         <button id="gvd-another" class="btn">Leave another whisper <span style="font-size:1.1em">${iconArrow()}</span></button>
         <button id="gvd-done" class="btn gold">I am done</button>
         <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--input-bd);width:100%;text-align:center">

@@ -47,7 +47,10 @@ export async function saveWhisper(opts: SaveOptions): Promise<SaveResult> {
 
       if (upErr) {
         console.error('[saveWhisper] Audio upload failed:', upErr)
-        return { success: false, error: 'Could not upload voice note.' }
+        const msg = upErr.message?.includes('not found')
+          ? 'Voice storage not configured. Run supabase-setup.sql in your Supabase SQL Editor.'
+          : 'Could not upload voice note. Please try again.'
+        return { success: false, error: msg }
       }
 
       const { data: urlData } = sb.storage.from('voice-notes').getPublicUrl(filename)
@@ -66,7 +69,10 @@ export async function saveWhisper(opts: SaveOptions): Promise<SaveResult> {
 
       if (upErr) {
         console.error('[saveWhisper] Photo upload failed:', upErr)
-        return { success: false, error: 'Could not upload photo.' }
+        const msg = upErr.message?.includes('not found')
+          ? 'Photo storage not configured. Run supabase-setup.sql in your Supabase SQL Editor.'
+          : 'Could not upload photo. Please try again.'
+        return { success: false, error: msg }
       }
 
       const { data: urlData } = sb.storage.from('photos').getPublicUrl(filename)
