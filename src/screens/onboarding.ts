@@ -67,7 +67,7 @@ export function initOnboarding(): void {
       <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ob-s3-back">${iconBack()}</button>
       <div class="headline" style="margin-bottom:0.5rem">Which pronouns for <span id="s3-name"></span>?</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">We use these throughout the app.</p>
-      <div style="display:flex;flex-direction:column;gap:0.6rem;width:100%;max-width:280px;margin-bottom:1.5rem">
+      <div style="display:flex;flex-direction:column;gap:0.6rem;width:100%;margin-bottom:1.5rem">
         <button class="pill active" data-pronoun="they" style="justify-content:center;padding:0.65rem 1rem">They / them</button>
         <button class="pill" data-pronoun="she" style="justify-content:center;padding:0.65rem 1rem">She / her</button>
         <button class="pill" data-pronoun="he" style="justify-content:center;padding:0.65rem 1rem">He / him</button>
