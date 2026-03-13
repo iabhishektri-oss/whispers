@@ -253,6 +253,10 @@ export function initGiver(): void {
     activeFormat = 'write'
     tabs.forEach(t => t.classList.remove('active'))
     tabs[0]?.classList.add('active')
+    // Reset save button state
+    saveBtn.innerHTML = 'Send whisper'
+    saveBtn.classList.add('off')
+    statusEl.style.display = 'none'
     renderGiverBody()
     navigate('v-giver-compose')
   })
@@ -294,6 +298,10 @@ export function initGiver(): void {
     if (to === 'v-giver-compose') {
       const nameEl = compose.querySelector('#gvc-name')
       if (nameEl) nameEl.textContent = s.name || 'this child'
+      // Reset save button for fresh compose session
+      saveBtn.innerHTML = 'Send whisper'
+      saveBtn.classList.add('off')
+      statusEl.style.display = 'none'
       renderGiverBody()
     }
 

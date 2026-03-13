@@ -155,7 +155,12 @@ async function loadGiverData(token: string): Promise<void> {
   if (error || !data?.children) {
     console.error('Giver token invalid:', error)
     setState({ isGiverMode: false })
+    // Init all screens so normal navigation works
     initStory()
+    initOnboarding()
+    initKeeper()
+    initContributors()
+    initChildMode()
     navigate('v-story')
     return
   }

@@ -194,12 +194,11 @@ export function initContributors(): void {
       return
     }
 
-    // Get whisper counts per contributor
+    // Get whisper counts per contributor (include keeper whispers where contributor_id is null)
     const { data: whisperCounts } = await sb
       .from('whispers')
       .select('contributor_id')
       .eq('child_id', childId)
-      .not('contributor_id', 'is', null)
 
     const countMap: Record<string, number> = {}
     if (whisperCounts) {

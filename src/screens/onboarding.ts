@@ -1,8 +1,7 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, setState, childName } from '@/lib/state'
 import { getSupabase } from '@/lib/supabase'
-import { iconBack, iconCheck, iconArrow, iconCamera, iconMic, iconWrite } from '@/lib/icons'
-import { escHtml } from '@/lib/utils'
+import { iconBack, iconCheck, iconArrow, iconCamera } from '@/lib/icons'
 
 export function initOnboarding(): void {
   const app = document.getElementById('app')!
@@ -440,8 +439,6 @@ export function initOnboarding(): void {
   }
 
   onRouteChange((_from, to) => {
-    const name = escHtml(childName())
-
     // Update all name spans
     for (const [spanId] of Object.entries(nameSpans)) {
       const el = document.getElementById(spanId)
