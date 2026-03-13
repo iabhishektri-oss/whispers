@@ -44,7 +44,7 @@ export function initOnboarding(): void {
       <div class="headline" style="margin-bottom:0.5rem">When was <span id="s2-name"></span> born?</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">This helps us personalise their collection.</p>
       <div style="align-self:stretch">
-        <input id="ob-dob" class="input" type="date" style="display:block;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;text-align:center;margin-bottom:1.5rem" />
+        <input id="ob-dob" class="input" type="date" style="display:block;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;line-height:1.2;text-align:center;margin-bottom:1.5rem" />
         <button id="ob-dob-next" class="btn" style="margin-bottom:0.75rem">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
       </div>
       <span id="ob-dob-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Skip for now</span>
