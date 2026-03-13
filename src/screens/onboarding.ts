@@ -43,8 +43,8 @@ export function initOnboarding(): void {
       <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ob-s2-back">${iconBack()}</button>
       <div class="headline" style="margin-bottom:0.5rem">When was <span id="s2-name"></span> born?</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">This helps us personalise their collection.</p>
-      <input id="ob-dob" class="input" type="date" style="text-align:center;margin-bottom:1.5rem" />
-      <button id="ob-dob-next" class="btn" style="margin-bottom:0.75rem">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
+      <input id="ob-dob" class="input" type="date" style="text-align:center;margin-bottom:1.5rem;align-self:stretch" />
+      <button id="ob-dob-next" class="btn" style="margin-bottom:0.75rem;align-self:stretch">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
       <span id="ob-dob-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Skip for now</span>
     </div>
   `
