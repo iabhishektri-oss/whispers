@@ -34,7 +34,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 .topbar-spacer{width:34px}
 .progress{display:flex;align-items:center;gap:5px}
 .dot{width:5px;height:5px;border-radius:50%;background:var(--dim);transition:all 0.3s}
-.dot.active{background:var(--gold-hi);width:18px;border-radius:3px}
+.dot.active{background:var(--gold-hi);width:18px;border-radius:2px}
 .dot.done{background:var(--gold);opacity:0.5}
 .main{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:2rem;animation:rise 0.8s cubic-bezier(0.16,1,0.3,1) 0.06s both}
 .bottom{padding-bottom:2.75rem;animation:rise 0.8s cubic-bezier(0.16,1,0.3,1) 0.12s both}
@@ -43,7 +43,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 .step-count{text-align:center;font-size:0.68rem;color:var(--dim);letter-spacing:0.1em;margin-top:1rem}
 .field-label{font-size:0.68rem;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:0.4rem}
 
-.btn{width:100%;padding:1rem 1.5rem;border:1px solid var(--border);border-radius:12px;background:linear-gradient(135deg,rgba(200,144,12,0.22),rgba(200,144,12,0.08));color:var(--gold-hi);font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.8rem;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.6rem;transition:all 0.25s;position:relative;overflow:hidden}
+.btn{width:100%;padding:1rem 1.5rem;border:1px solid var(--border);border-radius:12px;background:linear-gradient(135deg,rgba(200,144,12,0.22),rgba(200,144,12,0.08));color:var(--gold-hi);font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.82rem;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.6rem;transition:all 0.25s;position:relative;overflow:hidden}
 .btn::before{content:'';position:absolute;top:0;left:-80%;width:40%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,210,80,0.06),transparent);animation:sheen 4s ease-in-out infinite}
 .btn:hover{background:linear-gradient(135deg,rgba(200,144,12,0.32),rgba(200,144,12,0.15));transform:translateY(-1px)}
 .btn:active{transform:scale(0.98)}
@@ -53,12 +53,12 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 .btn.off{opacity:0.35;pointer-events:none}
 .btn-ghost{background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer;padding:0.75rem;transition:color 0.2s;width:100%;text-align:center}
 .btn-ghost:hover{color:var(--body)}
-.back{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--input-bd);border-radius:10px;background:var(--input-bg);color:var(--body);font-size:0.9rem;cursor:pointer;transition:all 0.2s;flex-shrink:0}
+.back{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--input-bd);border-radius:12px;background:var(--input-bg);color:var(--body);font-size:0.88rem;cursor:pointer;transition:all 0.2s;flex-shrink:0}
 .back:hover{border-color:var(--border);color:var(--white)}
 .inp{width:100%;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:14px;padding:1rem 1.25rem;font-family:'DM Sans',sans-serif;font-weight:500;font-size:1rem;color:var(--white);outline:none;transition:border-color 0.2s,box-shadow 0.2s;caret-color:var(--gold-hi)}
 .inp::placeholder{color:var(--dim);font-weight:400}
 .inp:focus{border-color:var(--input-focus);box-shadow:0 0 0 3px rgba(200,144,12,0.08)}
-.chip{padding:0.7rem 0.5rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:12px;font-size:0.85rem;color:var(--body);text-align:center;cursor:pointer;transition:all 0.2s}
+.chip{padding:0.7rem 0.5rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:12px;font-size:0.82rem;color:var(--body);text-align:center;cursor:pointer;transition:all 0.2s}
 .chip:hover{border-color:var(--border)}
 .chip.on{border-color:rgba(200,144,12,0.45);background:rgba(200,144,12,0.08);color:var(--white)}
 .wordmark{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:1rem;color:var(--gold-hi)}
@@ -66,7 +66,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 /* ── DEV NAV ── */
 
 /* ── Seal screen option rows ── */
-.seal-opt{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;background:var(--input-bg);border:1.5px solid var(--input-bd);border-radius:16px;cursor:pointer;transition:all 0.2s;gap:1rem}
+.seal-opt{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;background:var(--input-bg);border:1.5px solid var(--input-bd);border-radius:16px;cursor:pointer;transition:all 0.2s;gap:1rem}
 .seal-opt:hover{border-color:rgba(200,144,12,0.3)}
 .seal-opt.on{border-color:rgba(200,144,12,0.55);background:rgba(200,144,12,0.07)}
 .seal-opt-text{display:flex;flex-direction:column;gap:0.25rem}
@@ -111,16 +111,16 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 /* Story components */
 .quote-card{width:100%;padding:1rem 1.25rem;background:rgba(200,144,12,0.07);border:1px solid rgba(200,144,12,0.2);border-radius:16px}
 .fmt-row{display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap}
-.fmt-pill{display:inline-flex;align-items:center;gap:0.35rem;padding:0.4rem 0.8rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.16);border-radius:100px;font-size:0.73rem;color:var(--body)}
+.fmt-pill{display:inline-flex;align-items:center;gap:0.35rem;padding:0.4rem 0.8rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.16);border-radius:100px;font-size:0.78rem;color:var(--body)}
 .name-row{display:flex;align-items:center;justify-content:center;gap:0.75rem}
-.npill{padding:0.45rem 1.1rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;color:var(--white);white-space:nowrap}
+.npill{padding:0.45rem 1.1rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);white-space:nowrap}
 .npill.hi{background:rgba(200,144,12,0.1);border:1px solid rgba(200,144,12,0.25)}
 .npill.lo{background:rgba(255,255,255,0.03);border:1px solid rgba(200,191,180,0.12)}
 .ndesc{font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--dim)}
 .mic-outer{position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(200,144,12,0.1);animation:breathe 3s ease-in-out infinite}
 .mic-mid{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(200,144,12,0.18)}
 .mic-inner{position:absolute;inset:8px;border-radius:50%;background:linear-gradient(145deg,rgba(200,144,12,0.35),rgba(120,70,0,0.2));border:1.5px solid rgba(200,144,12,0.45);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(200,144,12,0.15)}
-.skip{font-size:0.73rem;color:var(--dim);cursor:pointer;border-bottom:1px solid rgba(106,94,82,0.28);padding-bottom:1px}
+.skip{font-size:0.78rem;color:var(--dim);cursor:pointer;border-bottom:1px solid rgba(106,94,82,0.28);padding-bottom:1px}
 @keyframes wavepulse{0%,100%{transform:scaleY(0.55);opacity:0.5}50%{transform:scaleY(1);opacity:1}}
 </style>
 
@@ -270,7 +270,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 .fl-fmt-tabs{display:flex;gap:0.6rem;margin-bottom:1.75rem}
 .fl-tab{flex:1;padding:0.85rem 0.5rem;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:0.4rem;cursor:pointer;transition:all 0.25s;border:1.5px solid var(--input-bd);background:var(--input-bg)}
 .fl-tab.on{border-color:rgba(200,144,12,0.5);background:rgba(200,144,12,0.08)}
-.fl-tab-lbl{font-size:0.7rem;font-weight:500;color:var(--dim);transition:color 0.2s;letter-spacing:0.05em;text-transform:uppercase}
+.fl-tab-lbl{font-size:0.68rem;font-weight:500;color:var(--dim);transition:color 0.2s;letter-spacing:0.05em;text-transform:uppercase}
 .fl-tab.on .fl-tab-lbl{color:var(--gold-hi)}
 .rec-ring{position:relative;width:140px;height:140px}
 .rec-outer{position:absolute;inset:-18px;border-radius:50%;border:1px solid rgba(200,144,12,0.12);animation:breathe 3s ease-in-out infinite}
@@ -319,7 +319,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
     <div style="text-align:center">
       <div style="font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--body)" id="rec-label">Tap to record</div>
       <div style="font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--dim);margin-top:0.15rem">Up to 3 minutes</div>
-      <div style="font-family:'DM Sans',sans-serif;font-size:0.72rem;color:var(--dim);margin-top:0.2rem;font-variant-numeric:tabular-nums" id="rec-time"></div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:0.68rem;color:var(--dim);margin-top:0.2rem;font-variant-numeric:tabular-nums" id="rec-time"></div>
     </div>
     <!-- Recorded preview -->
     <div id="rec-preview" style="display:none;width:100%;padding:0.9rem 1rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.2);border-radius:14px">
@@ -329,16 +329,16 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
         </div>
         <div style="flex:1">
           <div style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--white);font-weight:500">Voice note saved</div>
-          <div style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--dim)" id="rec-duration">0:00</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:0.68rem;color:var(--dim)" id="rec-duration">0:00</div>
         </div>
-        <span style="font-family:'DM Sans',sans-serif;font-size:0.72rem;color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="clearRec()">Re-record</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:0.68rem;color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="clearRec()">Re-record</span>
       </div>
     </div>
   </div>
 
   <!-- Write panel -->
   <div id="fl-write-panel" style="display:none;flex-direction:column;gap:0.75rem;flex:1;padding-top:0.5rem">
-    <textarea class="inp" style="resize:none;line-height:1.65;font-size:0.92rem;font-weight:400;flex:1;min-height:200px" rows="8" placeholder="Just talk to them. What do you want them to know?" id="fl-txt" oninput="flChk()"></textarea>
+    <textarea class="inp" style="resize:none;line-height:1.65;font-size:0.88rem;font-weight:400;flex:1;min-height:200px" rows="8" placeholder="Just talk to them. What do you want them to know?" id="fl-txt" oninput="flChk()"></textarea>
     <div style="font-family:'DM Sans',sans-serif;text-align:right;font-size:0.68rem;color:var(--dim)"><span id="fl-cc">0</span> / 1000</div>
   </div>
 
@@ -346,7 +346,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
   <div id="fl-photo-panel" style="display:none;flex-direction:column;flex:1;justify-content:center">
     <div style="width:100%;aspect-ratio:1;max-height:260px;border-radius:16px;border:1.5px dashed rgba(200,191,180,0.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.65rem;cursor:pointer" onclick="document.getElementById('fl-photo-input').click()">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="opacity:0.25"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#c8bfb4" stroke-width="1.5"/><circle cx="12" cy="13" r="4" stroke="#c8bfb4" stroke-width="1.5"/></svg>
-      <span style="font-family:'DM Sans',sans-serif;font-size:0.8rem;color:var(--dim)">Tap to add a photo</span>
+      <span style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--dim)">Tap to add a photo</span>
       <span style="font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--dim);margin-top:0.2rem">Up to 10MB</span>
       <input type="file" id="fl-photo-input" accept="image/*" style="display:none">
     </div>
@@ -356,7 +356,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
   <div style="padding-top:1.75rem">
     <button class="btn off" id="fl-save" onclick="flSave()">Save and continue <span class="arr">&#8594;</span></button>
     <div style="text-align:center;margin-top:0.85rem">
-      <span style="font-family:'DM Sans',sans-serif;font-size:0.75rem;color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="G('v-s1')">Skip for now</span>
+      <span style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="G('v-s1')">Skip for now</span>
     </div>
   </div>
 
@@ -446,9 +446,9 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 .pron-opt.on .pron-circle{border-color:var(--gold-hi);background:var(--gold-hi)}
 .pron-tick{width:8px;height:5px;border-left:1.5px solid var(--bg);border-bottom:1.5px solid var(--bg);transform:rotate(-45deg) translateY(-1px);opacity:0}
 .pron-opt.on .pron-tick{opacity:1}
-.pron-txt{font-size:0.95rem;color:var(--body);flex:1;transition:color 0.2s}
+.pron-txt{font-size:0.88rem;color:var(--body);flex:1;transition:color 0.2s}
 .pron-opt.on .pron-txt{color:var(--white)}
-.pron-sub{font-size:0.72rem;color:var(--dim)}
+.pron-sub{font-size:0.68rem;color:var(--dim)}
 .pron-opt.on .pron-sub{color:var(--gold)}
 </style>
 </div>
@@ -506,7 +506,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
     <span class="hint">Shows when someone leaves them a whisper.</span>
     <div id="s5pa" style="width:140px;height:140px;border-radius:50%;border:1.5px dashed rgba(200,191,180,0.25);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;margin-bottom:1.25rem;transition:all 0.25s" onclick="document.getElementById('s5fi').click()">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="opacity:0.35;margin-bottom:0.4rem"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#c8bfb4" stroke-width="1.5"/><circle cx="12" cy="13" r="4" stroke="#c8bfb4" stroke-width="1.5"/></svg>
-      <div style="font-size:0.72rem;color:var(--dim);line-height:1.4">Tap to upload</div>
+      <div style="font-size:0.68rem;color:var(--dim);line-height:1.4">Tap to upload</div>
       <img id="s5prev" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
     </div>
     <span style="font-size:0.78rem;color:var(--dim);cursor:pointer;border-bottom:1px solid rgba(106,94,82,0.3)" onclick="G('v-s6')">Skip for now</span>
@@ -533,9 +533,9 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
     <span class="question">Where should<br>we reach you?</span>
     <span class="hint">A sign-in link arrives in your inbox. No password ever.</span>
     <input class="inp" id="s6e" type="email" placeholder="Your email address" autocomplete="email" autocapitalize="none" oninput="s6c()">
-    <div style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1rem;background:rgba(200,144,12,0.05);border:1px solid rgba(200,144,12,0.12);border-radius:10px;margin-top:0.75rem">
+    <div style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1rem;background:rgba(200,144,12,0.05);border:1px solid rgba(200,144,12,0.12);border-radius:12px;margin-top:0.75rem">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="opacity:0.5;flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#c8bfb4" stroke-width="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#c8bfb4" stroke-width="2" stroke-linecap="round"/></svg>
-      <span style="font-size:0.75rem;color:var(--dim);line-height:1.5">No password. A secure link each time.</span>
+      <span style="font-size:0.78rem;color:var(--dim);line-height:1.5">No password. A secure link each time.</span>
     </div>
   </div>
   <div class="bottom">
@@ -589,7 +589,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
       <div>
         <span class="field-label">What does your child call them?</span>
         <input class="inp" id="s8nick" type="text" placeholder="e.g. Nani, Dadi, Granny, Pop..." autocomplete="off" oninput="s8c()">
-        <div style="font-size:0.72rem;color:var(--dim);margin-top:0.4rem;padding:0 0.25rem">This is how their name appears on every whisper.</div>
+        <div style="font-size:0.68rem;color:var(--dim);margin-top:0.4rem;padding:0 0.25rem">This is how their name appears on every whisper.</div>
       </div>
 
       <!-- Field 2: Relationship type (private, for system) -->
@@ -630,16 +630,16 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
   <div class="main">
     <span class="question" id="s9q">Send them<br>their link.</span>
     <span class="hint">They open it, leave a whisper. No account needed.</span>
-    <div style="padding:1.1rem 1.25rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.18);border-radius:14px;margin-bottom:1rem;display:flex;align-items:center;gap:1rem">
+    <div style="padding:1rem 1.25rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.18);border-radius:14px;margin-bottom:1rem;display:flex;align-items:center;gap:1rem">
       <span style="font-size:0.78rem;color:var(--body);flex:1;line-height:1.5;word-break:break-all" id="s9url">generating link...</span>
-      <span id="s9copy" style="flex-shrink:0;padding:0.45rem 0.75rem;background:rgba(200,144,12,0.12);border:1px solid var(--border);border-radius:8px;font-size:0.7rem;font-weight:500;color:var(--gold-hi);cursor:pointer" onclick="s9cp()">Copy</span>
+      <span id="s9copy" style="flex-shrink:0;padding:0.45rem 0.75rem;background:rgba(200,144,12,0.12);border:1px solid var(--border);border-radius:12px;font-size:0.68rem;font-weight:500;color:var(--gold-hi);cursor:pointer" onclick="s9cp()">Copy</span>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1.25rem">
-      <div onclick="shareWhatsApp('s9')" style="padding:0.8rem;border-radius:12px;border:1px solid rgba(37,211,102,0.25);background:var(--input-bg);display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.8rem;color:rgba(37,211,102,0.9);cursor:pointer;font-weight:500">
+      <div onclick="shareWhatsApp('s9')" style="padding:0.8rem;border-radius:12px;border:1px solid rgba(37,211,102,0.25);background:var(--input-bg);display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.82rem;color:rgba(37,211,102,0.9);cursor:pointer;font-weight:500">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="rgba(37,211,102,0.9)"/></svg>
         WhatsApp
       </div>
-      <div onclick="shareSMS('s9')" style="padding:0.8rem;border-radius:12px;border:1px solid var(--input-bd);background:var(--input-bg);display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.8rem;color:var(--body);cursor:pointer;font-weight:500">
+      <div onclick="shareSMS('s9')" style="padding:0.8rem;border-radius:12px;border:1px solid var(--input-bd);background:var(--input-bg);display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.82rem;color:var(--body);cursor:pointer;font-weight:500">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#c8bfb4" stroke-width="1.5"/></svg>
         iMessage
       </div>
@@ -665,7 +665,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-keeper .kshell{max-width:420px;margin:0 auto;padding:0 1.5rem 1.5rem;flex:1}
 #v-keeper .ktop{display:flex;align-items:center;justify-content:space-between;padding:3.5rem 0 1.5rem}
 #v-keeper .ktop-icons{display:flex;gap:0.5rem}
-#v-keeper .kicon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--input-bd);border-radius:10px;background:var(--input-bg);cursor:pointer;transition:all 0.2s}
+#v-keeper .kicon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--input-bd);border-radius:12px;background:var(--input-bg);cursor:pointer;transition:all 0.2s}
 #v-keeper .kicon:hover{border-color:var(--border)}
 /* Heartbeat */
 #v-keeper .hb{padding:1.25rem 1.5rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.18);border-radius:20px;margin-bottom:1.5rem}
@@ -676,43 +676,43 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-keeper .hb-stats{display:flex;gap:1.25rem}
 #v-keeper .hb-stat{text-align:right}
 #v-keeper .hb-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:500;color:var(--gold-hi);display:block}
-#v-keeper .hb-lbl{font-size:0.62rem;color:var(--dim);letter-spacing:0.08em;text-transform:uppercase}
+#v-keeper .hb-lbl{font-size:0.65rem;color:var(--dim);letter-spacing:0.08em;text-transform:uppercase}
 /* Capture */
-#v-keeper .cap{padding:1.1rem 1.25rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:18px;margin-bottom:1.5rem;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;gap:1rem}
+#v-keeper .cap{padding:1rem 1.25rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:16px;margin-bottom:1.5rem;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;gap:1rem}
 #v-keeper .cap:hover{border-color:var(--border);background:rgba(200,144,12,0.04)}
-#v-keeper .cap-icon{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,rgba(200,144,12,0.2),rgba(200,144,12,0.06));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-#v-keeper .cap-lbl{font-size:0.7rem;color:var(--dim);letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:0.2rem}
+#v-keeper .cap-icon{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,rgba(200,144,12,0.2),rgba(200,144,12,0.06));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#v-keeper .cap-lbl{font-size:0.68rem;color:var(--dim);letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:0.2rem}
 #v-keeper .cap-q{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.5rem;color:var(--white)}
 /* Section */
 #v-keeper .sec{font-size:0.68rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim);margin-bottom:0.85rem}
 /* Filter chips */
 #v-keeper .frow{display:flex;gap:0.5rem;overflow-x:auto;padding-bottom:0.5rem;margin-bottom:1rem;scrollbar-width:none}
 #v-keeper .frow::-webkit-scrollbar{display:none}
-#v-keeper .fchip{display:flex;align-items:center;gap:0.4rem;padding:0.38rem 0.7rem;border-radius:100px;border:1px solid var(--input-bd);background:var(--input-bg);cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;font-size:0.75rem;color:var(--body)}
+#v-keeper .fchip{display:flex;align-items:center;gap:0.4rem;padding:0.38rem 0.7rem;border-radius:100px;border:1px solid var(--input-bd);background:var(--input-bg);cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;font-size:0.78rem;color:var(--body)}
 #v-keeper .fchip.on{border-color:rgba(200,144,12,0.4);background:rgba(200,144,12,0.08);color:var(--gold-hi)}
-#v-keeper .favt{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.4),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.58rem;color:var(--gold-hi);font-weight:500}
+#v-keeper .favt{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.4),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--gold-hi);font-weight:500}
 /* Letter cards */
-#v-keeper .lcard{padding:1.1rem 1.25rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:16px;margin-bottom:0.75rem;cursor:pointer;transition:border-color 0.2s}
+#v-keeper .lcard{padding:1rem 1.25rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:16px;margin-bottom:0.75rem;cursor:pointer;transition:border-color 0.2s}
 #v-keeper .lcard:hover{border-color:var(--border)}
 #v-keeper .lmeta{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.55rem}
-#v-keeper .lavt{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.62rem;color:var(--gold-hi);font-weight:500;flex-shrink:0}
-#v-keeper .lfrom{font-size:0.75rem;color:var(--body)}
+#v-keeper .lavt{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--gold-hi);font-weight:500;flex-shrink:0}
+#v-keeper .lfrom{font-size:0.78rem;color:var(--body)}
 #v-keeper .ltime{font-size:0.68rem;color:var(--dim);margin-left:auto}
 #v-keeper .lbody{font-size:0.88rem;color:var(--body);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-#v-keeper .lseal{display:inline-flex;align-items:center;gap:0.3rem;padding:0.22rem 0.55rem;border-radius:100px;border:1px solid rgba(200,144,12,0.2);background:rgba(200,144,12,0.06);font-size:0.64rem;color:var(--gold);margin-top:0.55rem}
+#v-keeper .lseal{display:inline-flex;align-items:center;gap:0.3rem;padding:0.22rem 0.55rem;border-radius:100px;border:1px solid rgba(200,144,12,0.2);background:rgba(200,144,12,0.06);font-size:0.65rem;color:var(--gold);margin-top:0.55rem}
 /* Compose */
 #v-keeper .cshell{padding:3.5rem 0 2rem}
-#v-keeper .mtabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1.25rem}
-#v-keeper .mtab{padding:0.65rem 0.5rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:0.3rem;cursor:pointer;transition:all 0.2s}
-#v-keeper .mtab:hover{border-color:var(--border)}
-#v-keeper .mtab.on{border-color:rgba(200,144,12,0.45);background:rgba(200,144,12,0.08)}
-#v-keeper .mtab-lbl{font-size:0.68rem;color:var(--dim);transition:color 0.2s}
+.mtabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1.25rem}
+.mtab{padding:0.65rem 0.5rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:0.3rem;cursor:pointer;transition:all 0.2s}
+.mtab:hover{border-color:var(--border)}
+.mtab.on{border-color:rgba(200,144,12,0.45);background:rgba(200,144,12,0.08)}
+.mtab-lbl{font-size:0.68rem;color:var(--dim);transition:color 0.2s}
 #v-keeper .mtab.on .mtab-lbl{color:var(--gold-hi)}
-#v-keeper .mta{width:100%;min-height:150px;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:14px;padding:1rem 1.25rem;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--white);outline:none;resize:none;line-height:1.65;caret-color:var(--gold-hi);transition:border-color 0.2s}
+#v-keeper .mta{width:100%;min-height:150px;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:14px;padding:1rem 1.25rem;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--white);outline:none;resize:none;line-height:1.65;caret-color:var(--gold-hi);transition:border-color 0.2s}
 #v-keeper .mta:focus{border-color:var(--input-focus)}
 #v-keeper .mta::placeholder{color:var(--dim)}
 /* Seal panel */
-#v-keeper .btn-seal{width:100%;padding:0.85rem 1.25rem;border:1px solid rgba(200,144,12,0.22);border-radius:12px;background:transparent;color:var(--body);font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;gap:0.75rem;margin-top:0.75rem;transition:all 0.2s}
+#v-keeper .btn-seal{width:100%;padding:0.85rem 1.25rem;border:1px solid rgba(200,144,12,0.22);border-radius:12px;background:transparent;color:var(--body);font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;display:flex;align-items:center;gap:0.75rem;margin-top:0.75rem;transition:all 0.2s}
 #v-keeper .btn-seal:hover{border-color:var(--gold);color:var(--gold-hi)}
 #v-keeper .btn-seal.on{border-color:var(--gold);color:var(--gold-hi);background:rgba(200,144,12,0.06)}
 #v-keeper .seal-chevron{margin-left:auto;transition:transform 0.2s}
@@ -728,7 +728,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-keeper .bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:0.28rem;cursor:pointer;padding:0.2rem 0}
 #v-keeper .bni svg{opacity:0.35;transition:opacity 0.2s}
 #v-keeper .bni.on svg{opacity:1}
-#v-keeper .bni-lbl{font-size:0.6rem;color:var(--dim);letter-spacing:0.05em;transition:color 0.2s}
+#v-keeper .bni-lbl{font-size:0.65rem;color:var(--dim);letter-spacing:0.05em;transition:color 0.2s}
 #v-keeper .bni.on .bni-lbl{color:var(--gold-hi)}
 </style>
 <div class="kshell">
@@ -738,7 +738,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
     <div class="ktop">
       <span class="wordmark">Whispers</span>
       <div class="ktop-icons">
-        <div class="kicon" onclick="kMode('child')" title="Switch to child mode" id="k-child-avt" style="background:linear-gradient(135deg,rgba(200,144,12,0.3),rgba(200,144,12,0.08));border-color:rgba(200,144,12,0.3);font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:600;color:var(--gold-hi)">A</div>
+        <div class="kicon" onclick="kMode('child')" title="Switch to child mode" id="k-child-avt" style="background:linear-gradient(135deg,rgba(200,144,12,0.3),rgba(200,144,12,0.08));border-color:rgba(200,144,12,0.3);font-family:'DM Sans',sans-serif;font-size:0.68rem;font-weight:600;color:var(--gold-hi)">A</div>
       </div>
     </div>
 
@@ -755,7 +755,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
           <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:1.5rem;color:var(--white)">Your whispers</div>
         </div>
         <div style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--body);line-height:1.6;margin-bottom:1.25rem">Capture what they said today. Or tell them something they'll hear at 18.</div>
-        <button class="btn" onclick="kCompose()" style="font-size:0.75rem">Leave your first whisper <span class="arr">&#8594;</span></button>
+        <button class="btn" onclick="kCompose()" style="font-size:0.78rem">Leave your first whisper <span class="arr">&#8594;</span></button>
       </div>
 
       <!-- Card 2: Child's corner -->
@@ -781,7 +781,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
             Writing
           </div>
         </div>
-        <button class="btn" onclick="kMode('child')" style="font-size:0.75rem" id="k-corner-btn">Open their corner <span class="arr">&#8594;</span></button>
+        <button class="btn" onclick="kMode('child')" style="font-size:0.78rem" id="k-corner-btn">Open their corner <span class="arr">&#8594;</span></button>
       </div>
 
       <div style="font-family:'DM Sans',sans-serif;font-size:0.68rem;color:var(--dim);text-align:center;letter-spacing:0.1em;text-transform:uppercase;margin-top:0.5rem">0 whispers · 0 contributors</div>
@@ -818,7 +818,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
     #ks-child .cs-star{position:absolute;opacity:0.12}
     #ks-child .cs-moon{position:absolute;width:20px;height:20px;border-radius:50%;box-shadow:5px -2px 0 0 rgba(240,184,48,0.1);background:transparent}
     #ks-child .cs-heart{position:absolute;opacity:0.08}
-    #ks-child .cs-cloud{position:absolute;background:rgba(200,180,140,0.04);border-radius:50px;height:12px}
+    #ks-child .cs-cloud{position:absolute;background:rgba(200,180,140,0.04);border-radius:100px;height:12px}
     #ks-child .cs-dot{position:absolute;border-radius:50%;background:rgba(240,184,48,0.08)}
     </style>
     <div class="child-bg"></div>
@@ -889,7 +889,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
         <div style="flex:1;padding:0.85rem;background:rgba(255,255,255,0.03);border:1px solid rgba(200,191,180,0.1);border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:0.4rem;cursor:pointer">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" stroke="#6a5e52" stroke-width="1.5"/><path d="M5 10a7 7 0 0014 0" stroke="#6a5e52" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="#6a5e52" stroke-width="1.5" stroke-linecap="round"/></svg>
           <span style="font-family:'DM Sans',sans-serif;font-size:0.68rem;color:var(--dim)">Record voice</span>
-          <span style="font-family:'DM Sans',sans-serif;font-size:0.58rem;color:var(--dim)">Up to 3 min</span>
+          <span style="font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--dim)">Up to 3 min</span>
         </div>
         <div style="flex:1;padding:0.85rem;background:rgba(255,255,255,0.03);border:1px solid rgba(200,191,180,0.1);border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:0.4rem;cursor:pointer">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="#6a5e52" stroke-width="1.5" stroke-linecap="round"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#6a5e52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -938,7 +938,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
         <span style="font-size:0.65rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:0.15rem">Leave a whisper for</span>
         <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:1.65rem;color:var(--white)" id="k-sheet-name">them</div>
       </div>
-      <span style="font-family:'DM Sans',sans-serif;font-size:0.72rem;color:var(--dim);cursor:pointer" onclick="kComposeClose()">Cancel</span>
+      <span style="font-family:'DM Sans',sans-serif;font-size:0.68rem;color:var(--dim);cursor:pointer" onclick="kComposeClose()">Cancel</span>
     </div>
 
     <div class="mtabs">
@@ -973,58 +973,6 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 <!-- ═══════════════════════════
      ALL LETTERS VIEW
 ════════════════════════════ -->
-<div class="view" id="v-letters">
-<style>
-#v-letters .lshell{max-width:420px;margin:0 auto;padding:0 1.5rem 6rem}
-#v-letters .ltop{display:flex;align-items:center;gap:0.75rem;padding:3.5rem 0 1.5rem}
-#v-letters .ltitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:1.65rem;color:var(--white);flex:1}
-#v-letters .vtoggle{display:flex;gap:0.4rem;padding:0.25rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:10px;margin-bottom:1.25rem}
-#v-letters .vtbtn{flex:1;padding:0.48rem;border-radius:7px;font-size:0.72rem;color:var(--dim);cursor:pointer;transition:all 0.2s;text-align:center;font-weight:500}
-#v-letters .vtbtn.on{background:rgba(200,144,12,0.14);color:var(--gold-hi);border:1px solid rgba(200,144,12,0.25)}
-#v-letters .frow{display:flex;gap:0.5rem;overflow-x:auto;padding-bottom:0.5rem;margin-bottom:1.25rem;scrollbar-width:none}
-#v-letters .frow::-webkit-scrollbar{display:none}
-#v-letters .fchip{display:flex;align-items:center;gap:0.4rem;padding:0.38rem 0.7rem;border-radius:100px;border:1px solid var(--input-bd);background:var(--input-bg);cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;font-size:0.75rem;color:var(--body)}
-#v-letters .fchip.on{border-color:rgba(200,144,12,0.4);background:rgba(200,144,12,0.08);color:var(--gold-hi)}
-#v-letters .favt{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.4),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.58rem;color:var(--gold-hi);font-weight:500}
-#v-letters .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
-#v-letters .lgcard{background:var(--input-bg);border:1px solid var(--input-bd);border-radius:14px;padding:1rem;cursor:pointer;transition:border-color 0.2s}
-#v-letters .lgcard:hover{border-color:var(--border)}
-#v-letters .lgcard.wide{grid-column:1/-1}
-#v-letters .lgfrom{font-size:0.65rem;color:var(--dim);margin-bottom:0.4rem}
-#v-letters .lgbody{font-size:0.8rem;color:var(--body);line-height:1.5;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-#v-letters .lgseal{display:inline-flex;align-items:center;gap:0.25rem;font-size:0.62rem;color:var(--gold);margin-top:0.5rem}
-#v-letters .fab{position:fixed;bottom:3rem;right:1.5rem;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.5),rgba(200,144,12,0.2));border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(200,144,12,0.25);transition:all 0.2s;z-index:50}
-#v-letters .fab:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(200,144,12,0.35)}
-</style>
-<div class="lshell">
-  <div class="ltop">
-    <div class="back" onclick="G('v-keeper')">&#8592;</div>
-    <div class="ltitle" id="ltitle">Their whispers</div>
-  </div>
-
-  <div style="display:flex;gap:1rem;margin-bottom:1.5rem">
-    <div style="flex:1;padding:0.9rem;background:rgba(200,144,12,0.05);border:1px solid rgba(200,144,12,0.14);border-radius:12px;text-align:center">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:500;color:var(--gold-hi);display:block">0</span>
-      <span style="font-size:0.62rem;color:var(--dim);letter-spacing:0.08em;text-transform:uppercase">Whispers</span>
-    </div>
-    <div style="flex:1;padding:0.9rem;background:rgba(200,144,12,0.05);border:1px solid rgba(200,144,12,0.14);border-radius:12px;text-align:center">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:500;color:var(--gold-hi);display:block">0</span>
-      <span style="font-size:0.62rem;color:var(--dim);letter-spacing:0.08em;text-transform:uppercase">Writers</span>
-    </div>
-    <div style="flex:1;padding:0.9rem;background:rgba(200,144,12,0.05);border:1px solid rgba(200,144,12,0.14);border-radius:12px;text-align:center">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:500;color:var(--gold-hi);display:block">0</span>
-      <span style="font-size:0.62rem;color:var(--dim);letter-spacing:0.08em;text-transform:uppercase">Sealed</span>
-    </div>
-  </div>
-
-  <div style="text-align:center;padding:2rem 1rem">
-    <div style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--dim);line-height:1.6">No whispers yet. Leave the first one, or invite family to start.</div>
-  </div>
-</div>
-<div class="fab" onclick="G('v-keeper');kCompose()">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#f0b830" stroke-width="2" stroke-linecap="round"/></svg>
-</div>
-</div><!-- /v-letters -->
 
 <!-- ═══════════════════════════
      GIVER — LETTER WRITER
@@ -1048,7 +996,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-giver .gchips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem}
 #v-giver .gchip{padding:0.42rem 0.85rem;border:1px solid var(--input-bd);border-radius:100px;font-size:0.78rem;color:var(--body);cursor:pointer;transition:all 0.2s;background:var(--input-bg)}
 #v-giver .gchip.on{border-color:var(--gold);color:var(--gold-hi);background:rgba(200,144,12,0.1)}
-#v-giver .gmta{width:100%;min-height:175px;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:14px;padding:1rem 1.25rem;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--white);outline:none;resize:none;line-height:1.65;caret-color:var(--gold-hi);transition:border-color 0.2s;margin-bottom:0.4rem}
+#v-giver .gmta{width:100%;min-height:175px;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:14px;padding:1rem 1.25rem;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--white);outline:none;resize:none;line-height:1.65;caret-color:var(--gold-hi);transition:border-color 0.2s;margin-bottom:0.4rem}
 #v-giver .gmta:focus{border-color:var(--input-focus)}
 #v-giver .gmta::placeholder{color:var(--dim)}
 </style>
@@ -1060,7 +1008,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 
       <!-- PATH A / PATH B badge — swaps based on W.giverFrom -->
       <div id="g-from-badge" style="display:inline-flex;align-items:center;gap:0.55rem;padding:0.45rem 0.9rem 0.45rem 0.55rem;background:var(--gold-dim);border:1px solid var(--border);border-radius:100px;margin-bottom:1.75rem">
-        <div id="g-from-avt" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.4),rgba(200,144,12,0.15));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--gold-hi);font-weight:500">P</div>
+        <div id="g-from-avt" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.4),rgba(200,144,12,0.15));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.68rem;color:var(--gold-hi);font-weight:500">P</div>
         <span id="g-from-txt" style="font-size:0.78rem;color:var(--body)"><strong style="color:var(--white)" id="g-keeper-name">them</strong> wants you to leave a whisper for your child</span>
       </div>
 
@@ -1069,17 +1017,17 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 
       <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:rgba(200,144,12,0.05);border:1px solid var(--border);border-radius:16px;margin-bottom:2rem">
         <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-size:1rem;color:var(--gold-hi);font-weight:600;flex-shrink:0" id="g-child-avt">A</div>
-        <div><span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.5rem;color:var(--white);font-weight:500;display:block" id="g-child-card-name">your child</span><span style="font-size:0.75rem;color:var(--dim)">7 years old</span></div>
+        <div><span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.5rem;color:var(--white);font-weight:500;display:block" id="g-child-card-name">your child</span><span style="font-size:0.78rem;color:var(--dim)">7 years old</span></div>
       </div>
     </div>
     <div style="animation:rise 0.9s cubic-bezier(0.16,1,0.3,1) 0.18s both">
       <button class="gbtn" onclick="gS('gp1')">Leave a whisper for <span id="g-cta-name">your child</span> <span class="arr">&#8594;</span></button>
       <div style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1rem">
-        <span style="font-size:0.7rem;color:var(--dim)">Private</span>
-        <span style="font-size:0.7rem;color:var(--dim)">·</span>
-        <span style="font-size:0.7rem;color:var(--dim)">No account needed</span>
-        <span style="font-size:0.7rem;color:var(--dim)">·</span>
-        <span style="font-size:0.7rem;color:var(--dim)">2 minutes</span>
+        <span style="font-size:0.68rem;color:var(--dim)">Private</span>
+        <span style="font-size:0.68rem;color:var(--dim)">·</span>
+        <span style="font-size:0.68rem;color:var(--dim)">No account needed</span>
+        <span style="font-size:0.68rem;color:var(--dim)">·</span>
+        <span style="font-size:0.68rem;color:var(--dim)">2 minutes</span>
       </div>
     </div>
   </div>
@@ -1096,23 +1044,23 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
       </div>
 
       <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:12px;margin-bottom:1.25rem">
-        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--gold-hi);font-weight:500" id="gp1-avt">N</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:var(--gold-hi);font-weight:500" id="gp1-avt">N</div>
         <div style="flex:1"><span style="font-size:0.68rem;color:var(--dim);display:block">This whisper is from</span><span style="font-size:0.88rem;color:var(--white);font-weight:500" id="gp1-from-info">You</span></div>
       </div>
 
       <!-- Giver format tabs -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1.25rem">
-        <div class="mtab on" id="gm-write" onclick="giverFormat('write')" style="padding:0.65rem;border-radius:12px;border:1px solid var(--border);background:rgba(200,144,12,0.08);display:flex;flex-direction:column;align-items:center;gap:0.3rem;cursor:pointer;font-size:0.68rem;color:var(--gold-hi)">
+      <div class="mtabs">
+        <div class="mtab on" id="gm-write" onclick="giverFormat('write')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Write
+          <span class="mtab-lbl">Write</span>
         </div>
-        <div class="mtab" id="gm-voice" onclick="giverFormat('voice')" style="padding:0.65rem;border-radius:12px;border:1px solid var(--input-bd);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;gap:0.3rem;cursor:pointer;font-size:0.68rem;color:var(--dim)">
+        <div class="mtab" id="gm-voice" onclick="giverFormat('voice')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M5 10a7 7 0 0014 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          Voice
+          <span class="mtab-lbl">Voice</span>
         </div>
-        <div class="mtab" id="gm-photo" onclick="giverFormat('photo')" style="padding:0.65rem;border-radius:12px;border:1px solid var(--input-bd);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;gap:0.3rem;cursor:pointer;font-size:0.68rem;color:var(--dim)">
+        <div class="mtab" id="gm-photo" onclick="giverFormat('photo')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
-          Photo
+          <span class="mtab-lbl">Photo</span>
         </div>
       </div>
 
@@ -1192,9 +1140,9 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-contributors .ccard{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:16px;margin-bottom:0.75rem;cursor:pointer;transition:border-color 0.2s}
 #v-contributors .ccard:hover{border-color:var(--border)}
 #v-contributors .cavt{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--gold-hi);font-weight:500;flex-shrink:0}
-#v-contributors .cname{font-size:0.95rem;color:var(--white);font-weight:500;display:block}
-#v-contributors .crel{font-size:0.72rem;color:var(--dim)}
-#v-contributors .ccount{margin-left:auto;font-size:0.72rem;color:var(--gold);text-align:right;line-height:1.6}
+#v-contributors .cname{font-size:0.88rem;color:var(--white);font-weight:500;display:block}
+#v-contributors .crel{font-size:0.68rem;color:var(--dim)}
+#v-contributors .ccount{margin-left:auto;font-size:0.68rem;color:var(--gold);text-align:right;line-height:1.6}
 #v-contributors .cadd{display:flex;align-items:center;gap:0.75rem;padding:1rem 1.25rem;border:1.5px dashed rgba(200,191,180,0.15);border-radius:16px;cursor:pointer;transition:all 0.2s;margin-top:0.25rem}
 #v-contributors .cadd:hover{border-color:var(--border);background:rgba(200,144,12,0.02)}
 /* Profile sheet */
@@ -1223,8 +1171,8 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
     </div>
 
     <div class="cadd" onclick="cS('cs1')">
-      <div style="width:36px;height:36px;border-radius:50%;border:1px solid var(--input-bd);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--dim)">+</div>
-      <div><span style="font-size:0.88rem;color:var(--body);display:block">Invite someone</span><span style="font-size:0.72rem;color:var(--dim)">They get a private link, no account needed</span></div>
+      <div style="width:36px;height:36px;border-radius:50%;border:1px solid var(--input-bd);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--dim)">+</div>
+      <div><span style="font-size:0.88rem;color:var(--body);display:block">Invite someone</span><span style="font-size:0.68rem;color:var(--dim)">They get a private link, no account needed</span></div>
     </div>
   </div>
 
@@ -1237,7 +1185,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
       <div>
         <span class="field-label">What does your child call them?</span>
         <input class="inp" id="cn-nick" type="text" placeholder="e.g. Dadi, Granny, Nana, Pop..." autocomplete="off" oninput="cChk()">
-        <div style="font-size:0.72rem;color:var(--dim);margin-top:0.35rem">This is how their name appears on every whisper.</div>
+        <div style="font-size:0.68rem;color:var(--dim);margin-top:0.35rem">This is how their name appears on every whisper.</div>
       </div>
       <div>
         <span class="field-label">Their relationship to your child</span>
@@ -1262,13 +1210,13 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
       <div class="back" onclick="cS('cs1')">&#8592;</div>
       <div class="ctitle">Share the link</div>
     </div>
-    <div style="padding:1.1rem 1.25rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.18);border-radius:14px;margin-bottom:1rem;display:flex;align-items:center;gap:1rem">
+    <div style="padding:1rem 1.25rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.18);border-radius:14px;margin-bottom:1rem;display:flex;align-items:center;gap:1rem">
       <span style="font-size:0.78rem;color:var(--body);flex:1;line-height:1.5;word-break:break-all" id="cs2url">generating link...</span>
-      <span style="flex-shrink:0;padding:0.45rem 0.75rem;background:rgba(200,144,12,0.12);border:1px solid var(--border);border-radius:8px;font-size:0.7rem;font-weight:500;color:var(--gold-hi);cursor:pointer" onclick="copyShareUrl('cs2')">Copy</span>
+      <span style="flex-shrink:0;padding:0.45rem 0.75rem;background:rgba(200,144,12,0.12);border:1px solid var(--border);border-radius:12px;font-size:0.68rem;font-weight:500;color:var(--gold-hi);cursor:pointer" onclick="copyShareUrl('cs2')">Copy</span>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1.5rem">
-      <div onclick="shareWhatsApp('cs2')" style="padding:0.8rem;border-radius:12px;border:1px solid rgba(37,211,102,0.25);background:var(--input-bg);display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.8rem;color:rgba(37,211,102,0.9);cursor:pointer;font-weight:500">WhatsApp</div>
-      <div onclick="shareSMS('cs2')" style="padding:0.8rem;border-radius:12px;border:1px solid var(--input-bd);background:var(--input-bg);display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.8rem;color:var(--body);cursor:pointer;font-weight:500">iMessage</div>
+      <div onclick="shareWhatsApp('cs2')" style="padding:0.8rem;border-radius:12px;border:1px solid rgba(37,211,102,0.25);background:var(--input-bg);display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.82rem;color:rgba(37,211,102,0.9);cursor:pointer;font-weight:500">WhatsApp</div>
+      <div onclick="shareSMS('cs2')" style="padding:0.8rem;border-radius:12px;border:1px solid var(--input-bd);background:var(--input-bg);display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.82rem;color:var(--body);cursor:pointer;font-weight:500">iMessage</div>
     </div>
     <span style="font-size:0.78rem;color:var(--gold);cursor:pointer;display:block;text-align:center" onclick="cS('cs0')">Done, back to family</span>
   </div>
@@ -1280,23 +1228,23 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
   <div class="pinner">
     <div style="width:36px;height:3px;background:rgba(200,191,180,0.18);border-radius:2px;margin:0 auto 1.5rem"></div>
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem">
-      <div id="ps-avt" style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--gold-hi);font-weight:600;flex-shrink:0">N</div>
+      <div id="ps-avt" style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--gold-hi);font-weight:600;flex-shrink:0">N</div>
       <div>
         <div id="ps-name" style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.5rem;color:var(--white);font-weight:500">Nani</div>
-        <div id="ps-rel" style="font-size:0.75rem;color:var(--dim)">Maternal grandmother</div>
+        <div id="ps-rel" style="font-size:0.78rem;color:var(--dim)">Maternal grandmother</div>
       </div>
       <div style="margin-left:auto;text-align:right">
         <span id="ps-count" style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold-hi)">4</span>
-        <span style="font-size:0.62rem;color:var(--dim);display:block">whispers</span>
+        <span style="font-size:0.65rem;color:var(--dim);display:block">whispers</span>
       </div>
     </div>
-    <div style="font-size:0.8rem;color:var(--dim);margin-bottom:1.5rem">Last whisper: 2 days ago</div>
+    <div style="font-size:0.82rem;color:var(--dim);margin-bottom:1.5rem">Last whisper: 2 days ago</div>
     <div style="display:flex;flex-direction:column;gap:0.6rem">
       <button class="btn" onclick="closeSheetD()">See their whispers</button>
       <button class="btn" style="background:transparent;border-color:var(--input-bd);color:var(--body)" onclick="closeSheetD()">Send a nudge</button>
-      <button class="btn" id="ps-remove" style="background:transparent;border:1px solid rgba(200,80,80,0.2);color:rgba(200,120,120,0.7);font-size:0.75rem" onclick="closeSheetD()">Remove from their whispers</button>
+      <button class="btn" id="ps-remove" style="background:transparent;border:1px solid rgba(200,80,80,0.2);color:rgba(200,120,120,0.7);font-size:0.78rem" onclick="closeSheetD()">Remove from their whispers</button>
     </div>
-    <div style="margin-top:1rem;font-size:0.72rem;color:var(--dim);text-align:center;line-height:1.5">Their whispers stay. They belong to your child.</div>
+    <div style="margin-top:1rem;font-size:0.68rem;color:var(--dim);text-align:center;line-height:1.5">Their whispers stay. They belong to your child.</div>
   </div>
 </div>
 </div><!-- /v-contributors -->
@@ -1313,10 +1261,10 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-ceremony .cer-num{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:6rem;line-height:1;color:var(--gold-hi);display:block;margin-bottom:0.25rem}
 #v-ceremony .cer-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:1.65rem;color:var(--white);line-height:1.3}
 #v-ceremony .cer-avatars{display:flex;align-items:center;justify-content:center;gap:-0.5rem;margin:2rem 0 0.75rem}
-#v-ceremony .cer-avt{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-size:0.75rem;color:var(--gold-hi);font-weight:500;margin-left:-8px;position:relative}
+#v-ceremony .cer-avt{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,rgba(200,144,12,0.35),rgba(200,144,12,0.1));border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--gold-hi);font-weight:500;margin-left:-8px;position:relative}
 #v-ceremony .cer-avt:first-child{margin-left:0}
 #v-ceremony .cer-from{font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--body);line-height:1.6}
-#v-ceremony .cer-sealed{display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.2);border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.75rem;color:var(--gold);margin-top:1.5rem}
+#v-ceremony .cer-sealed{display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;background:rgba(200,144,12,0.06);border:1px solid rgba(200,144,12,0.2);border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--gold);margin-top:1.5rem}
 </style>
 <div class="cer-glow"></div>
 <div class="cer-shell">
@@ -1332,7 +1280,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
     <div class="cer-avt">D</div>
     <div class="cer-avt">P</div>
     <div class="cer-avt">M</div>
-    <div class="cer-avt" style="font-size:0.6rem;background:linear-gradient(135deg,rgba(200,144,12,0.2),rgba(200,144,12,0.05))">+2</div>
+    <div class="cer-avt" style="font-size:0.65rem;background:linear-gradient(135deg,rgba(200,144,12,0.2),rgba(200,144,12,0.05))">+2</div>
   </div>
   <div class="cer-from" style="animation:rise 0.9s cubic-bezier(0.16,1,0.3,1) 0.28s both">From Naani, Dada, Mum, Maasi and 2 others.</div>
 
@@ -1387,7 +1335,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
   <div style="margin-top:1rem;padding:1.25rem 1.5rem;background:rgba(200,144,12,0.05);border:1px solid rgba(200,144,12,0.14);border-radius:16px;text-align:center">
     <div style="font-family:'DM Sans',sans-serif;font-size:0.68rem;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem">Your space</div>
     <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:1.5rem;color:var(--white);margin-bottom:0.75rem">Want to leave a whisper for your future self?</div>
-    <button class="btn" onclick="G('v-keeper');kMode('child')" style="font-size:0.75rem;padding:0.75rem 1.25rem">Open your journal <span class="arr">&#8594;</span></button>
+    <button class="btn" onclick="G('v-keeper');kMode('child')" style="font-size:0.78rem;padding:0.75rem 1.25rem">Open your journal <span class="arr">&#8594;</span></button>
   </div>
 
 </div>
@@ -1410,14 +1358,14 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-journal .jrec-outer{position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(200,144,12,0.1);animation:breathe 3s ease-in-out infinite}
 #v-journal .jrec-mid{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(200,144,12,0.18)}
 #v-journal .jrec-btn{position:absolute;inset:8px;border-radius:50%;background:linear-gradient(145deg,rgba(200,144,12,0.35),rgba(120,70,0,0.2));border:1.5px solid rgba(200,144,12,0.45);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(200,144,12,0.15)}
-#v-journal .jor{font-family:'DM Sans',sans-serif;font-size:0.75rem;color:var(--dim);text-align:center}
-#v-journal .jta{width:100%;min-height:100px;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:14px;padding:1rem 1.25rem;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--white);outline:none;resize:none;line-height:1.65;caret-color:var(--gold-hi);transition:border-color 0.2s;margin-top:0.75rem}
+#v-journal .jor{font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--dim);text-align:center}
+#v-journal .jta{width:100%;min-height:100px;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:14px;padding:1rem 1.25rem;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--white);outline:none;resize:none;line-height:1.65;caret-color:var(--gold-hi);transition:border-color 0.2s;margin-top:0.75rem}
 #v-journal .jta:focus{border-color:var(--input-focus)}
 #v-journal .jta::placeholder{color:var(--dim)}
 #v-journal .jentry{padding:1rem 1.25rem;background:var(--input-bg);border:1px solid var(--input-bd);border-radius:14px;margin-bottom:0.65rem;cursor:pointer;transition:border-color 0.2s}
 #v-journal .jentry:hover{border-color:var(--border)}
 #v-journal .je-date{font-family:'DM Sans',sans-serif;font-size:0.65rem;color:var(--dim);letter-spacing:0.06em;margin-bottom:0.35rem}
-#v-journal .je-body{font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--body);line-height:1.55}
+#v-journal .je-body{font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--body);line-height:1.55}
 #v-journal .je-voice{display:inline-flex;align-items:center;gap:0.4rem;font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--gold)}
 </style>
 <div class="jshell">
@@ -1489,7 +1437,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 #v-paywall .pw-card.monthly{background:var(--input-bg);border:1.5px solid var(--input-bd)}
 #v-paywall .pw-card.on{border-color:var(--gold-hi);background:rgba(200,144,12,0.1)}
 #v-paywall .pw-price{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.8rem;color:var(--white);display:block;margin-bottom:0.15rem}
-#v-paywall .pw-per{font-family:'DM Sans',sans-serif;font-size:0.72rem;color:var(--dim)}
+#v-paywall .pw-per{font-family:'DM Sans',sans-serif;font-size:0.68rem;color:var(--dim)}
 #v-paywall .pw-label{font-family:'DM Sans',sans-serif;font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);margin-bottom:0.65rem}
 </style>
 <div class="pw-shell">
@@ -1537,7 +1485,7 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
   <!-- Top bar -->
   <div style="padding-top:3rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem">
     <div class="back" onclick="closeSealScreen()">&#8592;</div>
-    <span id="ss-seal-active" style="display:none;font-size:0.72rem;color:var(--gold);padding:0.3rem 0.75rem;border:1px solid rgba(200,144,12,0.3);border-radius:100px;background:rgba(200,144,12,0.07)">Sealed</span>
+    <span id="ss-seal-active" style="display:none;font-size:0.68rem;color:var(--gold);padding:0.3rem 0.75rem;border:1px solid rgba(200,144,12,0.3);border-radius:100px;background:rgba(200,144,12,0.07)">Sealed</span>
   </div>
 
   <!-- Icon -->
@@ -1564,11 +1512,11 @@ body::before{content:'';position:fixed;top:-80px;left:50%;transform:translateX(-
 
   <!-- Custom age -->
   <div id="ss-custom-wrap" style="display:none;margin-top:1rem;padding:1rem 1.25rem;background:rgba(255,255,255,0.03);border:1px solid rgba(200,191,180,0.1);border-radius:20px">
-    <span style="font-size:0.72rem;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.6rem">Choose a specific age</span>
+    <span style="font-size:0.68rem;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.6rem">Choose a specific age</span>
     <div style="display:flex;align-items:center;gap:0.75rem">
       <span style="font-size:0.88rem;color:var(--body)">Open when <span id="ss-custom-label">them</span> turns</span>
       <input type="number" id="ss-custom-input" min="8" max="30" placeholder="e.g. 10"
-        style="width:70px;background:rgba(255,255,255,0.06);border:1px solid var(--input-bd);border-radius:10px;padding:0.5rem 0.6rem;color:var(--white);font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;text-align:center;caret-color:var(--gold-hi)"
+        style="width:70px;background:rgba(255,255,255,0.06);border:1px solid var(--input-bd);border-radius:12px;padding:0.5rem 0.6rem;color:var(--white);font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;text-align:center;caret-color:var(--gold-hi)"
         oninput="ssCustomInput()">
       <span style="font-size:0.88rem;color:var(--body)">years old</span>
     </div>
@@ -1745,7 +1693,6 @@ function syncName(){
     'k-capq': `What happened today with ${n}?`,
     'k-compose-name': n,
     'k-feed-title': 'Recent whispers',
-    'ltitle': `${n}'s whispers`,
     'g-child-name': n,
     'g-cta-name': n,
     'g-child-card-name': n,
@@ -2119,17 +2066,6 @@ function kSave(){
 }
 
 // ── Letters view ──
-function lToggle(m){
-  document.querySelectorAll('#v-letters .vtbtn').forEach(b=>b.classList.remove('on'));
-  document.getElementById('vt-'+m[0]).classList.add('on');
-}
-function lFilter(el,who){
-  document.querySelectorAll('#v-letters .fchip').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
-  document.querySelectorAll('#lgrid .lgcard').forEach(c=>{
-    c.style.display=(who==='all'||c.dataset.a===who)?'':'none';
-  });
-}
 
 // ── Giver ──
 function gS(id){
@@ -2147,11 +2083,7 @@ function giverFormat(fmt){
   giverFmt = fmt;
   ['write','voice','photo'].forEach(f => {
     const tab = document.getElementById('gm-' + f);
-    if(tab){
-      tab.style.borderColor = f === fmt ? 'var(--border)' : 'var(--input-bd)';
-      tab.style.background = f === fmt ? 'rgba(200,144,12,0.08)' : 'var(--input-bg)';
-      tab.style.color = f === fmt ? 'var(--gold-hi)' : 'var(--dim)';
-    }
+    if(tab) tab.classList.toggle('on', f === fmt);
     const panel = document.getElementById('gp-' + f + '-panel');
     if(panel) panel.style.display = f === fmt ? '' : 'none';
   });
@@ -2464,7 +2396,7 @@ function showInlineError(afterId, msg, isSuccess){
   if(!el) return;
   const div = document.createElement('div');
   div.id = 'inline-msg';
-  div.style.cssText = `font-family:'DM Sans',sans-serif;font-size:0.75rem;color:${isSuccess?'var(--gold)':'rgba(220,120,120,0.9)'};margin-top:0.5rem;line-height:1.5`;
+  div.style.cssText = `font-family:'DM Sans',sans-serif;font-size:0.78rem;color:${isSuccess?'var(--gold)':'rgba(220,120,120,0.9)'};margin-top:0.5rem;line-height:1.5`;
   div.textContent = msg;
   el.parentNode.insertBefore(div, el.nextSibling);
 }
@@ -2679,11 +2611,11 @@ function giverDone(){
   if(gp2){
     gp2.querySelector('div').innerHTML = `
       <div style="margin-bottom:2rem">
-        <span class="wordmark" style="font-size:1.2rem">Whispers</span>
+        <span class="wordmark" style="font-size:1rem">Whispers</span>
       </div>
       <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:2rem;line-height:1.2;color:var(--white);margin-bottom:1rem">Thank you.</div>
       <div style="font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--body);line-height:1.65;margin-bottom:2rem">${escHtml(n)} will hear your voice one day.<br>That matters more than you know.</div>
-      <div style="font-family:'DM Sans',sans-serif;font-size:0.75rem;color:var(--dim)">You can close this tab now.</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--dim)">You can close this tab now.</div>
     `;
   }
 }
