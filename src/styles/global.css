@@ -1,0 +1,90 @@
+@import './tokens.css';
+@import './animations.css';
+@import './components.css';
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  color: var(--body);
+  background: var(--bg);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* View system */
+.view {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  -webkit-overflow-scrolling: touch;
+}
+
+.view.active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* Shell: constrains content to mobile width */
+.shell {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  min-height: 100%;
+}
+
+/* Scrollbar hide */
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+/* Selection */
+::selection {
+  background: rgba(200, 144, 12, 0.3);
+  color: var(--white);
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+input, textarea, button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
