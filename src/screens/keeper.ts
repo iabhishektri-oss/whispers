@@ -257,46 +257,55 @@ export function initKeeper(): void {
 
       const sealVal = sealEnabled ? sealAge.value || '18' : null
 
-      let result
-      if (activeFormat === 'write') {
-        const text = (sheetContent.querySelector('#cs-text') as HTMLTextAreaElement)?.value.trim()
-        result = await saveWhisper({
-          format: 'write',
-          content: text,
-          sealed: sealEnabled,
-          sealType: sealEnabled ? 'age' : null,
-          sealValue: sealVal,
-        })
-      } else if (activeFormat === 'voice') {
-        const blob = getRecordingBlob()
-        result = await saveWhisper({
-          format: 'voice',
-          audioBlob: blob,
-          sealed: sealEnabled,
-          sealType: sealEnabled ? 'age' : null,
-          sealValue: sealVal,
-        })
-      } else {
-        const file = (sheetContent.querySelector('#cs-photo-file') as HTMLInputElement)?.files?.[0]
-        const caption = (sheetContent.querySelector('#cs-photo-caption') as HTMLTextAreaElement)?.value.trim()
-        result = await saveWhisper({
-          format: 'photo',
-          photoFile: file,
-          content: caption || null,
-          sealed: sealEnabled,
-          sealType: sealEnabled ? 'age' : null,
-          sealValue: sealVal,
-        })
-      }
+      try {
+        let result
+        if (activeFormat === 'write') {
+          const text = (sheetContent.querySelector('#cs-text') as HTMLTextAreaElement)?.value.trim()
+          result = await saveWhisper({
+            format: 'write',
+            content: text,
+            sealed: sealEnabled,
+            sealType: sealEnabled ? 'age' : null,
+            sealValue: sealVal,
+          })
+        } else if (activeFormat === 'voice') {
+          const blob = getRecordingBlob()
+          result = await saveWhisper({
+            format: 'voice',
+            audioBlob: blob,
+            sealed: sealEnabled,
+            sealType: sealEnabled ? 'age' : null,
+            sealValue: sealVal,
+          })
+        } else {
+          const file = (sheetContent.querySelector('#cs-photo-file') as HTMLInputElement)?.files?.[0]
+          const caption = (sheetContent.querySelector('#cs-photo-caption') as HTMLTextAreaElement)?.value.trim()
+          result = await saveWhisper({
+            format: 'photo',
+            photoFile: file,
+            content: caption || null,
+            sealed: sealEnabled,
+            sealType: sealEnabled ? 'age' : null,
+            sealValue: sealVal,
+          })
+        }
 
-      if (result.success) {
-        closeSheet()
-        clearRecording()
-        loadFeed()
-      } else {
+        if (result.success) {
+          closeSheet()
+          clearRecording()
+          loadFeed()
+        } else {
+          statusEl.style.display = 'block'
+          statusEl.style.color = '#e85454'
+          statusEl.textContent = result.error || 'Could not save. Try again.'
+          saveBtn.innerHTML = 'Save whisper'
+          saveBtn.classList.remove('off')
+        }
+      } catch (e) {
+        console.error('[Keeper] Save failed:', e)
         statusEl.style.display = 'block'
         statusEl.style.color = '#e85454'
-        statusEl.textContent = result.error || 'Could not save. Try again.'
+        statusEl.textContent = 'Something went wrong. Please try again.'
         saveBtn.innerHTML = 'Save whisper'
         saveBtn.classList.remove('off')
       }
@@ -321,12 +330,21 @@ export function initKeeper(): void {
     const feed = view.querySelector('#k-feed') as HTMLDivElement
     const sb = getSupabase()
 
-    const { data, error } = await sb
-      .from('whispers')
-      .select('*, contributors(nickname, relationship)')
-      .eq('child_id', childId)
-      .order('created_at', { ascending: false })
-      .limit(50)
+    let data, error
+    try {
+      const res = await sb
+        .from('whispers')
+        .select('*, contributors(nickname, relationship)')
+        .eq('child_id', childId)
+        .order('created_at', { ascending: false })
+        .limit(50)
+      data = res.data
+      error = res.error
+    } catch (e) {
+      console.error('Feed exception:', e)
+      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers.</div>`
+      return
+    }
 
     if (error) {
       feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers.</div>`

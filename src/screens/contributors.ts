@@ -177,28 +177,49 @@ export function initContributors(): void {
   // Load contributors
   async function loadContributors(): Promise<void> {
     const { childId } = getState()
-    if (!childId) return
+    if (!childId) {
+      const list = view.querySelector('#ct-list') as HTMLDivElement
+      list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:var(--dim);font-size:var(--text-body)">No child selected.</div>`
+      return
+    }
 
     const list = view.querySelector('#ct-list') as HTMLDivElement
     const sb = getSupabase()
 
-    // Get contributors
-    const { data: contributors, error } = await sb
-      .from('contributors')
-      .select('*')
-      .eq('child_id', childId)
-      .order('created_at', { ascending: false })
+    let contributors: any[] | null = null
+    let whisperCounts: any[] | null = null
 
-    if (error) {
+    try {
+      // Get contributors
+      const { data, error } = await sb
+        .from('contributors')
+        .select('*')
+        .eq('child_id', childId)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Contributors query error:', error)
+        list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors.</div>`
+        return
+      }
+      contributors = data
+    } catch (e) {
+      console.error('Contributors exception:', e)
       list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors.</div>`
       return
     }
 
-    // Get whisper counts per contributor (include keeper whispers where contributor_id is null)
-    const { data: whisperCounts } = await sb
-      .from('whispers')
-      .select('contributor_id')
-      .eq('child_id', childId)
+    try {
+      // Get whisper counts per contributor (include keeper whispers where contributor_id is null)
+      const { data } = await sb
+        .from('whispers')
+        .select('contributor_id')
+        .eq('child_id', childId)
+      whisperCounts = data
+    } catch (e) {
+      console.error('Whisper counts exception:', e)
+      // Continue without counts
+    }
 
     const countMap: Record<string, number> = {}
     if (whisperCounts) {

@@ -111,14 +111,23 @@ export function initChildMode(): void {
         if (saveBtn.classList.contains('off')) return
         saveBtn.innerHTML = '<div class="spinner"></div>'
         saveBtn.classList.add('off')
-        const result = await saveWhisper({ format: 'write', content: ta.value.trim() })
-        if (result.success) {
-          closeChildSheet()
-          showChildSuccess()
-        } else {
+        try {
+          const result = await saveWhisper({ format: 'write', content: ta.value.trim() })
+          if (result.success) {
+            closeChildSheet()
+            showChildSuccess()
+          } else {
+            statusEl.style.display = 'block'
+            statusEl.style.color = '#e85454'
+            statusEl.textContent = result.error || 'Could not save.'
+            saveBtn.innerHTML = 'Save'
+            saveBtn.classList.remove('off')
+          }
+        } catch (e) {
+          console.error('[ChildMode] Write save failed:', e)
           statusEl.style.display = 'block'
           statusEl.style.color = '#e85454'
-          statusEl.textContent = result.error || 'Could not save.'
+          statusEl.textContent = 'Something went wrong. Please try again.'
           saveBtn.innerHTML = 'Save'
           saveBtn.classList.remove('off')
         }
@@ -186,16 +195,25 @@ export function initChildMode(): void {
         if (saveBtn.classList.contains('off')) return
         saveBtn.innerHTML = '<div class="spinner"></div>'
         saveBtn.classList.add('off')
-        const blob = getRecordingBlob()
-        const result = await saveWhisper({ format: 'voice', audioBlob: blob })
-        if (result.success) {
-          closeChildSheet()
-          clearRecording()
-          showChildSuccess()
-        } else {
+        try {
+          const blob = getRecordingBlob()
+          const result = await saveWhisper({ format: 'voice', audioBlob: blob })
+          if (result.success) {
+            closeChildSheet()
+            clearRecording()
+            showChildSuccess()
+          } else {
+            statusEl.style.display = 'block'
+            statusEl.style.color = '#e85454'
+            statusEl.textContent = result.error || 'Could not save.'
+            saveBtn.innerHTML = 'Save'
+            saveBtn.classList.remove('off')
+          }
+        } catch (e) {
+          console.error('[ChildMode] Voice save failed:', e)
           statusEl.style.display = 'block'
           statusEl.style.color = '#e85454'
-          statusEl.textContent = result.error || 'Could not save.'
+          statusEl.textContent = 'Something went wrong. Please try again.'
           saveBtn.innerHTML = 'Save'
           saveBtn.classList.remove('off')
         }
@@ -235,15 +253,24 @@ export function initChildMode(): void {
         if (saveBtn.classList.contains('off')) return
         saveBtn.innerHTML = '<div class="spinner"></div>'
         saveBtn.classList.add('off')
-        const file = pFile.files?.[0]
-        const result = await saveWhisper({ format: 'photo', photoFile: file })
-        if (result.success) {
-          closeChildSheet()
-          showChildSuccess()
-        } else {
+        try {
+          const file = pFile.files?.[0]
+          const result = await saveWhisper({ format: 'photo', photoFile: file })
+          if (result.success) {
+            closeChildSheet()
+            showChildSuccess()
+          } else {
+            statusEl.style.display = 'block'
+            statusEl.style.color = '#e85454'
+            statusEl.textContent = result.error || 'Could not save.'
+            saveBtn.innerHTML = 'Save'
+            saveBtn.classList.remove('off')
+          }
+        } catch (e) {
+          console.error('[ChildMode] Photo save failed:', e)
           statusEl.style.display = 'block'
           statusEl.style.color = '#e85454'
-          statusEl.textContent = result.error || 'Could not save.'
+          statusEl.textContent = 'Something went wrong. Please try again.'
           saveBtn.innerHTML = 'Save'
           saveBtn.classList.remove('off')
         }
@@ -281,16 +308,26 @@ export function initChildMode(): void {
     const feed = view.querySelector('#cm-family-feed') as HTMLDivElement
     const sb = getSupabase()
 
-    const { data, error } = await sb
-      .from('whispers')
-      .select('*, contributors(nickname, relationship)')
-      .eq('child_id', childId)
-      .eq('sealed', false)
-      .not('contributor_id', 'is', null)
-      .order('created_at', { ascending: false })
-      .limit(20)
+    let data, error
+    try {
+      const res = await sb
+        .from('whispers')
+        .select('*, contributors(nickname, relationship)')
+        .eq('child_id', childId)
+        .eq('sealed', false)
+        .not('contributor_id', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(20)
+      data = res.data
+      error = res.error
+    } catch (e) {
+      console.error('Child mode feed exception:', e)
+      feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load whispers.</div>`
+      return
+    }
 
     if (error) {
+      console.error('Child mode feed error:', error)
       feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load.</div>`
       return
     }

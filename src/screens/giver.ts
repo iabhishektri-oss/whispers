@@ -197,28 +197,37 @@ export function initGiver(): void {
     saveBtn.classList.add('off')
     statusEl.style.display = 'none'
 
-    const { giverContributorId } = getState()
-    let result
+    try {
+      const { giverContributorId } = getState()
+      let result
 
-    if (activeFormat === 'write') {
-      const text = (body.querySelector('#gvc-text') as HTMLTextAreaElement)?.value.trim()
-      result = await saveWhisper({ format: 'write', content: text, contributorId: giverContributorId })
-    } else if (activeFormat === 'voice') {
-      const blob = getRecordingBlob()
-      result = await saveWhisper({ format: 'voice', audioBlob: blob, contributorId: giverContributorId })
-    } else {
-      const file = (body.querySelector('#gvc-photo-file') as HTMLInputElement)?.files?.[0]
-      const caption = (body.querySelector('#gvc-photo-caption') as HTMLTextAreaElement)?.value.trim()
-      result = await saveWhisper({ format: 'photo', photoFile: file, content: caption || null, contributorId: giverContributorId })
-    }
+      if (activeFormat === 'write') {
+        const text = (body.querySelector('#gvc-text') as HTMLTextAreaElement)?.value.trim()
+        result = await saveWhisper({ format: 'write', content: text, contributorId: giverContributorId })
+      } else if (activeFormat === 'voice') {
+        const blob = getRecordingBlob()
+        result = await saveWhisper({ format: 'voice', audioBlob: blob, contributorId: giverContributorId })
+      } else {
+        const file = (body.querySelector('#gvc-photo-file') as HTMLInputElement)?.files?.[0]
+        const caption = (body.querySelector('#gvc-photo-caption') as HTMLTextAreaElement)?.value.trim()
+        result = await saveWhisper({ format: 'photo', photoFile: file, content: caption || null, contributorId: giverContributorId })
+      }
 
-    if (result.success) {
-      clearRecording()
-      navigate('v-giver-done')
-    } else {
+      if (result.success) {
+        clearRecording()
+        navigate('v-giver-done')
+      } else {
+        statusEl.style.display = 'block'
+        statusEl.style.color = '#e85454'
+        statusEl.textContent = result.error || 'Could not save. Try again.'
+        saveBtn.innerHTML = 'Send whisper'
+        saveBtn.classList.remove('off')
+      }
+    } catch (e) {
+      console.error('[Giver] Save failed:', e)
       statusEl.style.display = 'block'
       statusEl.style.color = '#e85454'
-      statusEl.textContent = result.error || 'Could not save. Try again.'
+      statusEl.textContent = 'Something went wrong. Please try again.'
       saveBtn.innerHTML = 'Send whisper'
       saveBtn.classList.remove('off')
     }
