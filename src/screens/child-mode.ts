@@ -314,10 +314,8 @@ export function initChildMode(): void {
         .from('whispers')
         .select('*, contributors(nickname, relationship)')
         .eq('child_id', childId)
-        .eq('sealed', false)
-        .not('contributor_id', 'is', null)
         .order('created_at', { ascending: false })
-        .limit(20)
+        .limit(50)
       data = res.data
       error = res.error
     } catch (e) {
@@ -332,7 +330,8 @@ export function initChildMode(): void {
       return
     }
 
-    const whispers = data || []
+    // Filter client-side: only unsealed whispers from contributors
+    const whispers = (data || []).filter((w: any) => w.contributor_id && !w.sealed).slice(0, 20)
     if (whispers.length === 0) {
       feed.innerHTML = `
         <div style="text-align:center;padding:1.5rem 0;color:var(--dim);font-size:var(--text-caption)">
