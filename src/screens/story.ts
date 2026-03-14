@@ -1,7 +1,7 @@
-import { navigate } from '@/lib/router'
+import { navigate, onRouteChange } from '@/lib/router'
 
 let currentSlide = 0
-let autoTimer: ReturnType<typeof setInterval> | null = null
+let autoTimer: ReturnType<typeof setTimeout> | null = null
 
 export function initStory(): void {
   const app = document.getElementById('app')!
@@ -131,6 +131,11 @@ export function initStory(): void {
   ;(window as any).__storyNext = nextSlide
   ;(window as any).__storyRecord = () => navigate('v-s1')
   ;(window as any).__storySkip = () => navigate('v-s1')
+
+  // Reset story state when navigating back to it
+  onRouteChange((_from, to) => {
+    if (to === 'v-story') resetStory()
+  })
 }
 
 function buildProgress(): void {
@@ -203,11 +208,21 @@ function nextSlide(): void {
 }
 
 function startAutoAdvance(): void {
-  if (autoTimer) clearInterval(autoTimer)
+  if (autoTimer) clearTimeout(autoTimer)
   if (currentSlide >= 3) return // Don't auto-advance on last slide
   autoTimer = setTimeout(() => {
     if (currentSlide < 3) nextSlide()
   }, 12000)
+}
+
+function resetStory(): void {
+  if (autoTimer) { clearTimeout(autoTimer); autoTimer = null }
+  currentSlide = 0
+  const slides = document.querySelectorAll('#v-story .slide')
+  slides.forEach(s => s.classList.remove('on'))
+  if (slides[0]) slides[0].classList.add('on')
+  buildProgress()
+  startAutoAdvance()
 }
 
 // Inline SVG helpers for this file

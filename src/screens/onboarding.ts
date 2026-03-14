@@ -477,44 +477,6 @@ export function initOnboarding(): void {
   })
   s9.querySelector('#s9-done')!.addEventListener('click', () => navigate('v-keeper'))
 
-  // ── First letter (functional — left-aligned) ──
-  const fl = document.createElement('div')
-  fl.id = 'v-first-letter'
-  fl.className = 'view'
-  fl.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:2rem;padding-bottom:0">
-      <span class="wordmark" style="margin-bottom:2rem">Whispers</span>
-      <div class="headline" style="margin-bottom:0.5rem">Write your first whisper</div>
-      <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:1.5rem">Something true. Something you never want them to forget.</p>
-      <textarea id="fl-text" class="textarea" placeholder="The thing I never want you to forget is..." maxlength="1000" style="margin-bottom:0.5rem"></textarea>
-      <div style="text-align:right;width:100%;font-size:var(--text-meta);color:var(--dim);margin-bottom:1.5rem"><span id="fl-count">0</span>/1000</div>
-      ${footerOpen}
-        <button id="fl-save" class="btn gold off">Save and continue <span style="font-size:1.1em">${iconArrow()}</span></button>
-        <span id="fl-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin-top:0.75rem;display:block;text-align:center">Skip for now</span>
-      ${footerClose}
-    </div>
-  `
-  app.appendChild(fl)
-
-  const flText = fl.querySelector('#fl-text') as HTMLTextAreaElement
-  const flCount = fl.querySelector('#fl-count') as HTMLSpanElement
-  const flSave = fl.querySelector('#fl-save') as HTMLButtonElement
-
-  flText.addEventListener('input', () => {
-    const len = flText.value.length
-    flCount.textContent = String(len)
-    flSave.classList.toggle('off', len === 0)
-  })
-
-  flSave.addEventListener('click', () => {
-    const content = flText.value.trim()
-    if (!content) return
-    localStorage.setItem('whispers_first_whisper', JSON.stringify({ format: 'write', content }))
-    navigate('v-s1')
-  })
-
-  fl.querySelector('#fl-skip')!.addEventListener('click', () => navigate('v-s1'))
-
   // ── Dynamic data updates on navigation ──
   onRouteChange((_from, to) => {
     const s = getState()

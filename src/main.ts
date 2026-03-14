@@ -23,12 +23,23 @@ async function boot(): Promise<void> {
     return
   }
 
+  // Detect if this is a magic-link auth callback (URL hash contains access_token)
+  const isAuthCallback = window.location.hash.includes('access_token')
+    || window.location.hash.includes('type=magiclink')
+    || window.location.hash.includes('type=recovery')
+
   // Initialize all screens
   initStory()
   initOnboarding()
   initKeeper()
   initContributors()
   initChildMode()
+
+  // If this is an auth callback, show a loading state instead of the story
+  // and let onAuthStateChange handle navigation
+  if (isAuthCallback) {
+    showLoadingScreen()
+  }
 
   // Check auth
   const { data } = await sb.auth.getSession()
@@ -53,7 +64,9 @@ async function boot(): Promise<void> {
         navigate('v-story')
       }
     }
-  } else {
+  } else if (!isAuthCallback) {
+    // Only show story if this is NOT a magic-link callback.
+    // If it IS a callback, onAuthStateChange will fire shortly and handle navigation.
     navigate('v-story')
   }
 
@@ -61,6 +74,7 @@ async function boot(): Promise<void> {
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
       setState({ authUserId: session.user.id, email: session.user.email || '' })
+      hideLoadingScreen()
 
       const pending = localStorage.getItem('whispers_onboarding')
       if (pending) {
@@ -73,6 +87,7 @@ async function boot(): Promise<void> {
       } else {
         await loadChildData()
         if (getState().childId) navigate('v-keeper')
+        else navigate('v-story')
       }
     }
   })
@@ -144,6 +159,23 @@ async function saveFirstWhisper(): Promise<void> {
 }
 
 async function loadGiverData(token: string): Promise<void> {
+  // Show loading state on the giver landing screen
+  const giverView = document.getElementById('v-giver')
+  if (giverView) {
+    giverView.classList.add('active')
+    const shell = giverView.querySelector('.shell') as HTMLDivElement
+    if (shell) {
+      shell.dataset.originalHtml = shell.innerHTML
+      shell.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;gap:1rem">
+          <span style="font-family:var(--font-display);font-style:italic;font-size:var(--text-display-md);color:var(--gold-hi)">Whispers</span>
+          <div class="spinner"></div>
+          <div style="font-size:var(--text-body);color:var(--dim)">Loading your invite...</div>
+        </div>
+      `
+    }
+  }
+
   try {
     const response = await fetch(
       'https://kxrpvmpoehmwcsszwpzt.supabase.co/functions/v1/resolve-invite',
@@ -161,13 +193,7 @@ async function loadGiverData(token: string): Promise<void> {
     if (!response.ok) {
       const err = await response.json().catch(() => ({}))
       console.error('Giver token invalid:', err.error || response.status)
-      setState({ isGiverMode: false })
-      initStory()
-      initOnboarding()
-      initKeeper()
-      initContributors()
-      initChildMode()
-      navigate('v-story')
+      showGiverError('This invite link is invalid or has expired.')
       return
     }
 
@@ -183,17 +209,59 @@ async function loadGiverData(token: string): Promise<void> {
       giverRelationship: data.contributorRelationship || '',
     })
 
+    // Restore the original giver landing and navigate
+    if (giverView) {
+      const shell = giverView.querySelector('.shell') as HTMLDivElement
+      if (shell?.dataset.originalHtml) {
+        shell.innerHTML = shell.dataset.originalHtml
+        delete shell.dataset.originalHtml
+        // Re-wire the start button since we replaced innerHTML
+        giverView.querySelector('#gv-start')?.addEventListener('click', () => navigate('v-giver-compose'))
+      }
+    }
     navigate('v-giver')
   } catch (e) {
     console.error('Giver load failed:', e)
-    setState({ isGiverMode: false })
-    initStory()
-    initOnboarding()
-    initKeeper()
-    initContributors()
-    initChildMode()
-    navigate('v-story')
+    showGiverError('Could not load the invite. Please check your connection and try again.')
   }
+}
+
+function showGiverError(message: string): void {
+  setState({ isGiverMode: false })
+  const giverView = document.getElementById('v-giver')
+  if (giverView) {
+    const shell = giverView.querySelector('.shell') as HTMLDivElement
+    if (shell) {
+      shell.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;gap:1.25rem;padding:2rem">
+          <span style="font-family:var(--font-display);font-style:italic;font-size:var(--text-display-md);color:var(--gold-hi)">Whispers</span>
+          <div style="font-size:var(--text-headline);color:var(--white)">Invite not found</div>
+          <p style="font-size:var(--text-body);color:var(--dim);line-height:var(--lh-body)">${message}</p>
+          <button class="btn" onclick="window.location.href=window.location.origin" style="margin-top:1rem">Go to Whispers</button>
+        </div>
+      `
+    }
+  }
+}
+
+function showLoadingScreen(): void {
+  let el = document.getElementById('v-loading')
+  if (!el) {
+    el = document.createElement('div')
+    el.id = 'v-loading'
+    el.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--bg);flex-direction:column;gap:1rem'
+    el.innerHTML = `
+      <span style="font-family:var(--font-display);font-style:italic;font-size:var(--text-display-md);color:var(--gold-hi)">Whispers</span>
+      <div class="spinner"></div>
+    `
+    document.getElementById('app')!.appendChild(el)
+  }
+  el.style.display = 'flex'
+}
+
+function hideLoadingScreen(): void {
+  const el = document.getElementById('v-loading')
+  if (el) el.style.display = 'none'
 }
 
 // Boot

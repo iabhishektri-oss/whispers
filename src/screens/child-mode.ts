@@ -1,5 +1,5 @@
 import { navigate, onRouteChange } from '@/lib/router'
-import { getState, childName } from '@/lib/state'
+import { getState, childName, keeperName } from '@/lib/state'
 import { getSupabase } from '@/lib/supabase'
 import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
@@ -342,7 +342,7 @@ export function initChildMode(): void {
     }
 
     feed.innerHTML = whispers.map((w: any) => {
-      const from = w.contributors?.nickname || 'Family'
+      const from = w.contributors?.nickname || keeperName()
       const ago = timeAgo(w.created_at)
       let preview = ''
       if (w.format === 'write') preview = escHtml((w.content || '').slice(0, 80))
