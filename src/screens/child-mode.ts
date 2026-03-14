@@ -6,6 +6,7 @@ import { startRecording, stopRecording, getRecordingBlob, clearRecording, isReco
 import { iconCamera, iconMic, iconWrite, iconBack, iconCheck } from '@/lib/icons'
 import { escHtml, dailyPrompt, formatDuration, timeAgo } from '@/lib/utils'
 import { renderTimeline, TimelineWhisper } from '@/lib/timeline'
+import { initPullToRefresh } from '@/lib/pull-to-refresh'
 
 let recordTimer: ReturnType<typeof setInterval> | null = null
 let recordSeconds = 0
@@ -74,6 +75,9 @@ export function initChildMode(): void {
     </div>
   `
   app.appendChild(view)
+
+  // Pull-to-refresh
+  initPullToRefresh(view, () => loadFamilyWhispers())
 
   const overlay = view.querySelector('#cm-sheet-overlay') as HTMLDivElement
   const sheetContent = view.querySelector('#cm-sheet-content') as HTMLDivElement

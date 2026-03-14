@@ -6,6 +6,7 @@ import { startRecording, stopRecording, getRecordingBlob, clearRecording, isReco
 import { iconHome, iconFamily, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
 import { escHtml, timeAgo, formatDuration } from '@/lib/utils'
 import { renderTimeline, TimelineWhisper } from '@/lib/timeline'
+import { initPullToRefresh } from '@/lib/pull-to-refresh'
 
 type WhisperRow = TimelineWhisper
 
@@ -78,6 +79,9 @@ export function initKeeper(): void {
     </div>
   `
   app.appendChild(view)
+
+  // Pull-to-refresh
+  initPullToRefresh(view, () => loadFeed())
 
   // Nav
   view.querySelector('#k-nav-home')!.addEventListener('click', () => {
