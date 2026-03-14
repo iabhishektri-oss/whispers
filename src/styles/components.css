@@ -206,9 +206,22 @@
   font-size: var(--text-body);
 }
 
-.avatar-filter.active {
-  border-color: var(--gold-hi);
-  box-shadow: 0 0 0 2px rgba(200, 144, 12, 0.2);
+.filter-pill {
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-caption);
+  font-family: var(--font-body);
+  color: var(--dim);
+  background: var(--input-bg);
+  border: 1px solid var(--input-bd);
+  white-space: nowrap;
+  transition: all var(--duration);
+}
+
+.filter-pill.active {
+  color: var(--gold-hi);
+  border-color: var(--gold);
+  background: var(--gold-dim);
 }
 
 /* ── Child mode toggle glow on tap ── */

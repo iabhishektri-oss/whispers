@@ -508,7 +508,7 @@ export function initKeeper(): void {
       hero.style.display = 'flex'
     }
 
-    // Update avatar row
+    // Update filter row
     const avatarRow = view.querySelector('#k-avatars') as HTMLDivElement
     if (avatarRow) {
       const kName = keeperName()
@@ -518,18 +518,18 @@ export function initKeeper(): void {
           contributorMap.set(w.contributor_id, w.contributors.nickname)
         }
       })
-      let avatarHtml = `<div class="avatar avatar-filter active" data-filter="all" style="cursor:pointer"><span style="font-size:var(--text-meta)">All</span></div>`
-      avatarHtml += `<div class="avatar avatar-filter" data-filter="keeper" style="cursor:pointer">${kName[0]?.toUpperCase() || '?'}</div>`
+      let filterHtml = `<div class="filter-pill active" data-filter="all" style="cursor:pointer">All</div>`
+      filterHtml += `<div class="filter-pill" data-filter="keeper" style="cursor:pointer">${escHtml(kName)}</div>`
       contributorMap.forEach((nickname, id) => {
-        avatarHtml += `<div class="avatar avatar-filter" data-filter="${escHtml(id)}" style="cursor:pointer">${nickname[0]?.toUpperCase() || '?'}</div>`
+        filterHtml += `<div class="filter-pill" data-filter="${escHtml(id)}" style="cursor:pointer">${escHtml(nickname)}</div>`
       })
-      avatarRow.innerHTML = avatarHtml
+      avatarRow.innerHTML = filterHtml
       avatarRow.style.display = 'flex'
 
       // Wire filter clicks
-      avatarRow.querySelectorAll('.avatar-filter').forEach(av => {
+      avatarRow.querySelectorAll('.filter-pill').forEach(av => {
         av.addEventListener('click', () => {
-          avatarRow.querySelectorAll('.avatar-filter').forEach(a => a.classList.remove('active'))
+          avatarRow.querySelectorAll('.filter-pill').forEach(a => a.classList.remove('active'))
           av.classList.add('active')
           const filter = (av as HTMLElement).dataset.filter!
           const filtered = filter === 'all' ? whispers
