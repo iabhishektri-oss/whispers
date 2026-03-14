@@ -61,10 +61,8 @@ export function initKeeper(): void {
 
       <!-- Feed -->
       <div id="k-feed" style="display:flex;flex-direction:column;gap:0.75rem">
-        <div style="text-align:center;padding:3rem 0;color:var(--dim);font-size:var(--text-body)">
-          <div class="spinner" style="margin:0 auto 1rem"></div>
-          Loading whispers...
-        </div>
+        <div class="skeleton-card"><div class="skeleton-line" style="width:40%;margin-bottom:8px"></div><div class="skeleton-line" style="width:80%"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line" style="width:35%;margin-bottom:8px"></div><div class="skeleton-line" style="width:70%"></div></div>
       </div>
     </div>
 
@@ -607,12 +605,45 @@ export function initKeeper(): void {
     `
   }
 
+  // Realtime subscription for live whisper updates
+  let realtimeChannel: ReturnType<typeof getSupabase>['channel'] extends (...args: any[]) => infer R ? R : any = null as any
+  let realtimeActive = false
+
+  function startRealtime(): void {
+    const { childId } = getState()
+    if (!childId || realtimeActive) return
+
+    const sb = getSupabase()
+    realtimeChannel = sb
+      .channel('whispers-feed')
+      .on(
+        'postgres_changes' as any,
+        { event: 'INSERT', schema: 'public', table: 'whispers', filter: `child_id=eq.${childId}` },
+        () => {
+          console.log('[Realtime] New whisper received, refreshing feed')
+          loadFeed()
+        }
+      )
+      .subscribe()
+    realtimeActive = true
+  }
+
+  function stopRealtime(): void {
+    if (realtimeChannel && realtimeActive) {
+      getSupabase().removeChannel(realtimeChannel)
+      realtimeActive = false
+    }
+  }
+
   // Route change listener
   onRouteChange((_from, to) => {
     if (to === 'v-keeper') {
       const sub = view.querySelector('#k-subtitle')
       if (sub) sub.textContent = `${childName()}'s collection`
       loadFeed()
+      startRealtime()
+    } else {
+      stopRealtime()
     }
   })
 }

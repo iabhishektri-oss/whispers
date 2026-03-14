@@ -52,10 +52,12 @@ async function boot(): Promise<void> {
         await saveFirstWhisper()
         localStorage.removeItem('whispers_onboarding')
         navigate('v-s7')
+        hideSplash()
       } catch (e) {
         console.error('Onboarding save failed:', e)
         localStorage.removeItem('whispers_onboarding')
         navigate('v-story')
+        hideSplash()
       }
     } else {
       await loadChildData()
@@ -64,6 +66,7 @@ async function boot(): Promise<void> {
       } else {
         navigate('v-story')
       }
+      hideSplash()
     }
   } else if (isAuthCallback) {
     // getSession() returned null but we have an auth hash.
@@ -81,6 +84,7 @@ async function boot(): Promise<void> {
     }, 15000)
   } else {
     navigate('v-story')
+    hideSplash()
   }
 
   // Listen for auth changes (magic link callback).
@@ -99,15 +103,18 @@ async function boot(): Promise<void> {
           await saveFirstWhisper()
           localStorage.removeItem('whispers_onboarding')
           navigate('v-s7')
+          hideSplash()
         } else {
           await loadChildData()
           if (getState().childId) navigate('v-keeper')
           else navigate('v-story')
+          hideSplash()
         }
       } catch (e) {
         console.error('onAuthStateChange handler failed:', e)
         hideLoadingScreen()
         navigate('v-story')
+        hideSplash()
       }
     }
   })
@@ -252,9 +259,11 @@ async function loadGiverData(token: string): Promise<void> {
       }
     }
     navigate('v-giver')
+    hideSplash()
   } catch (e) {
     console.error('Giver load failed:', e)
     showGiverError('Could not load the invite. Please check your connection and try again.')
+    hideSplash()
   }
 }
 
@@ -276,7 +285,17 @@ function showGiverError(message: string): void {
   }
 }
 
+function hideSplash(): void {
+  const splash = document.getElementById('splash')
+  if (splash) {
+    splash.classList.add('hide')
+    setTimeout(() => splash.remove(), 500)
+  }
+}
+
 function showLoadingScreen(): void {
+  // Hide the splash first since we'll show our own loading state
+  hideSplash()
   let el = document.getElementById('v-loading')
   if (!el) {
     el = document.createElement('div')

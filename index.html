@@ -10,8 +10,94 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0d0b09;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    #splash.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .splash-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,144,12,0.12), rgba(200,144,12,0.03) 50%, transparent 70%);
+      animation: splashBreathe 2.5s ease-in-out infinite;
+    }
+    .splash-content {
+      position: relative;
+      text-align: center;
+      animation: splashFadeIn 0.5s ease both;
+    }
+    .splash-wordmark {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 2rem;
+      color: #f0b830;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      animation: splashFadeIn 0.4s ease 0.1s both;
+    }
+    .splash-tagline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 400;
+      color: #6a5e52;
+      letter-spacing: 0.1em;
+      margin-top: 8px;
+      opacity: 0;
+      animation: splashFadeIn 0.3s ease 0.4s both;
+    }
+    @keyframes splashBreathe {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      50% { transform: translate(-50%, -50%) scale(1.08); opacity: 0.6; }
+    }
+    @keyframes splashFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .skeleton-card {
+      padding: 20px;
+      border: 1px solid rgba(200,191,180,0.18);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 12px;
+    }
+    .skeleton-line {
+      height: 12px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      background-size: 200% 100%;
+      animation: skeletonShimmer 1.5s ease-in-out infinite;
+    }
+    @keyframes skeletonShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
 </head>
 <body>
+  <div id="splash" aria-hidden="true">
+    <div class="splash-glow"></div>
+    <div class="splash-content">
+      <div class="splash-wordmark">Whispers</div>
+      <div class="splash-tagline">kept safe.</div>
+    </div>
+  </div>
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
 </body>
