@@ -251,6 +251,13 @@ export function initContributors(): void {
     const list = view.querySelector('#ct-list') as HTMLDivElement
     const sb = getSupabase()
 
+    // Show loading state with a timeout fallback
+    const loadingTimeout = setTimeout(() => {
+      list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Taking too long. <span style="text-decoration:underline;cursor:pointer" id="ct-retry">Retry</span></div>`
+      const retry = list.querySelector('#ct-retry')
+      if (retry) retry.addEventListener('click', () => loadContributors())
+    }, 10_000)
+
     let contributors: any[] | null = null
     let whisperCounts: any[] | null = null
 
@@ -263,12 +270,14 @@ export function initContributors(): void {
         .order('created_at', { ascending: false })
 
       if (error) {
+        clearTimeout(loadingTimeout)
         console.error('Contributors query error:', error)
         list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors.</div>`
         return
       }
       contributors = data
     } catch (e) {
+      clearTimeout(loadingTimeout)
       console.error('Contributors exception:', e)
       list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors.</div>`
       return
@@ -285,6 +294,8 @@ export function initContributors(): void {
       console.error('Whisper counts exception:', e)
       // Continue without counts
     }
+
+    clearTimeout(loadingTimeout)
 
     const countMap: Record<string, number> = {}
     if (whisperCounts) {

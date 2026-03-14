@@ -7,7 +7,7 @@
 const THRESHOLD = 64
 const MAX_PULL = 100
 const RESIST = 0.4
-const REFRESH_TIMEOUT = 10_000  // safety: collapse after 10s no matter what
+const REFRESH_TIMEOUT = 8_000  // safety: collapse after 8s no matter what
 
 export function initPullToRefresh(
   scrollEl: HTMLElement,
@@ -28,10 +28,11 @@ export function initPullToRefresh(
     pulling = false
     refreshing = false
     spinner.classList.remove('ptr-spinning')
+    // Clear inline transform so CSS class defaults take over
+    spinner.style.transform = ''
     indicator.style.transition = 'height 0.25s ease'
     indicator.style.height = '0'
     spinner.style.opacity = '0'
-    spinner.style.transform = 'rotate(0deg) scale(0.6)'
   }
 
   function onStart(clientY: number): void {
@@ -73,13 +74,14 @@ export function initPullToRefresh(
       indicator.style.transition = 'height 0.2s ease'
       indicator.style.height = '44px'
       spinner.style.opacity = '1'
-      spinner.style.transform = 'scale(1)'
+      // Clear inline transform BEFORE adding animation class
+      // so the animation's from/to keyframes aren't fighting inline styles
+      spinner.style.transform = ''
       spinner.classList.add('ptr-spinning')
 
       // Safety timeout — always collapse even if onRefresh hangs
       const safetyTimer = setTimeout(collapse, REFRESH_TIMEOUT)
 
-      // Fire and forget — collapse when done (or on error)
       Promise.resolve()
         .then(() => onRefresh())
         .catch(() => {})
