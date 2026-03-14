@@ -1,6 +1,6 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, childName, keeperName } from '@/lib/state'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabase, ensureFreshSession } from '@/lib/supabase'
 import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconCamera, iconMic, iconWrite, iconBack, iconCheck } from '@/lib/icons'
@@ -413,14 +413,15 @@ export function initChildMode(): void {
   })
 
   // Refresh feed when app returns from background
-  function refreshIfActive(): void {
+  async function refreshIfActive(): Promise<void> {
     if (view.classList.contains('active')) {
-      setTimeout(() => loadFamilyWhispers(), 300)
+      await ensureFreshSession()
+      loadFamilyWhispers()
     }
   }
 
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) refreshIfActive()
+    if (document.visibilityState === 'visible') refreshIfActive()
   })
 
   window.addEventListener('pageshow', (e) => {

@@ -1,6 +1,6 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, childName, keeperName } from '@/lib/state'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabase, ensureFreshSession } from '@/lib/supabase'
 import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconHome, iconFamily, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
@@ -455,10 +455,18 @@ export function initKeeper(): void {
   async function loadFeed(): Promise<void> {
     console.log('[Keeper] loadFeed called')
     const { childId } = getState()
-    if (!childId) return
+    if (!childId) { console.warn('[Keeper] loadFeed skipped — no childId'); return }
 
     const feed = view.querySelector('#k-feed') as HTMLDivElement
     const sb = getSupabase()
+
+    // Timeout: show retry UI if the query hangs (matches loadContributors pattern)
+    const feedTimeout = setTimeout(() => {
+      console.warn('[Keeper] loadFeed timed out after 15s')
+      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Taking too long. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
+      const retry = feed.querySelector('#k-feed-retry')
+      if (retry) retry.addEventListener('click', () => loadFeed())
+    }, 15_000)
 
     let data, error
     try {
@@ -470,14 +478,22 @@ export function initKeeper(): void {
         .limit(50)
       data = res.data
       error = res.error
-    } catch (e) {
+    } catch (e: any) {
+      clearTimeout(feedTimeout)
       console.error('[Keeper] Feed exception:', e)
-      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers.</div>`
+      const msg = e?.name === 'AbortError' ? 'Request timed out.' : 'Could not load whispers.'
+      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">${msg} <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
+      const retry = feed.querySelector('#k-feed-retry')
+      if (retry) retry.addEventListener('click', () => loadFeed())
       return
     }
 
+    clearTimeout(feedTimeout)
+
     if (error) {
-      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers.</div>`
+      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
+      const retry = feed.querySelector('#k-feed-retry')
+      if (retry) retry.addEventListener('click', () => loadFeed())
       console.error('[Keeper] Feed error:', error)
       return
     }
@@ -617,13 +633,17 @@ export function initKeeper(): void {
     }
   })
 
-  // Refresh feed when app returns from background
-  function refreshIfActive(): void {
+  // Refresh feed when app returns from background.
+  // Must refresh the Supabase session FIRST — on iOS Safari, background tabs
+  // kill TCP connections; the auth token refresh can hang on a dead socket,
+  // which blocks every subsequent query. ensureFreshSession() forces a new
+  // network request (with our 15s timeout) to unblock the client.
+  async function refreshIfActive(): Promise<void> {
     const isActive = view.classList.contains('active')
     console.log(`[Keeper] refreshIfActive — keeper active: ${isActive}`)
     if (isActive) {
-      // Small delay to let Supabase session refresh after wake
-      setTimeout(() => loadFeed(), 300)
+      await ensureFreshSession()
+      loadFeed()
     }
   }
 
