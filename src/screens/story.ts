@@ -167,21 +167,34 @@ function updateProgress(): void {
 
 function showSlide(index: number): void {
   const slides = document.querySelectorAll('#v-story .slide')
-  slides.forEach((s, i) => s.classList.toggle('on', i === index))
+
+  // Phase 1: fade out current slide
+  slides.forEach(s => s.classList.remove('on'))
   currentSlide = index
 
-  // Move progress bar to current slide
-  const prog = document.getElementById('s-prog')
-  if (prog) {
-    const currentSlideEl = slides[index]
-    const sbody = currentSlideEl?.querySelector('.sbody')
-    if (sbody && !sbody.contains(prog)) {
-      sbody.insertBefore(prog, sbody.firstChild)
+  // Phase 2: after outgoing fade, move progress bar and fade in new slide
+  setTimeout(() => {
+    const prog = document.getElementById('s-prog')
+    if (prog) {
+      const currentSlideEl = slides[index]
+      const sbody = currentSlideEl?.querySelector('.sbody')
+      if (sbody && !sbody.contains(prog)) {
+        sbody.insertBefore(prog, sbody.firstChild)
+      }
     }
-  }
 
-  updateProgress()
-  startAutoAdvance()
+    // Re-trigger rise animation on incoming slide content
+    const content = slides[index]?.querySelector('.sbody > div:not(.prog)') as HTMLElement
+    if (content) {
+      content.style.animation = 'none'
+      content.offsetHeight // force reflow
+      content.style.animation = 'rise 0.5s 0.1s both'
+    }
+
+    slides[index]?.classList.add('on')
+    updateProgress()
+    startAutoAdvance()
+  }, 350)
 }
 
 function nextSlide(): void {
