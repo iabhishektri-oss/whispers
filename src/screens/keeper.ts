@@ -38,8 +38,9 @@ export function initKeeper(): void {
           <span class="wordmark">Whispers</span>
           <div style="font-size:var(--text-meta);color:var(--dim);margin-top:0.15rem" id="k-subtitle"></div>
         </div>
-        <button id="k-child-toggle" class="pill" style="gap:0.4rem">
-          ${iconLock(14)} Child mode
+        <button id="k-child-toggle" style="display:flex;align-items:center;gap:0.5rem;background:none;border:none;cursor:pointer;padding:0;transition:all var(--duration)">
+          <div id="k-child-initial" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(145deg, rgba(255,183,77,0.3), rgba(200,144,12,0.15));border:1px solid rgba(200,144,12,0.25);display:flex;align-items:center;justify-content:center;color:var(--gold-hi);font-size:0.82rem;font-family:var(--font-body);font-weight:500;transition:box-shadow var(--duration)"></div>
+          <span style="font-size:0.68rem;color:var(--dim);font-family:var(--font-body)">Child mode</span>
         </button>
       </div>
 
@@ -610,6 +611,8 @@ export function initKeeper(): void {
     if (to === 'v-keeper') {
       const sub = view.querySelector('#k-subtitle')
       if (sub) sub.textContent = `${childName()}'s collection`
+      const initial = view.querySelector('#k-child-initial') as HTMLDivElement
+      if (initial) initial.textContent = (childName()[0] || '?').toUpperCase()
       loadFeed()
     }
   })

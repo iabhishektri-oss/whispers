@@ -70,16 +70,14 @@ export function formatDuration(seconds: number): string {
 
 // Daily prompts for child mode
 const PROMPTS = [
-  "If you could go anywhere tomorrow, where?",
-  "What does your best friend do that makes you happy?",
-  "What made you laugh this week?",
-  "What's your favourite thing right now?",
-  "What do you wish grown-ups knew?",
-  "If you could have any superpower, what would it be?",
-  "What's the bravest thing you've ever done?",
-  "What makes you feel safe?",
-  "If you could tell the world one thing, what would it be?",
+  "What made you laugh today?",
+  "What's your favourite thing about your best friend?",
+  "If you could have any superpower what would it be?",
+  "What's the funniest thing that happened this week?",
+  "What do you want to be when you grow up?",
   "What's the best thing about being you?",
+  "What would you build if you could build anything?",
+  "What made you feel proud this week?",
 ]
 
 export function dailyPrompt(): string {

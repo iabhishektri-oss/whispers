@@ -48,6 +48,21 @@ body {
   z-index: 1;
 }
 
+/* Child mode: gentle scale-up on enter */
+#v-child-mode {
+  transform: scale(0.98);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#v-child-mode.active {
+  transform: scale(1);
+}
+
+/* Keeper fades out faster when child mode enters */
+#v-keeper {
+  transition: opacity 0.2s ease;
+}
+
 /* Shell: constrains content to mobile width */
 .shell {
   max-width: 420px;

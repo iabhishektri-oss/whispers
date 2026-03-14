@@ -16,43 +16,50 @@ export function initChildMode(): void {
   view.id = 'v-child-mode'
   view.className = 'view'
   view.innerHTML = `
-    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100dvh">
-      <!-- Header -->
-      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem">
-        <button class="back" id="cm-back">${iconBack()}</button>
-        <div>
-          <div style="font-size:var(--text-body);font-weight:500;color:var(--white)" id="cm-title"></div>
-          <div style="font-size:var(--text-meta);color:var(--dim)">Your space</div>
+    <div style="min-height:100dvh;background:linear-gradient(180deg, #1a1510 0%, #1e1712 40%, #241a12 100%);position:relative;overflow:hidden">
+      <!-- Decorative atmosphere circles -->
+      <div style="position:absolute;top:60px;right:30px;width:12px;height:12px;border-radius:50%;background:rgba(255,183,77,0.08);pointer-events:none"></div>
+      <div style="position:absolute;top:140px;left:20px;width:8px;height:8px;border-radius:50%;background:rgba(206,147,216,0.08);pointer-events:none"></div>
+      <div style="position:absolute;top:90px;left:55%;width:14px;height:14px;border-radius:50%;background:rgba(255,183,77,0.06);pointer-events:none"></div>
+
+      <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;position:relative">
+        <!-- Header -->
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem">
+          <button class="back" id="cm-back">${iconBack()}</button>
+          <div>
+            <div style="font-family:var(--font-display);font-style:italic;font-weight:500;font-size:1.5rem;color:var(--white);line-height:var(--lh-headline)" id="cm-title"></div>
+            <div style="font-size:0.78rem;color:var(--dim)">From the people who love you</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Daily prompt -->
-      <div class="card-gold" style="text-align:center;margin-bottom:1.5rem">
-        <div style="font-size:var(--text-label);color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem">Today's prompt</div>
-        <div style="font-family:var(--font-display);font-style:italic;font-size:var(--text-headline-sm);color:var(--white);line-height:var(--lh-headline)" id="cm-prompt"></div>
-      </div>
+        <!-- Daily prompt -->
+        <div style="text-align:center;margin-bottom:1.5rem;padding:var(--card-padding);background:linear-gradient(135deg, rgba(255,183,77,0.12), rgba(200,144,12,0.08));border:1px solid rgba(255,183,77,0.15);border-radius:20px">
+          <div style="font-size:0.65rem;color:rgba(255,183,77,0.5);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.5rem">Today's prompt</div>
+          <div style="font-family:var(--font-display);font-style:italic;font-size:1.2rem;color:var(--body);line-height:var(--lh-headline)" id="cm-prompt"></div>
+        </div>
 
-      <!-- Action buttons -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:2rem">
-        <button class="format-tab" id="cm-btn-camera" style="padding:1.25rem 0.5rem">
-          ${iconCamera(24)}
-          <span style="font-size:var(--text-label);letter-spacing:0.08em;text-transform:uppercase">Photo</span>
-        </button>
-        <button class="format-tab" id="cm-btn-voice" style="padding:1.25rem 0.5rem">
-          ${iconMic(24)}
-          <span style="font-size:var(--text-label);letter-spacing:0.08em;text-transform:uppercase">Voice</span>
-        </button>
-        <button class="format-tab" id="cm-btn-write" style="padding:1.25rem 0.5rem">
-          ${iconWrite(24)}
-          <span style="font-size:var(--text-label);letter-spacing:0.08em;text-transform:uppercase">Write</span>
-        </button>
-      </div>
+        <!-- Action buttons -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:2rem">
+          <button class="cm-action-btn" id="cm-btn-camera" style="height:80px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4rem;cursor:pointer;transition:all var(--duration)">
+            <span style="color:var(--body)">${iconCamera(24)}</span>
+            <span style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--body);font-family:var(--font-body)">Photo</span>
+          </button>
+          <button class="cm-action-btn" id="cm-btn-voice" style="height:80px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4rem;cursor:pointer;transition:all var(--duration)">
+            <span style="color:var(--body)">${iconMic(24)}</span>
+            <span style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--body);font-family:var(--font-body)">Voice</span>
+          </button>
+          <button class="cm-action-btn" id="cm-btn-write" style="height:80px;border-radius:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4rem;cursor:pointer;transition:all var(--duration)">
+            <span style="color:var(--body)">${iconWrite(24)}</span>
+            <span style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--body);font-family:var(--font-body)">Write</span>
+          </button>
+        </div>
 
-      <!-- Incoming whispers from family -->
-      <div style="margin-bottom:1rem">
-        <div class="label" style="margin-bottom:0.75rem">From the people who love you</div>
-        <div id="cm-family-feed" style="display:flex;flex-direction:column;gap:0.6rem">
-          <div style="text-align:center;padding:1.5rem 0;color:var(--dim);font-size:var(--text-caption)">Loading...</div>
+        <!-- Incoming whispers from family -->
+        <div style="margin-bottom:1rem">
+          <div style="font-size:0.68rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);font-family:var(--font-body);margin-bottom:0.75rem">From the people who love you</div>
+          <div id="cm-family-feed" style="display:flex;flex-direction:column;gap:0.6rem">
+            <div style="text-align:center;padding:1.5rem 0;color:var(--dim);font-size:var(--text-caption)">Loading...</div>
+          </div>
         </div>
       </div>
     </div>
@@ -290,9 +297,7 @@ export function initChildMode(): void {
   function showChildSuccess(): void {
     const feed = view.querySelector('#cm-family-feed') as HTMLDivElement
     const msg = document.createElement('div')
-    msg.className = 'card-gold'
-    msg.style.textAlign = 'center'
-    msg.style.animation = 'rise 0.4s both'
+    msg.style.cssText = 'text-align:center;padding:var(--card-padding);background:linear-gradient(135deg, rgba(255,183,77,0.12), rgba(200,144,12,0.08));border:1px solid rgba(255,183,77,0.15);border-radius:16px;animation:rise 0.4s both'
     msg.innerHTML = `
       <div style="color:var(--gold-hi);margin-bottom:0.5rem">${iconCheck(32)}</div>
       <div style="font-size:var(--text-body);color:var(--white)">Saved to your collection</div>
@@ -364,7 +369,7 @@ export function initChildMode(): void {
       }
 
       return `
-        <div class="card" style="animation:rise 0.3s both">
+        <div style="padding:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;animation:rise 0.3s both">
           <div style="display:flex;align-items:center;gap:0.6rem">
             <div class="avatar avatar-sm">${from[0]?.toUpperCase() || '?'}</div>
             <div style="flex:1;min-width:0">
