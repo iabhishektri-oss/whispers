@@ -456,10 +456,6 @@ export function initKeeper(): void {
     const feed = view.querySelector('#k-feed') as HTMLDivElement
     const sb = getSupabase()
 
-    // Force-refresh auth token — stale JWTs cause RLS to silently
-    // return empty results, hiding contributor whispers.
-    await sb.auth.refreshSession()
-
     let data, error
     try {
       const res = await sb

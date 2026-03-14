@@ -251,9 +251,6 @@ export function initContributors(): void {
     const list = view.querySelector('#ct-list') as HTMLDivElement
     const sb = getSupabase()
 
-    // Force-refresh auth token (prevents stale JWT issues)
-    await sb.auth.refreshSession()
-
     // Show loading state with a timeout fallback
     const loadingTimeout = setTimeout(() => {
       list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Taking too long. <span style="text-decoration:underline;cursor:pointer" id="ct-retry">Retry</span></div>`
