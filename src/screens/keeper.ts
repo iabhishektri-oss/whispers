@@ -607,9 +607,22 @@ export function initKeeper(): void {
   })
 
   // Refresh feed when app returns from background
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && view.classList.contains('active')) {
-      loadFeed()
+  function refreshIfActive(): void {
+    if (view.classList.contains('active')) {
+      // Small delay to let Supabase session refresh after wake
+      setTimeout(() => loadFeed(), 300)
     }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshIfActive()
   })
+
+  // Fallback: iOS Safari may restore from bfcache without firing visibilitychange
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) refreshIfActive()
+  })
+
+  // Fallback: some mobile browsers fire focus but not visibilitychange
+  window.addEventListener('focus', refreshIfActive)
 }

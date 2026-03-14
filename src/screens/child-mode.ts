@@ -410,9 +410,19 @@ export function initChildMode(): void {
   })
 
   // Refresh feed when app returns from background
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && view.classList.contains('active')) {
-      loadFamilyWhispers()
+  function refreshIfActive(): void {
+    if (view.classList.contains('active')) {
+      setTimeout(() => loadFamilyWhispers(), 300)
     }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshIfActive()
   })
+
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) refreshIfActive()
+  })
+
+  window.addEventListener('focus', refreshIfActive)
 }
