@@ -405,7 +405,7 @@ export function initKeeper(): void {
         if (result.success) {
           closeSheet()
           clearRecording()
-          loadFeed()
+          await loadFeed()
         } else {
           statusEl.style.display = 'block'
           statusEl.style.color = '#e85454'

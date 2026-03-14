@@ -297,6 +297,8 @@ export function initChildMode(): void {
       <div style="color:var(--gold-hi);margin-bottom:0.5rem">${iconCheck(32)}</div>
       <div style="font-size:var(--text-body);color:var(--white)">Saved to your collection</div>
     `
+    // Refresh feed after brief delay to ensure DB commit
+    setTimeout(() => loadFamilyWhispers(), 500)
     feed.insertBefore(msg, feed.firstChild)
     setTimeout(() => msg.remove(), 3000)
   }
@@ -344,10 +346,22 @@ export function initChildMode(): void {
     feed.innerHTML = whispers.map((w: any) => {
       const from = w.contributors?.nickname || keeperName()
       const ago = timeAgo(w.created_at)
-      let preview = ''
-      if (w.format === 'write') preview = escHtml((w.content || '').slice(0, 80))
-      else if (w.format === 'voice') preview = 'Voice note'
-      else if (w.format === 'photo') preview = 'Photo'
+      let body = ''
+      if (w.format === 'write') {
+        body = `<p style="font-size:var(--text-body);color:var(--body);line-height:var(--lh-body);white-space:pre-wrap;margin-top:0.5rem">${escHtml(w.content || '')}</p>`
+      } else if (w.format === 'voice') {
+        body = `
+          <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0">
+            <button class="pill active" data-play="${escHtml(w.audio_url || '')}" style="cursor:pointer;border-radius:var(--radius-child)">&#9654; Play</button>
+            ${w.duration ? `<span style="font-size:var(--text-meta);color:var(--dim)">${formatDuration(w.duration)}</span>` : ''}
+          </div>
+        `
+      } else if (w.format === 'photo') {
+        body = `
+          ${w.photo_url ? `<img src="${escHtml(w.photo_url)}" style="width:100%;border-radius:var(--radius-child,12px);margin-top:0.5rem" />` : ''}
+          ${w.content ? `<p style="font-size:var(--text-body);color:var(--body);line-height:var(--lh-body);margin-top:0.5rem">${escHtml(w.content)}</p>` : ''}
+        `
+      }
 
       return `
         <div class="card" style="animation:rise 0.3s both">
@@ -355,12 +369,27 @@ export function initChildMode(): void {
             <div class="avatar avatar-sm">${from[0]?.toUpperCase() || '?'}</div>
             <div style="flex:1;min-width:0">
               <div style="font-size:var(--text-caption);font-weight:500;color:var(--white)">${escHtml(from)}</div>
-              <div style="font-size:var(--text-meta);color:var(--dim)">${preview} . ${ago}</div>
+              <div style="font-size:var(--text-meta);color:var(--dim)">${w.format} . ${ago}</div>
             </div>
           </div>
+          ${body}
         </div>
       `
     }).join('')
+
+    // Wire audio play buttons
+    feed.querySelectorAll('[data-play]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const url = (btn as HTMLElement).dataset.play!
+        if (!url) return
+        const audio = new Audio(url)
+        audio.play().catch(() => {})
+        btn.innerHTML = '&#9632; Playing...'
+        audio.addEventListener('ended', () => {
+          btn.innerHTML = '&#9654; Play'
+        })
+      })
+    })
   }
 
   onRouteChange((_from, to) => {
