@@ -104,9 +104,36 @@ export function initKeeper(): void {
         <div class="format-tab" data-fmt="photo">${iconCamera(18)} <span style="font-size:var(--text-label);letter-spacing:0.08em;text-transform:uppercase">Photo</span></div>
       </div>
       <div id="cs-body"></div>
-      <div style="display:flex;align-items:center;gap:0.75rem;margin:1rem 0">
-        <button class="pill" id="cs-seal">${iconSeal(12)} Seal until age...</button>
-        <input id="cs-seal-age" class="input" type="number" min="1" max="30" placeholder="18" style="width:60px;text-align:center;display:none;padding:0.5rem" />
+      <div id="cs-seal-wrap" style="margin:1rem 0">
+        <!-- State 1: Collapsed prompt -->
+        <div id="cs-seal-prompt" style="display:flex;align-items:center;gap:0.6rem;padding:14px 16px;border:1px solid var(--input-bd);border-radius:14px;cursor:pointer;transition:all var(--duration)">
+          ${iconLock(16, 'var(--dim)')} <span style="font-size:var(--text-body-sm);color:var(--dim)">Seal this whisper?</span>
+        </div>
+        <!-- State 2: Expanded picker -->
+        <div id="cs-seal-expand" style="max-height:0;overflow:hidden;transition:max-height 0.25s ease;border:1px solid transparent;border-radius:14px">
+          <div style="padding:14px 16px">
+            <div style="font-size:var(--text-body-sm);color:var(--body);margin-bottom:0.75rem">${escHtml(childName())} will open this at:</div>
+            <div id="cs-seal-pills" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.6rem">
+              <button class="cs-pill" data-age="10">10</button>
+              <button class="cs-pill" data-age="13">13</button>
+              <button class="cs-pill" data-age="16">16</button>
+              <button class="cs-pill cs-pill-on" data-age="18">18</button>
+              <button class="cs-pill" data-age="21">21</button>
+              <button class="cs-pill" data-age="custom">Custom</button>
+            </div>
+            <div id="cs-seal-stepper" style="display:none;align-items:center;justify-content:center;gap:1rem;margin-bottom:0.6rem">
+              <button id="cs-seal-minus" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--input-bd);background:none;color:var(--body);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center">&minus;</button>
+              <span id="cs-seal-custom-val" style="font-size:1rem;font-weight:600;color:var(--gold-hi);min-width:2ch;text-align:center">18</span>
+              <button id="cs-seal-plus" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--input-bd);background:none;color:var(--body);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+            </div>
+            <div style="font-size:var(--text-meta);color:var(--dim)">Until then, only you can see it.</div>
+          </div>
+        </div>
+        <!-- State 3: Confirmed -->
+        <div id="cs-seal-confirmed" style="display:none;align-items:center;gap:0.6rem;padding:14px 16px;border:1px solid rgba(200,144,12,0.3);border-radius:14px;background:rgba(200,144,12,0.06)">
+          ${iconLock(16, 'var(--gold-hi)')} <span id="cs-seal-label" style="flex:1;font-size:var(--text-body-sm);color:var(--gold-hi)"></span>
+          <button id="cs-seal-remove" style="width:24px;height:24px;border:none;background:none;color:var(--dim);cursor:pointer;font-size:0.9rem;padding:0">&times;</button>
+        </div>
       </div>
       <button id="cs-save" class="btn gold off">Save whisper</button>
       <div id="cs-status" style="font-size:var(--text-caption);color:var(--dim);text-align:center;margin-top:0.5rem;display:none"></div>
@@ -116,13 +143,98 @@ export function initKeeper(): void {
     const body = sheetContent.querySelector('#cs-body') as HTMLDivElement
     const saveBtn = sheetContent.querySelector('#cs-save') as HTMLButtonElement
     const statusEl = sheetContent.querySelector('#cs-status') as HTMLDivElement
-    const sealBtn = sheetContent.querySelector('#cs-seal') as HTMLButtonElement
-    const sealAge = sheetContent.querySelector('#cs-seal-age') as HTMLInputElement
+    // Seal interaction: three states
+    let sealAge = 18
+    const sealPrompt = sheetContent.querySelector('#cs-seal-prompt') as HTMLDivElement
+    const sealExpand = sheetContent.querySelector('#cs-seal-expand') as HTMLDivElement
+    const sealConfirmed = sheetContent.querySelector('#cs-seal-confirmed') as HTMLDivElement
+    const sealLabel = sheetContent.querySelector('#cs-seal-label') as HTMLSpanElement
+    const sealStepper = sheetContent.querySelector('#cs-seal-stepper') as HTMLDivElement
+    const sealCustomVal = sheetContent.querySelector('#cs-seal-custom-val') as HTMLSpanElement
+    const sealPills = sheetContent.querySelectorAll('.cs-pill')
 
-    sealBtn.addEventListener('click', () => {
-      sealEnabled = !sealEnabled
-      sealBtn.classList.toggle('active', sealEnabled)
-      sealAge.style.display = sealEnabled ? '' : 'none'
+    // Pill inline styles (injected once)
+    const pillBase = 'padding:8px 18px;border-radius:100px;border:1px solid var(--input-bd);background:none;font-family:var(--font-body);font-size:var(--text-body-sm);color:var(--body);cursor:pointer;transition:all var(--duration);'
+    const pillOn = 'padding:8px 18px;border-radius:100px;border:1px solid rgba(200,144,12,0.4);background:rgba(200,144,12,0.15);font-family:var(--font-body);font-size:var(--text-body-sm);color:var(--gold-hi);cursor:pointer;transition:all var(--duration);'
+    sealPills.forEach(p => {
+      const el = p as HTMLElement
+      el.style.cssText = el.classList.contains('cs-pill-on') ? pillOn : pillBase
+    })
+
+    function setSealState(state: 'collapsed' | 'expanded' | 'confirmed'): void {
+      sealPrompt.style.display = state === 'collapsed' ? 'flex' : 'none'
+      sealExpand.style.maxHeight = state === 'expanded' ? '220px' : '0'
+      sealExpand.style.borderColor = state === 'expanded' ? 'var(--input-bd)' : 'transparent'
+      sealConfirmed.style.display = state === 'confirmed' ? 'flex' : 'none'
+      sealEnabled = state === 'confirmed'
+      saveBtn.textContent = sealEnabled ? 'Seal and save' : 'Save whisper'
+    }
+
+    function selectPill(age: string): void {
+      sealPills.forEach(p => {
+        const el = p as HTMLElement
+        const isOn = el.dataset.age === age
+        el.style.cssText = isOn ? pillOn : pillBase
+        el.classList.toggle('cs-pill-on', isOn)
+      })
+      if (age === 'custom') {
+        sealStepper.style.display = 'flex'
+      } else {
+        sealStepper.style.display = 'none'
+        sealAge = parseInt(age)
+      }
+    }
+
+    // State 1 → State 2
+    sealPrompt.addEventListener('click', () => {
+      setSealState('expanded')
+    })
+
+    // Pill clicks → confirm
+    sealPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const age = (pill as HTMLElement).dataset.age || '18'
+        selectPill(age)
+        if (age !== 'custom') {
+          sealAge = parseInt(age)
+          sealLabel.textContent = `Sealed until ${escHtml(childName())} is ${sealAge}`
+          setSealState('confirmed')
+        }
+      })
+    })
+
+    // Custom stepper
+    sheetContent.querySelector('#cs-seal-minus')!.addEventListener('click', () => {
+      if (sealAge > 10) {
+        sealAge--
+        sealCustomVal.textContent = String(sealAge)
+      }
+    })
+    sheetContent.querySelector('#cs-seal-plus')!.addEventListener('click', () => {
+      if (sealAge < 25) {
+        sealAge++
+        sealCustomVal.textContent = String(sealAge)
+      }
+    })
+
+    // Custom confirm: tap outside stepper or re-tap custom pill when stepper is showing
+    // We add a small confirm button logic: selecting custom + changing value, then tapping any pill confirms
+    // For simplicity, add a done action: tapping the custom pill again confirms
+    const customPill = sheetContent.querySelector('[data-age="custom"]') as HTMLButtonElement
+    customPill.addEventListener('click', () => {
+      if (sealStepper.style.display === 'flex') {
+        // Second tap on custom = confirm
+        sealLabel.textContent = `Sealed until ${escHtml(childName())} is ${sealAge}`
+        setSealState('confirmed')
+      }
+    })
+
+    // State 3 → State 1 (remove seal)
+    sheetContent.querySelector('#cs-seal-remove')!.addEventListener('click', () => {
+      setSealState('collapsed')
+      sealAge = 18
+      sealCustomVal.textContent = '18'
+      selectPill('18') // reset pills
     })
 
     function renderBody(): void {
@@ -255,7 +367,7 @@ export function initKeeper(): void {
       saveBtn.classList.add('off')
       statusEl.style.display = 'none'
 
-      const sealVal = sealEnabled ? sealAge.value || '18' : null
+      const sealVal = sealEnabled ? String(sealAge) : null
 
       try {
         let result
@@ -298,7 +410,7 @@ export function initKeeper(): void {
           statusEl.style.display = 'block'
           statusEl.style.color = '#e85454'
           statusEl.textContent = result.error || 'Could not save. Try again.'
-          saveBtn.innerHTML = 'Save whisper'
+          saveBtn.textContent = sealEnabled ? 'Seal and save' : 'Save whisper'
           saveBtn.classList.remove('off')
         }
       } catch (e) {
