@@ -2,33 +2,37 @@
  * Native-feeling pull-to-refresh for scrollable views.
  *
  * Works with both touch (mobile) and pointer/mouse (desktop) events.
- * Attach to any scrollable element — when the user pulls down past
- * a threshold and releases, the onRefresh callback fires.
  */
 
-const THRESHOLD = 64   // px to pull before triggering
-const MAX_PULL = 100   // visual cap
-const RESIST = 0.4     // rubber-band resistance factor
+const THRESHOLD = 64
+const MAX_PULL = 100
+const RESIST = 0.4
+const REFRESH_TIMEOUT = 10_000  // safety: collapse after 10s no matter what
 
 export function initPullToRefresh(
   scrollEl: HTMLElement,
   onRefresh: () => Promise<void> | void,
 ): void {
   const indicator = document.createElement('div')
-  indicator.style.cssText =
-    'display:flex;align-items:center;justify-content:center;' +
-    'height:0;overflow:visible;pointer-events:none;transition:none;'
-  indicator.innerHTML =
-    '<div style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(200,144,12,0.25);' +
-    'border-top-color:var(--gold);opacity:0;transition:opacity 0.15s;' +
-    'transform-origin:center" data-ptr-spinner></div>'
+  indicator.className = 'ptr-indicator'
+  indicator.innerHTML = '<div class="ptr-spinner"></div>'
 
   scrollEl.insertBefore(indicator, scrollEl.firstChild)
-  const spinner = indicator.querySelector('[data-ptr-spinner]') as HTMLDivElement
+  const spinner = indicator.querySelector('.ptr-spinner') as HTMLDivElement
 
   let startY = 0
   let pulling = false
   let refreshing = false
+
+  function collapse(): void {
+    pulling = false
+    refreshing = false
+    spinner.classList.remove('ptr-spinning')
+    indicator.style.transition = 'height 0.25s ease'
+    indicator.style.height = '0'
+    spinner.style.opacity = '0'
+    spinner.style.transform = 'rotate(0deg) scale(0.6)'
+  }
 
   function onStart(clientY: number): void {
     if (refreshing) return
@@ -36,10 +40,9 @@ export function initPullToRefresh(
     startY = clientY
     pulling = true
     indicator.style.transition = 'none'
-    spinner.style.transition = 'none'
   }
 
-  function onMove(clientY: number, cancel: () => void): void {
+  function onMove(clientY: number, prevent: () => void): void {
     if (!pulling || refreshing) return
 
     const dy = (clientY - startY) * RESIST
@@ -56,10 +59,10 @@ export function initPullToRefresh(
     spinner.style.opacity = String(progress)
     spinner.style.transform = `rotate(${progress * 270}deg) scale(${0.6 + progress * 0.4})`
 
-    if (scrollEl.scrollTop <= 0 && dy > 0) cancel()
+    if (scrollEl.scrollTop <= 0 && dy > 0) prevent()
   }
 
-  async function onEnd(): Promise<void> {
+  function onEnd(): void {
     if (!pulling || refreshing) return
     pulling = false
 
@@ -70,23 +73,22 @@ export function initPullToRefresh(
       indicator.style.transition = 'height 0.2s ease'
       indicator.style.height = '44px'
       spinner.style.opacity = '1'
-      spinner.style.animation = 'ptr-spin 0.6s linear infinite'
+      spinner.style.transform = 'scale(1)'
+      spinner.classList.add('ptr-spinning')
 
-      try {
-        await onRefresh()
-      } finally {
-        spinner.style.animation = ''
-        indicator.style.transition = 'height 0.3s ease'
-        indicator.style.height = '0'
-        spinner.style.transition = 'opacity 0.2s'
-        spinner.style.opacity = '0'
-        refreshing = false
-      }
+      // Safety timeout — always collapse even if onRefresh hangs
+      const safetyTimer = setTimeout(collapse, REFRESH_TIMEOUT)
+
+      // Fire and forget — collapse when done (or on error)
+      Promise.resolve()
+        .then(() => onRefresh())
+        .catch(() => {})
+        .finally(() => {
+          clearTimeout(safetyTimer)
+          collapse()
+        })
     } else {
-      indicator.style.transition = 'height 0.25s ease'
-      indicator.style.height = '0'
-      spinner.style.transition = 'opacity 0.15s'
-      spinner.style.opacity = '0'
+      collapse()
     }
   }
 
@@ -99,13 +101,14 @@ export function initPullToRefresh(
     onMove(e.touches[0].clientY, () => e.preventDefault())
   }, { passive: false })
 
-  scrollEl.addEventListener('touchend', () => { onEnd() }, { passive: true })
+  scrollEl.addEventListener('touchend', onEnd, { passive: true })
+  scrollEl.addEventListener('touchcancel', onEnd, { passive: true })
 
   // --- Pointer events (desktop / mouse / stylus) ---
   let pointerDown = false
 
   scrollEl.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'touch') return  // handled by touch events
+    if (e.pointerType === 'touch') return
     pointerDown = true
     onStart(e.clientY)
   })
@@ -115,11 +118,11 @@ export function initPullToRefresh(
     onMove(e.clientY, () => e.preventDefault())
   })
 
-  const pointerEnd = (e: PointerEvent) => {
+  const ptrEnd = (e: PointerEvent) => {
     if (!pointerDown || e.pointerType === 'touch') return
     pointerDown = false
     onEnd()
   }
-  scrollEl.addEventListener('pointerup', pointerEnd)
-  scrollEl.addEventListener('pointercancel', pointerEnd)
+  scrollEl.addEventListener('pointerup', ptrEnd)
+  scrollEl.addEventListener('pointercancel', ptrEnd)
 }
