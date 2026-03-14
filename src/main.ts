@@ -30,40 +30,13 @@ async function boot(): Promise<void> {
   initContributors()
   initChildMode()
 
-  // Detect if this is a magic-link auth callback
-  const hash = window.location.hash
-  const isAuthCallback = hash.includes('access_token') || hash.includes('type=magiclink') || hash.includes('type=recovery')
-  if (isAuthCallback) showLoadingScreen()
-
-  // Register auth listener BEFORE getSession so we never miss the SIGNED_IN
-  // event that Supabase fires when it processes the URL hash.
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      setState({ authUserId: session.user.id, email: session.user.email || '' })
-      hideLoadingScreen()
-
-      const pending = localStorage.getItem('whispers_onboarding')
-      if (pending) {
-        const saved = JSON.parse(pending)
-        setState(saved)
-        await saveOnboardingData()
-        await saveFirstWhisper()
-        localStorage.removeItem('whispers_onboarding')
-        navigate('v-s7')
-      } else {
-        await loadChildData()
-        if (getState().childId) navigate('v-keeper')
-        else navigate('v-story')
-      }
-    }
-  })
-
-  // For non-callback visits, getSession reads from local storage (fast, reliable)
+  // Check auth
   const { data } = await sb.auth.getSession()
   if (data.session) {
     setState({ authUserId: data.session.user.id, email: data.session.user.email || '' })
     console.log('Authenticated:', data.session.user.email)
 
+    // Check for pending onboarding
     const pending = localStorage.getItem('whispers_onboarding')
     if (pending) {
       const saved = JSON.parse(pending)
@@ -80,11 +53,30 @@ async function boot(): Promise<void> {
         navigate('v-story')
       }
     }
-  } else if (!isAuthCallback) {
-    // No session, not a magic link callback — show story
+  } else {
     navigate('v-story')
   }
-  // If isAuthCallback and no session yet, onAuthStateChange handles it above
+
+  // Listen for auth changes (magic link callback)
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      setState({ authUserId: session.user.id, email: session.user.email || '' })
+
+      const pending = localStorage.getItem('whispers_onboarding')
+      if (pending) {
+        const saved = JSON.parse(pending)
+        setState(saved)
+        await saveOnboardingData()
+        await saveFirstWhisper()
+        localStorage.removeItem('whispers_onboarding')
+        navigate('v-s7')
+      } else {
+        await loadChildData()
+        if (getState().childId) navigate('v-keeper')
+        else navigate('v-story')
+      }
+    }
+  })
 }
 
 async function loadChildData(): Promise<void> {
