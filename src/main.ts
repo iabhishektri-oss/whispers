@@ -1,4 +1,6 @@
 import './styles/global.css'
+// Clear the chunk-reload flag now that the app loaded successfully
+sessionStorage.removeItem('chunk_reload')
 import { getSupabase } from './lib/supabase'
 import { navigate } from './lib/router'
 import { setState, getState } from './lib/state'

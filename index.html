@@ -99,6 +99,19 @@
     </div>
   </div>
   <div id="app"></div>
+  <script>
+    // If a deploy swaps JS bundles while a user has a stale index.html,
+    // dynamic imports or the main entry will 404. Catch that and reload once.
+    window.addEventListener('error', function (e) {
+      if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
+        var src = e.target.src || e.target.href || ''
+        if (src.includes('/assets/') && !sessionStorage.getItem('chunk_reload')) {
+          sessionStorage.setItem('chunk_reload', '1')
+          location.reload()
+        }
+      }
+    }, true) // capture phase to catch resource errors
+  </script>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
