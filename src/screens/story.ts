@@ -129,8 +129,8 @@ export function initStory(): void {
 
   // Wire global handlers
   ;(window as any).__storyNext = nextSlide
-  ;(window as any).__storyRecord = () => navigate('v-s1')
-  ;(window as any).__storySkip = () => navigate('v-s1')
+  ;(window as any).__storyRecord = () => navigate('v-first-letter')
+  ;(window as any).__storySkip = () => navigate('v-first-letter')
 
   // Reset story state when navigating back to it
   onRouteChange((_from, to) => {

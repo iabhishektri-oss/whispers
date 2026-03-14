@@ -8,6 +8,7 @@ import { initKeeper } from './screens/keeper'
 import { initGiver } from './screens/giver'
 import { initContributors } from './screens/contributors'
 import { initChildMode } from './screens/child-mode'
+import { initFirstWhisper } from './screens/first-whisper'
 
 async function boot(): Promise<void> {
   const sb = getSupabase()
@@ -25,6 +26,7 @@ async function boot(): Promise<void> {
 
   // Initialize all screens
   initStory()
+  initFirstWhisper()
   initOnboarding()
   initKeeper()
   initContributors()
