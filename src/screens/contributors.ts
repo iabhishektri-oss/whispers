@@ -50,33 +50,97 @@ export function initContributors(): void {
   invite.id = 'v-ct-invite'
   invite.className = 'view'
   invite.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ct-inv-back">${iconBack()}</button>
-      <div class="headline" style="margin-bottom:0.5rem">Invite a family member</div>
-      <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">They'll get a link to leave a whisper for <span id="ct-inv-name"></span>. No account needed.</p>
-      <input id="ct-inv-nick" class="input" type="text" placeholder="Their name (e.g. Grandma)" style="text-align:center;margin-bottom:0.75rem" maxlength="40" autocomplete="off" />
-      <input id="ct-inv-rel" class="input" type="text" placeholder="Relationship (e.g. Grandmother)" style="text-align:center;margin-bottom:1.5rem" maxlength="40" autocomplete="off" />
-      <button id="ct-inv-create" class="btn off">Create invite link <span style="font-size:1.1em">${iconArrow()}</span></button>
-      <div id="ct-inv-status" style="font-size:var(--text-caption);color:var(--dim);display:none;margin-top:0.5rem"></div>
+    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100dvh;display:flex;flex-direction:column">
+      <button class="back" id="ct-inv-back">${iconBack()}</button>
+
+      <div class="headline" style="margin-top:1rem;margin-bottom:0.35rem" id="ct-inv-headline"></div>
+      <p style="color:var(--dim);font-size:var(--text-body);line-height:var(--lh-body);margin-bottom:1.5rem">Pick their relationship. They can leave whispers without creating an account.</p>
+
+      <!-- Grandparents -->
+      <div class="label" style="margin-bottom:0.5rem">Grandparents</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.25rem" id="ct-inv-gp">
+        <div class="rel-card" data-rel="Maternal Grandmother">
+          <span style="font-size:var(--text-meta);color:var(--dim)">Maternal</span>
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Grandmother</span>
+        </div>
+        <div class="rel-card" data-rel="Maternal Grandfather">
+          <span style="font-size:var(--text-meta);color:var(--dim)">Maternal</span>
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Grandfather</span>
+        </div>
+        <div class="rel-card" data-rel="Paternal Grandmother">
+          <span style="font-size:var(--text-meta);color:var(--dim)">Paternal</span>
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Grandmother</span>
+        </div>
+        <div class="rel-card" data-rel="Paternal Grandfather">
+          <span style="font-size:var(--text-meta);color:var(--dim)">Paternal</span>
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Grandfather</span>
+        </div>
+      </div>
+
+      <!-- Family -->
+      <div class="label" style="margin-bottom:0.5rem">Family</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1.25rem" id="ct-inv-fam">
+        <div class="rel-card" data-rel="Aunt">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Aunt</span>
+        </div>
+        <div class="rel-card" data-rel="Uncle">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Uncle</span>
+        </div>
+        <div class="rel-card" data-rel="Godparent">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Godparent</span>
+        </div>
+      </div>
+
+      <!-- Close to the family -->
+      <div class="label" style="margin-bottom:0.5rem">Close to the family</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.5rem" id="ct-inv-close">
+        <div class="rel-card" data-rel="Family friend">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Family friend</span>
+        </div>
+        <div class="rel-card" data-rel="Someone else">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Someone else</span>
+        </div>
+      </div>
+
+      <!-- Name input -->
+      <div class="label" style="margin-bottom:0.4rem" id="ct-inv-name-label"></div>
+      <input id="ct-inv-nick" class="input" type="text" placeholder="e.g. Nani, Grandma T, Chacha, Auntie Jo" maxlength="40" autocomplete="off" style="margin-bottom:1.5rem" />
+
+      <div style="margin-top:auto">
+        <button id="ct-inv-create" class="btn off">Create invite link <span style="font-size:1.1em">${iconArrow()}</span></button>
+        <div id="ct-inv-status" style="font-size:var(--text-caption);color:var(--dim);display:none;margin-top:0.5rem;text-align:center"></div>
+      </div>
     </div>
   `
   app.appendChild(invite)
 
+  let selectedRel = ''
   const invNick = invite.querySelector('#ct-inv-nick') as HTMLInputElement
-  const invRel = invite.querySelector('#ct-inv-rel') as HTMLInputElement
   const invCreate = invite.querySelector('#ct-inv-create') as HTMLButtonElement
   const invStatus = invite.querySelector('#ct-inv-status') as HTMLDivElement
 
-  invNick.addEventListener('input', () => {
-    invCreate.classList.toggle('off', invNick.value.trim().length === 0)
+  function updateInviteButton(): void {
+    invCreate.classList.toggle('off', !selectedRel || invNick.value.trim().length === 0)
+  }
+
+  // Wire all relationship cards
+  invite.querySelectorAll('.rel-card').forEach(card => {
+    card.addEventListener('click', () => {
+      invite.querySelectorAll('.rel-card').forEach(c => c.classList.remove('active'))
+      card.classList.add('active')
+      selectedRel = (card as HTMLElement).dataset.rel || ''
+      updateInviteButton()
+    })
   })
+
+  invNick.addEventListener('input', updateInviteButton)
 
   invite.querySelector('#ct-inv-back')!.addEventListener('click', () => navigate('v-contributors'))
 
   invCreate.addEventListener('click', async () => {
     const nick = invNick.value.trim()
-    if (!nick) return
-    const rel = invRel.value.trim()
+    if (!nick || !selectedRel) return
+    const rel = selectedRel
     const { childId } = getState()
     if (!childId) return
 
@@ -166,7 +230,8 @@ export function initContributors(): void {
 
   share.querySelector('#ct-share-another')!.addEventListener('click', () => {
     invNick.value = ''
-    invRel.value = ''
+    selectedRel = ''
+    invite.querySelectorAll('.rel-card').forEach(c => c.classList.remove('active'))
     invCreate.innerHTML = `Create invite link <span style="font-size:1.1em">${iconArrow()}</span>`
     invCreate.classList.add('off')
     invStatus.style.display = 'none'
@@ -321,8 +386,10 @@ export function initContributors(): void {
       loadContributors()
     }
     if (to === 'v-ct-invite') {
-      const nameEl = invite.querySelector('#ct-inv-name')
-      if (nameEl) nameEl.textContent = childName()
+      const headline = invite.querySelector('#ct-inv-headline')
+      if (headline) headline.textContent = `Who else loves ${childName()}?`
+      const nameLabel = invite.querySelector('#ct-inv-name-label')
+      if (nameLabel) nameLabel.textContent = `What does ${childName()} call them?`
     }
   })
 }
