@@ -251,48 +251,39 @@ export function initContributors(): void {
     const list = view.querySelector('#ct-list') as HTMLDivElement
     const sb = getSupabase()
 
+    // Refresh auth session before querying (prevents stale JWT issues)
+    await sb.auth.getSession()
+
     // Show loading state with a timeout fallback
     const loadingTimeout = setTimeout(() => {
       list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Taking too long. <span style="text-decoration:underline;cursor:pointer" id="ct-retry">Retry</span></div>`
       const retry = list.querySelector('#ct-retry')
       if (retry) retry.addEventListener('click', () => loadContributors())
-    }, 10_000)
+    }, 20_000)
 
     let contributors: any[] | null = null
     let whisperCounts: any[] | null = null
 
     try {
-      // Get contributors
-      const { data, error } = await sb
-        .from('contributors')
-        .select('*')
-        .eq('child_id', childId)
-        .order('created_at', { ascending: false })
+      // Run both queries in parallel for faster loading
+      const [contribRes, countsRes] = await Promise.all([
+        sb.from('contributors').select('*').eq('child_id', childId).order('created_at', { ascending: false }),
+        sb.from('whispers').select('contributor_id').eq('child_id', childId),
+      ])
 
-      if (error) {
+      if (contribRes.error) {
         clearTimeout(loadingTimeout)
-        console.error('Contributors query error:', error)
+        console.error('Contributors query error:', contribRes.error)
         list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors.</div>`
         return
       }
-      contributors = data
+      contributors = contribRes.data
+      whisperCounts = countsRes.data
     } catch (e) {
       clearTimeout(loadingTimeout)
       console.error('Contributors exception:', e)
       list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors.</div>`
       return
-    }
-
-    try {
-      // Get whisper counts per contributor (include keeper whispers where contributor_id is null)
-      const { data } = await sb
-        .from('whispers')
-        .select('contributor_id')
-        .eq('child_id', childId)
-      whisperCounts = data
-    } catch (e) {
-      console.error('Whisper counts exception:', e)
-      // Continue without counts
     }
 
     clearTimeout(loadingTimeout)
