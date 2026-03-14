@@ -335,19 +335,23 @@ export function initOnboarding(): void {
         </p>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;margin-top:0.5rem">
           <span class="pill active">${iconCheck(14)} Collection created</span>
-          <span class="pill active">${iconCheck(14)} First keeper added</span>
+          <span class="pill active">${iconCheck(14)} You're in</span>
+        </div>
+        <div class="card" style="margin-top:1rem;text-align:center">
+          <div class="headline-sm" style="margin-bottom:0.35rem">Now, bring in the people who matter.</div>
+          <p style="font-size:var(--text-caption);color:var(--dim);line-height:var(--lh-body)">Grandparents, aunts, uncles, anyone who loves <span id="s7-childname3"></span>. They can leave whispers without creating an account.</p>
         </div>
       </div>
       <div style="position:absolute;bottom:2.75rem;left:1.5rem;right:1.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;padding-bottom:env(safe-area-inset-bottom)">
         <button id="ob-s7-invite" class="btn gold">Invite family <span style="font-size:1.1em">${iconArrow()}</span></button>
-        <span id="ob-s7-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Go to home</span>
+        <span id="ob-s7-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px">or leave the first whisper yourself</span>
       </div>
     </div>
   `
   app.appendChild(s7)
 
   s7.querySelector('#ob-s7-invite')!.addEventListener('click', () => navigate('v-s8'))
-  s7.querySelector('#ob-s7-skip')!.addEventListener('click', () => navigate('v-keeper'))
+  s7.querySelector('#ob-s7-skip')!.addEventListener('click', () => navigate('v-first-letter'))
 
   // ── S8: Invite contributor (functional — left-aligned) ──
   const s8 = document.createElement('div')
@@ -483,7 +487,7 @@ export function initOnboarding(): void {
     const name = s.name || 'your child'
 
     // Update all name spans
-    const nameSpanIds = ['s2-name', 's3-name', 's3-name2', 's4-name', 's5-name', 's7-childname', 's7-childname2', 's8-name']
+    const nameSpanIds = ['s2-name', 's3-name', 's3-name2', 's4-name', 's5-name', 's7-childname', 's7-childname2', 's7-childname3', 's8-name']
     for (const id of nameSpanIds) {
       const el = document.getElementById(id)
       if (el) el.textContent = name
