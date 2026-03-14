@@ -1,6 +1,6 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, childName, keeperName } from '@/lib/state'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabase, markSuccess, markFailure } from '@/lib/supabase'
 import { iconBack, iconPlus, iconCheck, iconFamily, iconArrow } from '@/lib/icons'
 import { escHtml } from '@/lib/utils'
 
@@ -265,6 +265,7 @@ export function initContributors(): void {
 
       if (contribRes.error) {
         console.error('Contributors query error:', contribRes.error)
+        markFailure()
         if (!hadContent) {
           list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors. <span style="text-decoration:underline;cursor:pointer" id="ct-retry">Retry</span></div>`
           list.querySelector('#ct-retry')?.addEventListener('click', () => loadContributors())
@@ -275,6 +276,7 @@ export function initContributors(): void {
       whisperCounts = countsRes.data
     } catch (e) {
       console.error('Contributors exception:', e)
+      markFailure()
       if (!hadContent) {
         const msg = (e as any)?.name === 'AbortError' ? 'Connection timed out.' : 'Could not load contributors.'
         list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">${msg} <span style="text-decoration:underline;cursor:pointer" id="ct-retry">Retry</span></div>`
@@ -283,6 +285,7 @@ export function initContributors(): void {
       return
     }
 
+    markSuccess()
     const countMap: Record<string, number> = {}
     if (whisperCounts) {
       whisperCounts.forEach((w: any) => {

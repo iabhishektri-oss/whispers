@@ -1,6 +1,6 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, childName, keeperName } from '@/lib/state'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabase, markSuccess, markFailure } from '@/lib/supabase'
 import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconHome, iconFamily, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
@@ -475,7 +475,7 @@ export function initKeeper(): void {
       error = res.error
     } catch (e: any) {
       feedInFlight = false
-      // If we already have content showing, silently fail — don't nuke the feed
+      markFailure()
       if (!hadContent) {
         const msg = e?.name === 'AbortError' ? 'Connection timed out.' : 'Could not load whispers.'
         feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">${msg} <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
@@ -487,6 +487,7 @@ export function initKeeper(): void {
     feedInFlight = false
 
     if (error) {
+      markFailure()
       if (!hadContent) {
         feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
         feed.querySelector('#k-feed-retry')?.addEventListener('click', () => loadFeed())
@@ -495,6 +496,7 @@ export function initKeeper(): void {
       return
     }
 
+    markSuccess()
     const whispers = (data || []) as WhisperRow[]
     if (whispers.length === 0) {
       feed.innerHTML = `

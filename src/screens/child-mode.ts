@@ -1,6 +1,6 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, childName, keeperName } from '@/lib/state'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabase, markSuccess, markFailure } from '@/lib/supabase'
 import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconCamera, iconMic, iconWrite, iconBack, iconCheck } from '@/lib/icons'
@@ -334,6 +334,7 @@ export function initChildMode(): void {
       error = res.error
     } catch (e) {
       console.error('Child mode feed exception:', e)
+      markFailure()
       if (!hadContent) {
         feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load whispers.</div>`
       }
@@ -342,12 +343,14 @@ export function initChildMode(): void {
 
     if (error) {
       console.error('Child mode feed error:', error)
+      markFailure()
       if (!hadContent) {
         feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load.</div>`
       }
       return
     }
 
+    markSuccess()
     // Show all unsealed whispers (from both keeper and contributors)
     const whispers = (data || []).filter((w: any) => !w.sealed).slice(0, 20) as TimelineWhisper[]
     if (whispers.length === 0) {
