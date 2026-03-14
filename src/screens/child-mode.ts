@@ -5,6 +5,7 @@ import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconCamera, iconMic, iconWrite, iconBack, iconCheck } from '@/lib/icons'
 import { escHtml, dailyPrompt, formatDuration, timeAgo } from '@/lib/utils'
+import { renderTimeline, TimelineWhisper } from '@/lib/timeline'
 
 let recordTimer: ReturnType<typeof setInterval> | null = null
 let recordSeconds = 0
@@ -338,7 +339,7 @@ export function initChildMode(): void {
     }
 
     // Show all unsealed whispers (from both keeper and contributors)
-    const whispers = (data || []).filter((w: any) => !w.sealed).slice(0, 20)
+    const whispers = (data || []).filter((w: any) => !w.sealed).slice(0, 20) as TimelineWhisper[]
     if (whispers.length === 0) {
       feed.innerHTML = `
         <div style="text-align:center;padding:1.5rem 0;color:var(--dim);font-size:var(--text-caption)">
@@ -348,7 +349,7 @@ export function initChildMode(): void {
       return
     }
 
-    feed.innerHTML = whispers.map((w: any) => {
+    function renderChildCard(w: TimelineWhisper): string {
       const from = w.contributors?.nickname || keeperName()
       const ago = timeAgo(w.created_at)
       let body = ''
@@ -358,12 +359,11 @@ export function initChildMode(): void {
         body = `
           <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0">
             <button class="pill active" data-play="${escHtml(w.audio_url || '')}" style="cursor:pointer;border-radius:var(--radius-child)">&#9654; Play</button>
-            ${w.duration ? `<span style="font-size:var(--text-meta);color:var(--dim)">${formatDuration(w.duration)}</span>` : ''}
           </div>
         `
       } else if (w.format === 'photo') {
         body = `
-          ${w.photo_url ? `<img src="${escHtml(w.photo_url)}" style="width:100%;max-height:280px;object-fit:cover;border-radius:14px;margin-top:0.5rem" />` : ''}
+          ${w.photo_url ? `<img src="${escHtml(w.photo_url)}" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-top:0.5rem" />` : ''}
           ${w.content ? `<p style="font-size:var(--text-body);color:var(--body);line-height:var(--lh-body);margin-top:0.5rem">${escHtml(w.content)}</p>` : ''}
         `
       }
@@ -380,7 +380,9 @@ export function initChildMode(): void {
           ${body}
         </div>
       `
-    }).join('')
+    }
+
+    feed.innerHTML = renderTimeline(whispers, getState().dob, renderChildCard)
 
     // Wire audio play buttons
     feed.querySelectorAll('[data-play]').forEach(btn => {

@@ -5,20 +5,9 @@ import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconHome, iconFamily, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
 import { escHtml, timeAgo, formatDuration } from '@/lib/utils'
+import { renderTimeline, TimelineWhisper } from '@/lib/timeline'
 
-interface WhisperRow {
-  id: string
-  format: string
-  content: string | null
-  audio_url: string | null
-  photo_url: string | null
-  sealed: boolean
-  seal_type: string | null
-  seal_value: string | null
-  created_at: string
-  contributor_id: string | null
-  contributors?: { nickname: string; relationship: string | null } | null
-}
+type WhisperRow = TimelineWhisper
 
 let feedLoaded = false
 let recordTimer: ReturnType<typeof setInterval> | null = null
@@ -535,13 +524,13 @@ export function initKeeper(): void {
           const filtered = filter === 'all' ? whispers
             : filter === 'keeper' ? whispers.filter(w => !w.contributor_id)
             : whispers.filter(w => w.contributor_id === filter)
-          feed.innerHTML = filtered.map(w => renderWhisperCard(w)).join('')
+          feed.innerHTML = renderTimeline(filtered, getState().dob, renderWhisperCard)
           wireAudioButtons()
         })
       })
     }
 
-    feed.innerHTML = whispers.map(w => renderWhisperCard(w)).join('')
+    feed.innerHTML = renderTimeline(whispers, getState().dob, renderWhisperCard)
 
     wireAudioButtons()
     feedLoaded = true
@@ -586,7 +575,7 @@ export function initKeeper(): void {
       `
     } else if (w.format === 'photo') {
       body = `
-        ${w.photo_url ? `<img src="${escHtml(w.photo_url)}" style="width:100%;max-height:280px;object-fit:cover;border-radius:14px;margin-bottom:0.5rem" />` : ''}
+        ${w.photo_url ? `<img src="${escHtml(w.photo_url)}" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:0.5rem" />` : ''}
         ${w.content ? `<p style="font-size:var(--text-body);color:var(--body);line-height:var(--lh-body)">${escHtml(w.content)}</p>` : ''}
       `
     }
