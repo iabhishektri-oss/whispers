@@ -330,8 +330,8 @@ export function initChildMode(): void {
       return
     }
 
-    // Filter client-side: only unsealed whispers from contributors
-    const whispers = (data || []).filter((w: any) => w.contributor_id && !w.sealed).slice(0, 20)
+    // Show all unsealed whispers (from both keeper and contributors)
+    const whispers = (data || []).filter((w: any) => !w.sealed).slice(0, 20)
     if (whispers.length === 0) {
       feed.innerHTML = `
         <div style="text-align:center;padding:1.5rem 0;color:var(--dim);font-size:var(--text-caption)">
