@@ -452,17 +452,22 @@ export function initKeeper(): void {
   }
 
   // Feed loading
+  let feedInFlight = false
+
   async function loadFeed(): Promise<void> {
+    if (feedInFlight) { console.log('[Keeper] loadFeed skipped — already in flight'); return }
     console.log('[Keeper] loadFeed called')
     const { childId } = getState()
     if (!childId) { console.warn('[Keeper] loadFeed skipped — no childId'); return }
 
+    feedInFlight = true
     const feed = view.querySelector('#k-feed') as HTMLDivElement
     const sb = getSupabase()
 
-    // Timeout: show retry UI if the query hangs (matches loadContributors pattern)
+    // Timeout: show retry UI if the query hangs
     const feedTimeout = setTimeout(() => {
       console.warn('[Keeper] loadFeed timed out after 15s')
+      feedInFlight = false
       feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Taking too long. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
       const retry = feed.querySelector('#k-feed-retry')
       if (retry) retry.addEventListener('click', () => loadFeed())
@@ -480,6 +485,7 @@ export function initKeeper(): void {
       error = res.error
     } catch (e: any) {
       clearTimeout(feedTimeout)
+      feedInFlight = false
       console.error('[Keeper] Feed exception:', e)
       const msg = e?.name === 'AbortError' ? 'Request timed out.' : 'Could not load whispers.'
       feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">${msg} <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
@@ -489,6 +495,7 @@ export function initKeeper(): void {
     }
 
     clearTimeout(feedTimeout)
+    feedInFlight = false
 
     if (error) {
       feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
@@ -643,12 +650,4 @@ export function initKeeper(): void {
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) refreshIfActive()
   })
-
-  // Fallback: iOS Safari may restore from bfcache without firing visibilitychange
-  window.addEventListener('pageshow', (e) => {
-    if (e.persisted) refreshIfActive()
-  })
-
-  // Fallback: some mobile browsers fire focus but not visibilitychange
-  window.addEventListener('focus', refreshIfActive)
 }

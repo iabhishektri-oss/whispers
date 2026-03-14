@@ -422,10 +422,4 @@ export function initChildMode(): void {
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) refreshIfActive()
   })
-
-  window.addEventListener('pageshow', (e) => {
-    if (e.persisted) refreshIfActive()
-  })
-
-  window.addEventListener('focus', refreshIfActive)
 }
