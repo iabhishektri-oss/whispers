@@ -12,3 +12,22 @@
 - `<input>`, `<img>`, `<video>`, `<select>` are replaced elements with different sizing behavior than `<div>`/`<span>`.
 - Never assume `width:auto` or `line-height` will behave the same on replaced elements as on normal elements.
 - When fighting native form control styling on iOS, prefer explicit dimensions (`min-height`, inline `box-sizing`) over inherited/cascaded properties that the UA stylesheet may override.
+
+## Screen Layout Alignment Rules
+
+Two kinds of screens, two alignment rules:
+
+### Moment screens (centre-aligned)
+- **When:** The screen is an emotional beat — a reveal, a confirmation, a celebration. The user is *feeling*, not *doing*.
+- **Examples:** Ceremony/collection-ready screen (S7), share-link confirmation (S9), first-letter prompt.
+- **Layout:** `text-align:center; align-items:center; justify-content:center`. Content floats in the middle of the viewport.
+
+### Functional screens (left-aligned)
+- **When:** The screen is a task — the user is entering data, picking options, copying a link. They are *doing*, not *feeling*.
+- **Examples:** Onboarding steps (S1–S6), invite contributor (S8), any form or input screen.
+- **Layout:** Default left-aligned shell layout. No `text-align:center` on the container. Inputs, labels, and body text are left-aligned for readability and native feel.
+
+### Rule of thumb
+If the screen has inputs, selectors, or multi-step tasks → **left-aligned**.
+If the screen is a pause to celebrate or confirm → **centre-aligned**.
+Never mix: a screen is one or the other.
