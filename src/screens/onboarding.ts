@@ -65,7 +65,7 @@ export function initOnboarding(): void {
   s1.id = 'v-s1'
   s1.className = 'view'
   s1.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:0">
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:1rem;padding-bottom:0">
       ${obHeader(1)}
       <span class="wordmark" style="margin-bottom:2rem">Whispers</span>
       <div class="headline" style="margin-bottom:0.5rem">What is your child's name?</div>
@@ -95,7 +95,7 @@ export function initOnboarding(): void {
   s2.id = 'v-s2'
   s2.className = 'view'
   s2.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:0">
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:1rem;padding-bottom:0">
       ${obHeader(2, 'ob-s2-back')}
       <div id="s2-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">When was <span id="s2-name"></span> born?</div>
@@ -122,7 +122,7 @@ export function initOnboarding(): void {
   s3.id = 'v-s3'
   s3.className = 'view'
   s3.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:0">
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:1rem;padding-bottom:0">
       ${obHeader(3, 'ob-s3-back')}
       <div id="s3-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">Which pronouns for <span id="s3-name"></span>?</div>
@@ -159,7 +159,7 @@ export function initOnboarding(): void {
   s4.id = 'v-s4'
   s4.className = 'view'
   s4.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:0">
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:1rem;padding-bottom:0">
       ${obHeader(4, 'ob-s4-back')}
       <div id="s4-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">And who are you?</div>
@@ -196,7 +196,7 @@ export function initOnboarding(): void {
   s5.id = 'v-s5'
   s5.className = 'view'
   s5.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:0">
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:1rem;padding-bottom:0">
       ${obHeader(5, 'ob-s5-back')}
       <div id="s5-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">Add a photo of <span id="s5-name"></span></div>
@@ -244,7 +244,7 @@ export function initOnboarding(): void {
   s6.id = 'v-s6'
   s6.className = 'view'
   s6.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:0">
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:1rem;padding-bottom:0">
       ${obHeader(6, 'ob-s6-back')}
       <div id="s6-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">Last step. Your email.</div>
@@ -312,7 +312,7 @@ export function initOnboarding(): void {
   s7.id = 'v-s7'
   s7.className = 'view'
   s7.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
+    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding-top:2rem;padding-bottom:2rem">
       <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;align-items:center;gap:1.25rem">
         <div id="s7-avatar" class="avatar avatar-lg" style="width:80px;height:80px;font-size:var(--text-display-lg);margin-bottom:0.5rem"></div>
         <div class="headline" style="font-size:var(--text-display-lg);line-height:1.25">
@@ -342,7 +342,7 @@ export function initOnboarding(): void {
   s8.id = 'v-s8'
   s8.className = 'view'
   s8.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:0">
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:1rem;padding-bottom:0">
       <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem">
         <button class="back" id="ob-s8-back">${iconBack()}</button>
       </div>
@@ -405,7 +405,7 @@ export function initOnboarding(): void {
   s9.id = 'v-s9'
   s9.className = 'view'
   s9.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
+    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding-top:2rem;padding-bottom:2rem">
       <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;align-items:center;gap:1.25rem;width:100%">
         <div style="color:var(--gold-hi)">${iconCheck(48)}</div>
         <div class="headline" style="margin-bottom:0.25rem">Invite created</div>
@@ -470,7 +470,7 @@ export function initOnboarding(): void {
   fl.id = 'v-first-letter'
   fl.className = 'view'
   fl.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:2rem;padding-bottom:0">
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:2rem;padding-bottom:0">
       <span class="wordmark" style="margin-bottom:2rem">Whispers</span>
       <div class="headline" style="margin-bottom:0.5rem">Write your first whisper</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:1.5rem">Something true. Something you never want them to forget.</p>

@@ -16,7 +16,7 @@ export function initChildMode(): void {
   view.id = 'v-child-mode'
   view.className = 'view'
   view.innerHTML = `
-    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100vh">
+    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100dvh">
       <!-- Header -->
       <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem">
         <button class="back" id="cm-back">${iconBack()}</button>

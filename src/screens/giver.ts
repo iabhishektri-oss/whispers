@@ -16,7 +16,7 @@ export function initGiver(): void {
   landing.id = 'v-giver'
   landing.className = 'view'
   landing.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
+    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding-top:2rem;padding-bottom:2rem">
       <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;align-items:center;gap:1.25rem;width:100%">
         <span class="wordmark" style="margin-bottom:0.5rem">Whispers</span>
         <div id="gv-avatar" class="avatar avatar-lg" style="width:72px;height:72px;font-size:var(--text-display-md)"></div>
@@ -47,7 +47,7 @@ export function initGiver(): void {
   compose.id = 'v-giver-compose'
   compose.className = 'view'
   compose.innerHTML = `
-    <div class="shell" style="padding-top:2rem;padding-bottom:2rem;min-height:100vh">
+    <div class="shell" style="padding-top:2rem;padding-bottom:2rem;min-height:100dvh">
       <span class="wordmark" style="display:block;text-align:center;margin-bottom:1.5rem">Whispers</span>
       <div class="headline-sm" style="text-align:center;margin-bottom:1.25rem">Your whisper for <span id="gvc-name"></span></div>
       <div class="format-tabs" id="gvc-tabs">
@@ -238,7 +238,7 @@ export function initGiver(): void {
   done.id = 'v-giver-done'
   done.className = 'view'
   done.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
+    <div class="shell" style="display:flex;flex-direction:column;align-items:center;min-height:100dvh;text-align:center;padding-top:2rem;padding-bottom:2rem">
       <div style="flex:1;display:flex;align-items:center;justify-content:center">
         <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;align-items:center;gap:1.25rem">
           <div style="color:var(--gold-hi)">${iconCheck(56)}</div>
@@ -276,7 +276,7 @@ export function initGiver(): void {
     // Show a final thank you
     const shell = done.querySelector('.shell') as HTMLDivElement
     shell.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;animation:rise 0.5s both">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;animation:rise 0.5s both">
         <span class="wordmark" style="margin-bottom:1.5rem">Whispers</span>
         <div class="headline" style="font-size:var(--text-headline)">Thank you</div>
         <p style="color:var(--dim);font-size:var(--text-body);margin-top:0.75rem">You can close this window.</p>

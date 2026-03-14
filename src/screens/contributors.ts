@@ -21,7 +21,7 @@ export function initContributors(): void {
   view.id = 'v-contributors'
   view.className = 'view'
   view.innerHTML = `
-    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100vh">
+    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100dvh">
       <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem">
         <button class="back" id="ct-back">${iconBack()}</button>
         <div>
@@ -50,7 +50,7 @@ export function initContributors(): void {
   invite.id = 'v-ct-invite'
   invite.className = 'view'
   invite.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
+    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding-top:2rem;padding-bottom:2rem">
       <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ct-inv-back">${iconBack()}</button>
       <div class="headline" style="margin-bottom:0.5rem">Invite a family member</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">They'll get a link to leave a whisper for <span id="ct-inv-name"></span>. No account needed.</p>
@@ -114,7 +114,7 @@ export function initContributors(): void {
   share.id = 'v-ct-share'
   share.className = 'view'
   share.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
+    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding-top:2rem;padding-bottom:2rem">
       <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;align-items:center;gap:1.25rem;width:100%">
         <div style="color:var(--gold-hi)">${iconCheck(48)}</div>
         <div class="headline" style="margin-bottom:0.25rem">Invite created</div>
