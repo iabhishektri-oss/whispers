@@ -1,6 +1,7 @@
 /**
  * Native-feeling pull-to-refresh for scrollable views.
  *
+ * Works with both touch (mobile) and pointer/mouse (desktop) events.
  * Attach to any scrollable element — when the user pulls down past
  * a threshold and releases, the onRefresh callback fires.
  */
@@ -13,41 +14,35 @@ export function initPullToRefresh(
   scrollEl: HTMLElement,
   onRefresh: () => Promise<void> | void,
 ): void {
-  // Create the indicator — sits at the top of the scroll element, pushed up out of view
   const indicator = document.createElement('div')
-  indicator.style.cssText = `
-    display:flex;align-items:center;justify-content:center;
-    height:0;overflow:visible;pointer-events:none;
-    transition:none;
-  `
-  indicator.innerHTML = `
-    <div style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(200,144,12,0.25);
-      border-top-color:var(--gold);opacity:0;transition:opacity 0.15s;
-      transform-origin:center" data-ptr-spinner></div>
-  `
+  indicator.style.cssText =
+    'display:flex;align-items:center;justify-content:center;' +
+    'height:0;overflow:visible;pointer-events:none;transition:none;'
+  indicator.innerHTML =
+    '<div style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(200,144,12,0.25);' +
+    'border-top-color:var(--gold);opacity:0;transition:opacity 0.15s;' +
+    'transform-origin:center" data-ptr-spinner></div>'
 
-  // Prepend inside the scroll element so it scrolls with content
   scrollEl.insertBefore(indicator, scrollEl.firstChild)
-
   const spinner = indicator.querySelector('[data-ptr-spinner]') as HTMLDivElement
 
   let startY = 0
   let pulling = false
   let refreshing = false
 
-  scrollEl.addEventListener('touchstart', (e) => {
+  function onStart(clientY: number): void {
     if (refreshing) return
     if (scrollEl.scrollTop > 5) return
-    startY = e.touches[0].clientY
+    startY = clientY
     pulling = true
     indicator.style.transition = 'none'
     spinner.style.transition = 'none'
-  }, { passive: true })
+  }
 
-  scrollEl.addEventListener('touchmove', (e) => {
+  function onMove(clientY: number, cancel: () => void): void {
     if (!pulling || refreshing) return
 
-    const dy = (e.touches[0].clientY - startY) * RESIST
+    const dy = (clientY - startY) * RESIST
     if (dy <= 0) {
       indicator.style.height = '0'
       spinner.style.opacity = '0'
@@ -61,12 +56,10 @@ export function initPullToRefresh(
     spinner.style.opacity = String(progress)
     spinner.style.transform = `rotate(${progress * 270}deg) scale(${0.6 + progress * 0.4})`
 
-    if (scrollEl.scrollTop <= 0 && dy > 0) {
-      e.preventDefault()
-    }
-  }, { passive: false })
+    if (scrollEl.scrollTop <= 0 && dy > 0) cancel()
+  }
 
-  scrollEl.addEventListener('touchend', async () => {
+  async function onEnd(): Promise<void> {
     if (!pulling || refreshing) return
     pulling = false
 
@@ -95,5 +88,38 @@ export function initPullToRefresh(
       spinner.style.transition = 'opacity 0.15s'
       spinner.style.opacity = '0'
     }
+  }
+
+  // --- Touch events (mobile) ---
+  scrollEl.addEventListener('touchstart', (e) => {
+    onStart(e.touches[0].clientY)
   }, { passive: true })
+
+  scrollEl.addEventListener('touchmove', (e) => {
+    onMove(e.touches[0].clientY, () => e.preventDefault())
+  }, { passive: false })
+
+  scrollEl.addEventListener('touchend', () => { onEnd() }, { passive: true })
+
+  // --- Pointer events (desktop / mouse / stylus) ---
+  let pointerDown = false
+
+  scrollEl.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') return  // handled by touch events
+    pointerDown = true
+    onStart(e.clientY)
+  })
+
+  scrollEl.addEventListener('pointermove', (e) => {
+    if (!pointerDown || e.pointerType === 'touch') return
+    onMove(e.clientY, () => e.preventDefault())
+  })
+
+  const pointerEnd = (e: PointerEvent) => {
+    if (!pointerDown || e.pointerType === 'touch') return
+    pointerDown = false
+    onEnd()
+  }
+  scrollEl.addEventListener('pointerup', pointerEnd)
+  scrollEl.addEventListener('pointercancel', pointerEnd)
 }
