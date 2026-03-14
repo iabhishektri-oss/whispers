@@ -1,6 +1,6 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, childName, keeperName } from '@/lib/state'
-import { getSupabase, ensureFreshSession } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconHome, iconFamily, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
@@ -633,23 +633,15 @@ export function initKeeper(): void {
     }
   })
 
-  // Refresh feed when app returns from background.
-  // Must refresh the Supabase session FIRST — on iOS Safari, background tabs
-  // kill TCP connections; the auth token refresh can hang on a dead socket,
-  // which blocks every subsequent query. ensureFreshSession() forces a new
-  // network request (with our 15s timeout) to unblock the client.
-  async function refreshIfActive(): Promise<void> {
-    const isActive = view.classList.contains('active')
-    console.log(`[Keeper] refreshIfActive — keeper active: ${isActive}`)
-    if (isActive) {
-      await ensureFreshSession()
-      loadFeed()
+  // Refresh feed when app returns from background
+  function refreshIfActive(): void {
+    if (view.classList.contains('active')) {
+      setTimeout(() => loadFeed(), 300)
     }
   }
 
   document.addEventListener('visibilitychange', () => {
-    console.log(`[Keeper] visibilitychange — state: ${document.visibilityState}`)
-    if (document.visibilityState === 'visible') refreshIfActive()
+    if (!document.hidden) refreshIfActive()
   })
 
   // Fallback: iOS Safari may restore from bfcache without firing visibilitychange

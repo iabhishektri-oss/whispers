@@ -1,6 +1,6 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, childName, keeperName } from '@/lib/state'
-import { getSupabase, ensureFreshSession } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { iconBack, iconPlus, iconCheck, iconFamily, iconArrow } from '@/lib/icons'
 import { escHtml } from '@/lib/utils'
 
@@ -249,10 +249,6 @@ export function initContributors(): void {
     }
 
     const list = view.querySelector('#ct-list') as HTMLDivElement
-
-    // Refresh session before querying — stale tokens after background cause hangs
-    await ensureFreshSession()
-
     const sb = getSupabase()
 
     // Show loading state with a timeout fallback
