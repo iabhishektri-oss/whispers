@@ -30,7 +30,13 @@ async function boot(): Promise<void> {
   initContributors()
   initChildMode()
 
-  // Check auth
+  // Detect magic-link auth callback from URL hash
+  const isAuthCallback = window.location.hash.includes('access_token')
+    || window.location.hash.includes('type=magiclink')
+    || window.location.hash.includes('type=recovery')
+
+  // Check auth — getSession() processes the URL hash during Supabase init.
+  // For magic link callbacks, the hash is exchanged for a session.
   const { data } = await sb.auth.getSession()
   if (data.session) {
     setState({ authUserId: data.session.user.id, email: data.session.user.email || '' })
@@ -39,12 +45,18 @@ async function boot(): Promise<void> {
     // Check for pending onboarding
     const pending = localStorage.getItem('whispers_onboarding')
     if (pending) {
-      const saved = JSON.parse(pending)
-      setState(saved)
-      await saveOnboardingData()
-      await saveFirstWhisper()
-      localStorage.removeItem('whispers_onboarding')
-      navigate('v-s7')
+      try {
+        const saved = JSON.parse(pending)
+        setState(saved)
+        await saveOnboardingData()
+        await saveFirstWhisper()
+        localStorage.removeItem('whispers_onboarding')
+        navigate('v-s7')
+      } catch (e) {
+        console.error('Onboarding save failed:', e)
+        localStorage.removeItem('whispers_onboarding')
+        navigate('v-story')
+      }
     } else {
       await loadChildData()
       if (getState().childId) {
@@ -53,27 +65,49 @@ async function boot(): Promise<void> {
         navigate('v-story')
       }
     }
+  } else if (isAuthCallback) {
+    // getSession() returned null but we have an auth hash.
+    // Supabase may still be processing it — wait for onAuthStateChange.
+    // Show loading screen and set a timeout fallback.
+    showLoadingScreen()
+    setTimeout(() => {
+      // If still on loading screen after 15s, auth failed — go to story
+      const el = document.getElementById('v-loading')
+      if (el && el.style.display !== 'none') {
+        console.error('Magic link auth timed out')
+        hideLoadingScreen()
+        navigate('v-story')
+      }
+    }, 15000)
   } else {
     navigate('v-story')
   }
 
-  // Listen for auth changes (magic link callback)
+  // Listen for auth changes (magic link callback).
+  // This fires when Supabase finishes processing the hash asynchronously.
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
-      setState({ authUserId: session.user.id, email: session.user.email || '' })
+      try {
+        setState({ authUserId: session.user.id, email: session.user.email || '' })
+        hideLoadingScreen()
 
-      const pending = localStorage.getItem('whispers_onboarding')
-      if (pending) {
-        const saved = JSON.parse(pending)
-        setState(saved)
-        await saveOnboardingData()
-        await saveFirstWhisper()
-        localStorage.removeItem('whispers_onboarding')
-        navigate('v-s7')
-      } else {
-        await loadChildData()
-        if (getState().childId) navigate('v-keeper')
-        else navigate('v-story')
+        const pending = localStorage.getItem('whispers_onboarding')
+        if (pending) {
+          const saved = JSON.parse(pending)
+          setState(saved)
+          await saveOnboardingData()
+          await saveFirstWhisper()
+          localStorage.removeItem('whispers_onboarding')
+          navigate('v-s7')
+        } else {
+          await loadChildData()
+          if (getState().childId) navigate('v-keeper')
+          else navigate('v-story')
+        }
+      } catch (e) {
+        console.error('onAuthStateChange handler failed:', e)
+        hideLoadingScreen()
+        navigate('v-story')
       }
     }
   })
@@ -105,13 +139,25 @@ async function saveOnboardingData(): Promise<void> {
   if (!s.authUserId) return
 
   // Upsert profile
-  await sb.from('profiles').upsert({
+  const { error: profileError } = await sb.from('profiles').upsert({
     id: s.authUserId,
     email: s.email,
     name: s.keeper,
   })
+  if (profileError) console.error('Profile upsert failed:', profileError)
 
-  // Insert child
+  // Insert child (may already exist from a previous attempt — try upsert-like approach)
+  const { data: existing } = await sb.from('children')
+    .select('id')
+    .eq('keeper_id', s.authUserId)
+    .maybeSingle()
+
+  if (existing) {
+    // Child already exists (duplicate magic link click or retry)
+    setState({ childId: existing.id })
+    return
+  }
+
   const { data: child, error } = await sb.from('children').insert({
     keeper_id: s.authUserId,
     name: s.name,
