@@ -50,28 +50,28 @@ export function initContributors(): void {
   invite.id = 'v-ct-invite'
   invite.className = 'view'
   invite.innerHTML = `
-    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100dvh;display:flex;flex-direction:column">
-      <button class="back" id="ct-inv-back">${iconBack()}</button>
+    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100dvh;display:flex;flex-direction:column;text-align:center">
+      <button class="back" id="ct-inv-back" style="align-self:flex-start">${iconBack()}</button>
 
       <div class="headline" style="margin-top:1rem;margin-bottom:0.35rem" id="ct-inv-headline"></div>
       <p style="color:var(--dim);font-size:var(--text-body);line-height:var(--lh-body);margin-bottom:1.5rem">Pick their relationship. They can leave whispers without creating an account.</p>
 
       <!-- Grandparents -->
       <div class="label" style="margin-bottom:0.5rem">Grandparents</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.25rem" id="ct-inv-gp">
-        <div class="rel-card" data-rel="Maternal Grandmother">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.25rem">
+        <div class="format-tab" data-rel="Maternal Grandmother" style="padding:0.75rem 0.5rem">
           <span style="font-size:var(--text-meta);color:var(--dim)">Maternal</span>
           <span style="font-size:var(--text-body-sm);color:var(--white)">Grandmother</span>
         </div>
-        <div class="rel-card" data-rel="Maternal Grandfather">
+        <div class="format-tab" data-rel="Maternal Grandfather" style="padding:0.75rem 0.5rem">
           <span style="font-size:var(--text-meta);color:var(--dim)">Maternal</span>
           <span style="font-size:var(--text-body-sm);color:var(--white)">Grandfather</span>
         </div>
-        <div class="rel-card" data-rel="Paternal Grandmother">
+        <div class="format-tab" data-rel="Paternal Grandmother" style="padding:0.75rem 0.5rem">
           <span style="font-size:var(--text-meta);color:var(--dim)">Paternal</span>
           <span style="font-size:var(--text-body-sm);color:var(--white)">Grandmother</span>
         </div>
-        <div class="rel-card" data-rel="Paternal Grandfather">
+        <div class="format-tab" data-rel="Paternal Grandfather" style="padding:0.75rem 0.5rem">
           <span style="font-size:var(--text-meta);color:var(--dim)">Paternal</span>
           <span style="font-size:var(--text-body-sm);color:var(--white)">Grandfather</span>
         </div>
@@ -79,36 +79,36 @@ export function initContributors(): void {
 
       <!-- Family -->
       <div class="label" style="margin-bottom:0.5rem">Family</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1.25rem" id="ct-inv-fam">
-        <div class="rel-card" data-rel="Aunt">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1.25rem">
+        <div class="format-tab" data-rel="Aunt" style="padding:0.75rem 0.5rem">
           <span style="font-size:var(--text-body-sm);color:var(--white)">Aunt</span>
         </div>
-        <div class="rel-card" data-rel="Uncle">
+        <div class="format-tab" data-rel="Uncle" style="padding:0.75rem 0.5rem">
           <span style="font-size:var(--text-body-sm);color:var(--white)">Uncle</span>
         </div>
-        <div class="rel-card" data-rel="Godparent">
+        <div class="format-tab" data-rel="Godparent" style="padding:0.75rem 0.5rem">
           <span style="font-size:var(--text-body-sm);color:var(--white)">Godparent</span>
         </div>
       </div>
 
       <!-- Close to the family -->
       <div class="label" style="margin-bottom:0.5rem">Close to the family</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.5rem" id="ct-inv-close">
-        <div class="rel-card" data-rel="Family friend">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.5rem">
+        <div class="format-tab" data-rel="Family friend" style="padding:0.75rem 0.5rem">
           <span style="font-size:var(--text-body-sm);color:var(--white)">Family friend</span>
         </div>
-        <div class="rel-card" data-rel="Someone else">
+        <div class="format-tab" data-rel="Someone else" style="padding:0.75rem 0.5rem">
           <span style="font-size:var(--text-body-sm);color:var(--white)">Someone else</span>
         </div>
       </div>
 
       <!-- Name input -->
       <div class="label" style="margin-bottom:0.4rem" id="ct-inv-name-label"></div>
-      <input id="ct-inv-nick" class="input" type="text" placeholder="e.g. Nani, Grandma T, Chacha, Auntie Jo" maxlength="40" autocomplete="off" style="margin-bottom:1.5rem" />
+      <input id="ct-inv-nick" class="input" type="text" placeholder="e.g. Nani, Grandma T, Chacha, Auntie Jo" maxlength="40" autocomplete="off" style="text-align:center;margin-bottom:1.5rem" />
 
       <div style="margin-top:auto">
         <button id="ct-inv-create" class="btn off">Create invite link <span style="font-size:1.1em">${iconArrow()}</span></button>
-        <div id="ct-inv-status" style="font-size:var(--text-caption);color:var(--dim);display:none;margin-top:0.5rem;text-align:center"></div>
+        <div id="ct-inv-status" style="font-size:var(--text-caption);color:var(--dim);display:none;margin-top:0.5rem"></div>
       </div>
     </div>
   `
@@ -124,9 +124,9 @@ export function initContributors(): void {
   }
 
   // Wire all relationship cards
-  invite.querySelectorAll('.rel-card').forEach(card => {
+  invite.querySelectorAll('.format-tab[data-rel]').forEach(card => {
     card.addEventListener('click', () => {
-      invite.querySelectorAll('.rel-card').forEach(c => c.classList.remove('active'))
+      invite.querySelectorAll('.format-tab[data-rel]').forEach(c => c.classList.remove('active'))
       card.classList.add('active')
       selectedRel = (card as HTMLElement).dataset.rel || ''
       updateInviteButton()
@@ -231,7 +231,7 @@ export function initContributors(): void {
   share.querySelector('#ct-share-another')!.addEventListener('click', () => {
     invNick.value = ''
     selectedRel = ''
-    invite.querySelectorAll('.rel-card').forEach(c => c.classList.remove('active'))
+    invite.querySelectorAll('.format-tab[data-rel]').forEach(c => c.classList.remove('active'))
     invCreate.innerHTML = `Create invite link <span style="font-size:1.1em">${iconArrow()}</span>`
     invCreate.classList.add('off')
     invStatus.style.display = 'none'

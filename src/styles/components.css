@@ -224,35 +224,6 @@
   background: var(--gold-dim);
 }
 
-/* ── Relationship selector cards ── */
-.rel-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.15rem;
-  padding: 0.75rem 0.5rem;
-  border-radius: var(--radius-card);
-  border: 1px solid var(--input-bd);
-  background: var(--input-bg);
-  cursor: pointer;
-  transition: all var(--duration);
-  text-align: center;
-}
-
-.rel-card:active {
-  transform: scale(0.97);
-}
-
-.rel-card.active {
-  border-color: var(--gold);
-  background: var(--gold-dim);
-}
-
-.rel-card.active span {
-  color: var(--gold-hi) !important;
-}
-
 /* ── Child mode toggle glow on tap ── */
 #k-child-toggle:active #k-child-initial {
   box-shadow: 0 0 12px rgba(255, 183, 77, 0.15);
