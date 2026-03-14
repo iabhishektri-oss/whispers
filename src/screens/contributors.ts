@@ -251,8 +251,8 @@ export function initContributors(): void {
     const list = view.querySelector('#ct-list') as HTMLDivElement
     const sb = getSupabase()
 
-    // Refresh auth session before querying (prevents stale JWT issues)
-    await sb.auth.getSession()
+    // Force-refresh auth token (prevents stale JWT issues)
+    await sb.auth.refreshSession()
 
     // Show loading state with a timeout fallback
     const loadingTimeout = setTimeout(() => {

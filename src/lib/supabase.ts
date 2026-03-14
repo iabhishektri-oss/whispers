@@ -7,7 +7,15 @@ let client: SupabaseClient | null = null
 
 export function getSupabase(): SupabaseClient {
   if (!client) {
-    client = createClient(SUPABASE_URL, SUPABASE_ANON)
+    client = createClient(SUPABASE_URL, SUPABASE_ANON, {
+      global: {
+        // Force every fetch to bypass browser HTTP cache.
+        // Without this, mobile Safari returns stale cached responses
+        // on pull-to-refresh, hiding newly added whispers.
+        fetch: (url, options = {}) =>
+          fetch(url, { ...options, cache: 'no-store' }),
+      },
+    })
   }
   return client
 }
