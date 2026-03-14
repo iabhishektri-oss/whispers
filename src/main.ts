@@ -191,6 +191,7 @@ async function saveFirstWhisper(): Promise<void> {
     const fw = JSON.parse(raw)
     if (fw.format === 'write' && fw.content) {
       await saveWhisper({ format: 'write', content: fw.content })
+      setState({ hasFirstWhisper: true })
       console.log('First whisper saved')
     }
     localStorage.removeItem('whispers_first_whisper')

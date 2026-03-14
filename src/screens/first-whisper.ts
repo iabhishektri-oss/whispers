@@ -1,4 +1,5 @@
 import { navigate } from '@/lib/router'
+import { getState, setState } from '@/lib/state'
 import { iconMic, iconWrite, iconCamera, iconBack } from '@/lib/icons'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { formatDuration } from '@/lib/utils'
@@ -54,8 +55,12 @@ export function initFirstWhisper(): void {
   const body = view.querySelector('#fl-body') as HTMLDivElement
   const saveBtn = view.querySelector('#fl-save') as HTMLButtonElement
 
-  view.querySelector('#fl-back')!.addEventListener('click', () => navigate('v-story'))
-  view.querySelector('#fl-skip')!.addEventListener('click', () => navigate('v-s1'))
+  // If user is post-onboarding (has childId), they came from S7 — navigate back there
+  const flBack = () => getState().childId ? 'v-s7' : 'v-story'
+  const flSkipDest = () => getState().childId ? 'v-s7' : 'v-s1'
+
+  view.querySelector('#fl-back')!.addEventListener('click', () => navigate(flBack()))
+  view.querySelector('#fl-skip')!.addEventListener('click', () => navigate(flSkipDest()))
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -198,19 +203,36 @@ export function initFirstWhisper(): void {
   // Save first whisper to localStorage (survives magic link redirect)
   // Note: only text content persists through localStorage. Voice/photo blobs
   // are lost on page reload during auth, but work if auth completes in-session.
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', async () => {
     if (saveBtn.classList.contains('off')) return
+
+    const isPostOnboarding = !!getState().childId
 
     if (activeFormat === 'write') {
       const text = (body.querySelector('#fl-text') as HTMLTextAreaElement)?.value.trim()
       if (text) {
-        localStorage.setItem('whispers_first_whisper', JSON.stringify({ format: 'write', content: text }))
+        if (isPostOnboarding) {
+          // Already authenticated — save directly to DB
+          saveBtn.innerHTML = '<div class="spinner"></div>'
+          saveBtn.classList.add('off')
+          try {
+            const { saveWhisper } = await import('@/lib/whispers')
+            await saveWhisper({ format: 'write', content: text })
+            setState({ hasFirstWhisper: true })
+          } catch (e) {
+            console.error('Could not save whisper:', e)
+          }
+          navigate('v-s7')
+          return
+        } else {
+          localStorage.setItem('whispers_first_whisper', JSON.stringify({ format: 'write', content: text }))
+        }
       }
     }
     // Voice and photo blobs can't be stored in localStorage —
     // they'll be saved after auth if session stays alive
 
-    navigate('v-s1')
+    navigate(isPostOnboarding ? 'v-s7' : 'v-s1')
   })
 
   // Render initial panel

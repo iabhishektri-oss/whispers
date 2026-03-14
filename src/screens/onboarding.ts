@@ -336,6 +336,7 @@ export function initOnboarding(): void {
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;margin-top:0.5rem">
           <span class="pill active">${iconCheck(14)} Collection created</span>
           <span class="pill active">${iconCheck(14)} You're in</span>
+          <span id="s7-pill-whisper" class="pill active" style="display:none">${iconCheck(14)} First whisper saved</span>
         </div>
         <div class="card" style="margin-top:1rem;text-align:center">
           <div class="headline-sm" style="margin-bottom:0.35rem">Now, bring in the people who matter.</div>
@@ -555,7 +556,7 @@ export function initOnboarding(): void {
       if (el) el.textContent = ctxText
     }
 
-    // S7 avatar
+    // S7 avatar + dynamic content
     if (to === 'v-s7') {
       const avatar = document.getElementById('s7-avatar')
       if (avatar) {
@@ -565,6 +566,14 @@ export function initOnboarding(): void {
           avatar.textContent = (s.name || '?')[0].toUpperCase()
         }
       }
+
+      // Show/hide "First whisper saved" pill
+      const whisperPill = document.getElementById('s7-pill-whisper')
+      if (whisperPill) whisperPill.style.display = s.hasFirstWhisper ? '' : 'none'
+
+      // Hide "or leave the first whisper yourself" if they already left one
+      const skipLink = document.getElementById('ob-s7-skip')
+      if (skipLink) skipLink.style.display = s.hasFirstWhisper ? 'none' : ''
     }
 
     // S9 link

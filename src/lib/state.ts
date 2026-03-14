@@ -14,6 +14,9 @@ export interface AppState {
   childId: string | null
   authUserId: string | null
 
+  // Onboarding flags
+  hasFirstWhisper: boolean
+
   // Giver mode
   isGiverMode: boolean
   giverContributorId: string | null
@@ -31,6 +34,7 @@ const state: AppState = {
   email: '',
   childId: null,
   authUserId: null,
+  hasFirstWhisper: false,
   isGiverMode: false,
   giverContributorId: null,
   giverNickname: '',
