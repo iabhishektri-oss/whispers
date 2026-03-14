@@ -392,36 +392,6 @@ export function initChildMode(): void {
     })
   }
 
-  // Realtime subscription for live whisper updates
-  let realtimeChannel: any = null
-  let realtimeActive = false
-
-  function startRealtime(): void {
-    const { childId } = getState()
-    if (!childId || realtimeActive) return
-
-    const sb = getSupabase()
-    realtimeChannel = sb
-      .channel('child-whispers-feed')
-      .on(
-        'postgres_changes' as any,
-        { event: 'INSERT', schema: 'public', table: 'whispers', filter: `child_id=eq.${childId}` },
-        () => {
-          console.log('[Realtime] New whisper in child mode, refreshing feed')
-          loadFamilyWhispers()
-        }
-      )
-      .subscribe()
-    realtimeActive = true
-  }
-
-  function stopRealtime(): void {
-    if (realtimeChannel && realtimeActive) {
-      getSupabase().removeChannel(realtimeChannel)
-      realtimeActive = false
-    }
-  }
-
   onRouteChange((_from, to) => {
     if (to === 'v-child-mode') {
       const title = view.querySelector('#cm-title')
@@ -429,9 +399,13 @@ export function initChildMode(): void {
       const prompt = view.querySelector('#cm-prompt')
       if (prompt) prompt.textContent = dailyPrompt()
       loadFamilyWhispers()
-      startRealtime()
-    } else {
-      stopRealtime()
+    }
+  })
+
+  // Refresh feed when app returns from background
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && view.classList.contains('active')) {
+      loadFamilyWhispers()
     }
   })
 }

@@ -605,45 +605,19 @@ export function initKeeper(): void {
     `
   }
 
-  // Realtime subscription for live whisper updates
-  let realtimeChannel: ReturnType<typeof getSupabase>['channel'] extends (...args: any[]) => infer R ? R : any = null as any
-  let realtimeActive = false
-
-  function startRealtime(): void {
-    const { childId } = getState()
-    if (!childId || realtimeActive) return
-
-    const sb = getSupabase()
-    realtimeChannel = sb
-      .channel('whispers-feed')
-      .on(
-        'postgres_changes' as any,
-        { event: 'INSERT', schema: 'public', table: 'whispers', filter: `child_id=eq.${childId}` },
-        () => {
-          console.log('[Realtime] New whisper received, refreshing feed')
-          loadFeed()
-        }
-      )
-      .subscribe()
-    realtimeActive = true
-  }
-
-  function stopRealtime(): void {
-    if (realtimeChannel && realtimeActive) {
-      getSupabase().removeChannel(realtimeChannel)
-      realtimeActive = false
-    }
-  }
-
   // Route change listener
   onRouteChange((_from, to) => {
     if (to === 'v-keeper') {
       const sub = view.querySelector('#k-subtitle')
       if (sub) sub.textContent = `${childName()}'s collection`
       loadFeed()
-      startRealtime()
-    } else {
-      stopRealtime()
+    }
+  })
+
+  // Refresh feed when app returns from background
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && view.classList.contains('active')) {
+      loadFeed()
     }
   })
 }
