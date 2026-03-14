@@ -50,7 +50,7 @@ export function initContributors(): void {
   invite.id = 'v-ct-invite'
   invite.className = 'view'
   invite.innerHTML = `
-    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100dvh;display:flex;flex-direction:column;text-align:center">
+    <div class="shell" style="padding-top:1.25rem;padding-bottom:2rem;min-height:100dvh;display:flex;flex-direction:column">
       <button class="back" id="ct-inv-back" style="align-self:flex-start">${iconBack()}</button>
 
       <div class="headline" style="margin-top:1rem;margin-bottom:0.35rem" id="ct-inv-headline"></div>
@@ -104,7 +104,7 @@ export function initContributors(): void {
 
       <!-- Name input -->
       <div class="label" style="margin-bottom:0.4rem" id="ct-inv-name-label"></div>
-      <input id="ct-inv-nick" class="input" type="text" placeholder="e.g. Nani, Grandma T, Chacha, Auntie Jo" maxlength="40" autocomplete="off" style="text-align:center;margin-bottom:1.5rem" />
+      <input id="ct-inv-nick" class="input" type="text" placeholder="e.g. Nani, Grandma T, Chacha, Auntie Jo" maxlength="40" autocomplete="off" style="margin-bottom:1.5rem" />
 
       <div style="margin-top:auto">
         <button id="ct-inv-create" class="btn off">Create invite link <span style="font-size:1.1em">${iconArrow()}</span></button>
