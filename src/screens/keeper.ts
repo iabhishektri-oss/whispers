@@ -452,6 +452,7 @@ export function initKeeper(): void {
 
   // Feed loading
   let feedInFlight = false
+  let lastSuccessTime = 0
 
   async function loadFeed(): Promise<void> {
     if (feedInFlight) return
@@ -497,6 +498,7 @@ export function initKeeper(): void {
     }
 
     markSuccess()
+    lastSuccessTime = Date.now()
     const whispers = (data || []) as WhisperRow[]
     if (whispers.length === 0) {
       feed.innerHTML = `
@@ -629,13 +631,26 @@ export function initKeeper(): void {
   })
 
   // Refresh feed when app returns from background
+  const STALE_MS = 30_000 // consider feed stale after 30s
+
   function refreshIfActive(): void {
-    if (view.classList.contains('active')) {
-      setTimeout(() => loadFeed(), 300)
+    if (!view.classList.contains('active')) return
+    const age = Date.now() - lastSuccessTime
+    if (age > STALE_MS) {
+      loadFeed()
     }
   }
 
+  // visibilitychange — primary trigger (works on most mobile browsers)
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) refreshIfActive()
   })
+
+  // pageshow — fires on iOS Safari BFCache restore (visibilitychange doesn't)
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) refreshIfActive()
+  })
+
+  // focus — catches edge cases where visibility events don't fire
+  window.addEventListener('focus', () => refreshIfActive())
 }
