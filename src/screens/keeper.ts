@@ -87,7 +87,7 @@ export function initKeeper(): void {
   view.querySelector('#k-nav-home')!.addEventListener('click', () => {
     console.log('[Keeper] Home nav tapped')
     navigate('v-keeper')
-    loadFeed()
+    // loadFeed() fires via the route change handler — no duplicate call
   })
   view.querySelector('#k-nav-family')!.addEventListener('click', () => {
     navigate('v-contributors')
