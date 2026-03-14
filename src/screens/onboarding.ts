@@ -3,20 +3,71 @@ import { getState, setState, childName } from '@/lib/state'
 import { getSupabase } from '@/lib/supabase'
 import { iconBack, iconCheck, iconArrow, iconCamera } from '@/lib/icons'
 
+const TOTAL_STEPS = 6
+
+function obHeader(step: number, backId?: string): string {
+  const pct = Math.round((step / TOTAL_STEPS) * 100)
+  return `
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem">
+      ${backId ? `<button class="back" id="${backId}">${iconBack()}</button>` : '<div style="width:36px"></div>'}
+      <div style="flex:1;height:2px;background:rgba(200,191,180,0.1);border-radius:1px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:var(--gold-hi);border-radius:1px"></div>
+      </div>
+      <span style="font-size:var(--text-meta);color:var(--dim);white-space:nowrap">${step} of ${TOTAL_STEPS}</span>
+    </div>
+  `
+}
+
+function formatDob(dob: string): string {
+  if (!dob) return ''
+  try {
+    const d = new Date(dob + 'T00:00:00')
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  } catch { return dob }
+}
+
 export function initOnboarding(): void {
   const app = document.getElementById('app')!
 
-  // S1: Child name
+  // Onboarding-specific styles
+  const style = document.createElement('style')
+  style.textContent = `
+    .ob-opt {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-button);
+      border: 1px solid var(--input-bd);
+      background: var(--input-bg);
+      font-family: var(--font-body);
+      font-size: var(--text-body);
+      color: var(--body);
+      cursor: pointer;
+      transition: all var(--duration);
+    }
+    .ob-opt .ob-check { display: none; }
+    .ob-opt.sel {
+      background: rgba(200,144,12,0.12);
+      border-color: rgba(200,144,12,0.18);
+      color: var(--gold-hi);
+    }
+    .ob-opt.sel .ob-check { display: inline-flex; }
+  `
+  document.head.appendChild(style)
+
+  // ── S1: Child name ──
   const s1 = document.createElement('div')
   s1.id = 'v-s1'
   s1.className = 'view'
   s1.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <span class="wordmark" style="margin-bottom:2.5rem">Whispers</span>
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:2rem">
+      ${obHeader(1)}
+      <span class="wordmark" style="margin-bottom:2rem">Whispers</span>
       <div class="headline" style="margin-bottom:0.5rem">What is your child's name?</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">First name only. This is how we'll refer to them.</p>
-      <input id="ob-name" class="input" type="text" placeholder="First name" style="text-align:center;margin-bottom:1.5rem" maxlength="40" autocomplete="off" />
-      <button id="ob-name-next" class="btn off" style="margin-bottom:1rem">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
+      <input id="ob-name" class="input" type="text" placeholder="First name" style="margin-bottom:1.5rem" maxlength="40" autocomplete="off" />
+      <button id="ob-name-next" class="btn gold off">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
     </div>
   `
   app.appendChild(s1)
@@ -24,8 +75,7 @@ export function initOnboarding(): void {
   const nameInput = s1.querySelector('#ob-name') as HTMLInputElement
   const nameBtn = s1.querySelector('#ob-name-next') as HTMLButtonElement
   nameInput.addEventListener('input', () => {
-    const val = nameInput.value.trim()
-    nameBtn.classList.toggle('off', val.length === 0)
+    nameBtn.classList.toggle('off', nameInput.value.trim().length === 0)
   })
   nameBtn.addEventListener('click', () => {
     const val = nameInput.value.trim()
@@ -34,20 +84,19 @@ export function initOnboarding(): void {
     navigate('v-s2')
   })
 
-  // S2: Date of birth
+  // ── S2: Date of birth ──
   const s2 = document.createElement('div')
   s2.id = 'v-s2'
   s2.className = 'view'
   s2.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ob-s2-back">${iconBack()}</button>
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:2rem">
+      ${obHeader(2, 'ob-s2-back')}
+      <div id="s2-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">When was <span id="s2-name"></span> born?</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">This helps us personalise their collection.</p>
-      <div style="align-self:stretch">
-        <input id="ob-dob" class="input" type="date" style="display:block;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;min-height:3.65rem;text-align:center;margin-bottom:1.5rem" />
-        <button id="ob-dob-next" class="btn" style="margin-bottom:0.75rem">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
-      </div>
-      <span id="ob-dob-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Skip for now</span>
+      <input id="ob-dob" class="input" type="date" style="display:block;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;min-height:3.65rem;margin-bottom:1.5rem" />
+      <button id="ob-dob-next" class="btn gold" style="margin-bottom:0.75rem">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
+      <span id="ob-dob-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;align-self:center">Skip for now</span>
     </div>
   `
   app.appendChild(s2)
@@ -60,21 +109,22 @@ export function initOnboarding(): void {
   })
   s2.querySelector('#ob-dob-skip')!.addEventListener('click', () => navigate('v-s3'))
 
-  // S3: Pronouns
+  // ── S3: Pronouns ──
   const s3 = document.createElement('div')
   s3.id = 'v-s3'
   s3.className = 'view'
   s3.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ob-s3-back">${iconBack()}</button>
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:2rem">
+      ${obHeader(3, 'ob-s3-back')}
+      <div id="s3-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">Which pronouns for <span id="s3-name"></span>?</div>
-      <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">We use these throughout the app.</p>
-      <div style="display:flex;flex-direction:column;gap:0.6rem;width:100%;margin-bottom:1.5rem">
-        <button class="pill active" data-pronoun="they" style="justify-content:center;padding:0.65rem 1rem">They / them</button>
-        <button class="pill" data-pronoun="she" style="justify-content:center;padding:0.65rem 1rem">She / her</button>
-        <button class="pill" data-pronoun="he" style="justify-content:center;padding:0.65rem 1rem">He / him</button>
+      <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">This is how we'll refer to <span id="s3-name2"></span> in whispers from family.</p>
+      <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.5rem">
+        <button class="ob-opt sel" data-pronoun="they"><span class="ob-check">${iconCheck(14)}</span> They / them</button>
+        <button class="ob-opt" data-pronoun="she"><span class="ob-check">${iconCheck(14)}</span> She / her</button>
+        <button class="ob-opt" data-pronoun="he"><span class="ob-check">${iconCheck(14)}</span> He / him</button>
       </div>
-      <button id="ob-pronoun-next" class="btn">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
+      <button id="ob-pronoun-next" class="btn gold">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
     </div>
   `
   app.appendChild(s3)
@@ -83,8 +133,8 @@ export function initOnboarding(): void {
   const pronounPills = s3.querySelectorAll('[data-pronoun]')
   pronounPills.forEach(pill => {
     pill.addEventListener('click', () => {
-      pronounPills.forEach(p => p.classList.remove('active'))
-      pill.classList.add('active')
+      pronounPills.forEach(p => p.classList.remove('sel'))
+      pill.classList.add('sel')
       selectedPronoun = (pill as HTMLElement).dataset.pronoun || 'they'
     })
   })
@@ -94,18 +144,19 @@ export function initOnboarding(): void {
     navigate('v-s4')
   })
 
-  // S4: Parent info (your name, relationship)
+  // ── S4: Parent info ──
   const s4 = document.createElement('div')
   s4.id = 'v-s4'
   s4.className = 'view'
   s4.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ob-s4-back">${iconBack()}</button>
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:2rem">
+      ${obHeader(4, 'ob-s4-back')}
+      <div id="s4-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">And who are you?</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">Your name and what <span id="s4-name"></span> calls you.</p>
-      <input id="ob-keeper" class="input" type="text" placeholder="Your name" style="text-align:center;margin-bottom:0.75rem" maxlength="40" autocomplete="off" />
-      <input id="ob-rel" class="input" type="text" placeholder="e.g. Mum, Dad, Papa, Mama" style="text-align:center;margin-bottom:1.5rem" maxlength="40" autocomplete="off" />
-      <button id="ob-keeper-next" class="btn off">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
+      <input id="ob-keeper" class="input" type="text" placeholder="Your name" style="margin-bottom:0.75rem" maxlength="40" autocomplete="off" />
+      <input id="ob-rel" class="input" type="text" placeholder="e.g. Mum, Dad, Papa, Mama" style="margin-bottom:1.5rem" maxlength="40" autocomplete="off" />
+      <button id="ob-keeper-next" class="btn gold off">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
     </div>
   `
   app.appendChild(s4)
@@ -128,13 +179,14 @@ export function initOnboarding(): void {
     navigate('v-s5')
   })
 
-  // S5: Child photo (optional)
+  // ── S5: Child photo ──
   const s5 = document.createElement('div')
   s5.id = 'v-s5'
   s5.className = 'view'
   s5.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ob-s5-back">${iconBack()}</button>
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:2rem">
+      ${obHeader(5, 'ob-s5-back')}
+      <div id="s5-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">Add a photo of <span id="s5-name"></span></div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">This becomes their collection avatar. You can change it later.</p>
       <div id="ob-photo-preview" style="width:120px;height:120px;border-radius:var(--radius-circle);background:var(--input-bg);border:2px dashed var(--input-bd);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;overflow:hidden;cursor:pointer;color:var(--dim)">
@@ -143,7 +195,7 @@ export function initOnboarding(): void {
       <input id="ob-photo-file" type="file" accept="image/*" style="display:none" />
       <button id="ob-photo-choose" class="btn" style="margin-bottom:0.75rem">${iconCamera(16)} Choose photo</button>
       <button id="ob-photo-next" class="btn gold" style="margin-bottom:0.75rem;display:none">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
-      <span id="ob-photo-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Skip for now</span>
+      <span id="ob-photo-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;align-self:center">Skip for now</span>
     </div>
   `
   app.appendChild(s5)
@@ -173,17 +225,18 @@ export function initOnboarding(): void {
   photoNext.addEventListener('click', () => navigate('v-s6'))
   s5.querySelector('#ob-photo-skip')!.addEventListener('click', () => navigate('v-s6'))
 
-  // S6: Email / magic link auth
+  // ── S6: Email / magic link ──
   const s6 = document.createElement('div')
   s6.id = 'v-s6'
   s6.className = 'view'
   s6.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ob-s6-back">${iconBack()}</button>
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:2rem">
+      ${obHeader(6, 'ob-s6-back')}
+      <div id="s6-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">Last step. Your email.</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">We'll send a magic link. No password needed.</p>
-      <input id="ob-email" class="input" type="email" placeholder="you@example.com" style="text-align:center;margin-bottom:1.5rem" autocomplete="email" />
-      <button id="ob-email-send" class="btn off" style="margin-bottom:0.75rem">Send magic link <span style="font-size:1.1em">${iconArrow()}</span></button>
+      <input id="ob-email" class="input" type="email" placeholder="you@example.com" style="margin-bottom:1.5rem" autocomplete="email" />
+      <button id="ob-email-send" class="btn gold off" style="margin-bottom:0.75rem">Send magic link <span style="font-size:1.1em">${iconArrow()}</span></button>
       <div id="ob-email-status" style="font-size:var(--text-caption);color:var(--dim);display:none"></div>
     </div>
   `
@@ -238,7 +291,7 @@ export function initOnboarding(): void {
     }
   })
 
-  // S7: Ceremony - welcome screen after auth
+  // ── S7: Ceremony (centred — moment screen) ──
   const s7 = document.createElement('div')
   s7.id = 'v-s7'
   s7.className = 'view'
@@ -268,18 +321,20 @@ export function initOnboarding(): void {
   s7.querySelector('#ob-s7-invite')!.addEventListener('click', () => navigate('v-s8'))
   s7.querySelector('#ob-s7-skip')!.addEventListener('click', () => navigate('v-keeper'))
 
-  // S8: Invite contributor
+  // ── S8: Invite contributor (functional — left-aligned) ──
   const s8 = document.createElement('div')
   s8.id = 'v-s8'
   s8.className = 'view'
   s8.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <button class="back" style="position:absolute;top:1.25rem;left:1.5rem" id="ob-s8-back">${iconBack()}</button>
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:1rem;padding-bottom:2rem">
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem">
+        <button class="back" id="ob-s8-back">${iconBack()}</button>
+      </div>
       <div class="headline" style="margin-bottom:0.5rem">Invite someone who loves <span id="s8-name"></span></div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">Grandparents, aunts, uncles, family friends. They can leave a whisper without an account.</p>
-      <input id="ob-inv-nick" class="input" type="text" placeholder="Their name (e.g. Grandma)" style="text-align:center;margin-bottom:0.75rem" maxlength="40" autocomplete="off" />
-      <input id="ob-inv-rel" class="input" type="text" placeholder="Relationship (e.g. Grandmother)" style="text-align:center;margin-bottom:1.5rem" maxlength="40" autocomplete="off" />
-      <button id="ob-inv-create" class="btn off" style="margin-bottom:0.75rem">Create invite link <span style="font-size:1.1em">${iconArrow()}</span></button>
+      <input id="ob-inv-nick" class="input" type="text" placeholder="Their name (e.g. Grandma)" style="margin-bottom:0.75rem" maxlength="40" autocomplete="off" />
+      <input id="ob-inv-rel" class="input" type="text" placeholder="Relationship (e.g. Grandmother)" style="margin-bottom:1.5rem" maxlength="40" autocomplete="off" />
+      <button id="ob-inv-create" class="btn gold off" style="margin-bottom:0.75rem">Create invite link <span style="font-size:1.1em">${iconArrow()}</span></button>
       <div id="ob-inv-status" style="font-size:var(--text-caption);color:var(--dim);display:none"></div>
     </div>
   `
@@ -327,7 +382,7 @@ export function initOnboarding(): void {
     }
   })
 
-  // S9: Share link
+  // ── S9: Share link (centred — moment screen) ──
   const s9 = document.createElement('div')
   s9.id = 'v-s9'
   s9.className = 'view'
@@ -362,7 +417,6 @@ export function initOnboarding(): void {
       s9Copy.innerHTML = `Copied ${iconCheck(16)}`
       setTimeout(() => { s9Copy.innerHTML = 'Copy link' }, 2000)
     } catch {
-      // Fallback: select text
       const range = document.createRange()
       range.selectNodeContents(s9LinkText)
       const sel = window.getSelection()
@@ -393,19 +447,19 @@ export function initOnboarding(): void {
   })
   s9.querySelector('#s9-done')!.addEventListener('click', () => navigate('v-keeper'))
 
-  // First letter view (from story screen "leave your voice" -> actually a write whisper)
+  // ── First letter (functional — left-aligned) ──
   const fl = document.createElement('div')
   fl.id = 'v-first-letter'
   fl.className = 'view'
   fl.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;min-height:100vh;text-align:center;padding-top:3rem;padding-bottom:2rem">
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100vh;padding-top:2rem;padding-bottom:2rem">
       <span class="wordmark" style="margin-bottom:2rem">Whispers</span>
       <div class="headline" style="margin-bottom:0.5rem">Write your first whisper</div>
       <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:1.5rem">Something true. Something you never want them to forget.</p>
       <textarea id="fl-text" class="textarea" placeholder="The thing I never want you to forget is..." maxlength="1000" style="margin-bottom:0.5rem"></textarea>
       <div style="text-align:right;width:100%;font-size:var(--text-meta);color:var(--dim);margin-bottom:1.5rem"><span id="fl-count">0</span>/1000</div>
       <button id="fl-save" class="btn gold off">Save and continue <span style="font-size:1.1em">${iconArrow()}</span></button>
-      <span id="fl-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin-top:0.75rem">Skip for now</span>
+      <span id="fl-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin-top:0.75rem;align-self:center">Skip for now</span>
     </div>
   `
   app.appendChild(fl)
@@ -429,29 +483,39 @@ export function initOnboarding(): void {
 
   fl.querySelector('#fl-skip')!.addEventListener('click', () => navigate('v-s1'))
 
-  // Update dynamic names when navigating
-  const nameSpans: Record<string, string> = {
-    's2-name': 'v-s2',
-    's3-name': 'v-s3',
-    's4-name': 'v-s4',
-    's5-name': 'v-s5',
-    's7-childname': 'v-s7',
-    's7-childname2': 'v-s7',
-    's8-name': 'v-s8',
-  }
-
+  // ── Dynamic data updates on navigation ──
   onRouteChange((_from, to) => {
+    const s = getState()
+    const name = s.name || 'your child'
+
     // Update all name spans
-    for (const [spanId] of Object.entries(nameSpans)) {
-      const el = document.getElementById(spanId)
-      if (el) el.textContent = getState().name || 'your child'
+    const nameSpanIds = ['s2-name', 's3-name', 's3-name2', 's4-name', 's5-name', 's7-childname', 's7-childname2', 's8-name']
+    for (const id of nameSpanIds) {
+      const el = document.getElementById(id)
+      if (el) el.textContent = name
+    }
+
+    // Update context lines — show what we know so far
+    const dobStr = s.dob ? formatDob(s.dob) : ''
+    const ctxParts: string[] = []
+    if (s.name) ctxParts.push(s.name)
+    if (dobStr) ctxParts.push('born ' + dobStr)
+    const ctxText = ctxParts.join(', ')
+
+    // S2 context: just the name
+    const s2Ctx = document.getElementById('s2-ctx')
+    if (s2Ctx) s2Ctx.textContent = s.name || ''
+
+    // S3+ context: name + DOB if available
+    for (const id of ['s3-ctx', 's4-ctx', 's5-ctx', 's6-ctx']) {
+      const el = document.getElementById(id)
+      if (el) el.textContent = ctxText
     }
 
     // S7 avatar
     if (to === 'v-s7') {
       const avatar = document.getElementById('s7-avatar')
       if (avatar) {
-        const s = getState()
         if (s.photo) {
           avatar.innerHTML = `<img src="${s.photo}" style="width:100%;height:100%;border-radius:var(--radius-circle);object-fit:cover" />`
         } else {
