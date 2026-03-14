@@ -2,6 +2,7 @@ import './styles/global.css'
 import { getSupabase } from './lib/supabase'
 import { navigate } from './lib/router'
 import { setState, getState } from './lib/state'
+import { dbg } from './lib/debug'
 import { initStory } from './screens/story'
 import { initOnboarding } from './screens/onboarding'
 import { initKeeper } from './screens/keeper'
@@ -39,10 +40,12 @@ async function boot(): Promise<void> {
 
   // Check auth — getSession() processes the URL hash during Supabase init.
   // For magic link callbacks, the hash is exchanged for a session.
+  dbg('getSession() start')
   const { data } = await sb.auth.getSession()
+  dbg(`getSession() done — session=${!!data.session}`)
   if (data.session) {
     setState({ authUserId: data.session.user.id, email: data.session.user.email || '' })
-    console.log('Authenticated:', data.session.user.email)
+    dbg(`Authenticated: ${data.session.user.email}`)
 
     // Check for pending onboarding
     const pending = localStorage.getItem('whispers_onboarding')
@@ -62,8 +65,11 @@ async function boot(): Promise<void> {
         hideSplash()
       }
     } else {
+      dbg('loadChildData start')
       await loadChildData()
+      dbg(`loadChildData done — childId=${getState().childId}`)
       if (getState().childId) {
+        dbg('navigate(v-keeper) from boot')
         navigate('v-keeper')
       } else {
         navigate('v-story')
@@ -92,6 +98,7 @@ async function boot(): Promise<void> {
   // Listen for auth changes (magic link callback).
   // This fires when Supabase finishes processing the hash asynchronously.
   sb.auth.onAuthStateChange(async (event, session) => {
+    dbg(`onAuthStateChange: event=${event} session=${!!session}`)
     if (event === 'SIGNED_IN' && session) {
       try {
         setState({ authUserId: session.user.id, email: session.user.email || '' })
@@ -107,7 +114,9 @@ async function boot(): Promise<void> {
           navigate('v-s7')
           hideSplash()
         } else {
+          dbg('onAuthStateChange: loadChildData start')
           await loadChildData()
+          dbg(`onAuthStateChange: navigate(v-keeper) childId=${getState().childId}`)
           if (getState().childId) navigate('v-keeper')
           else navigate('v-story')
           hideSplash()

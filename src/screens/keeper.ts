@@ -1,6 +1,7 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, childName, keeperName } from '@/lib/state'
 import { getSupabase } from '@/lib/supabase'
+import { dbg } from '@/lib/debug'
 import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconHome, iconFamily, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
@@ -453,12 +454,15 @@ export function initKeeper(): void {
 
   // Feed loading
   let feedInFlight = false
+  let feedCallCount = 0
 
   async function loadFeed(): Promise<void> {
-    if (feedInFlight) { console.log('[Keeper] loadFeed skipped — already in flight'); return }
-    console.log('[Keeper] loadFeed called')
+    if (feedInFlight) { dbg('loadFeed SKIPPED (in flight)'); return }
+    feedCallCount++
+    const callNum = feedCallCount
+    dbg(`loadFeed #${callNum} START`)
     const { childId } = getState()
-    if (!childId) { console.warn('[Keeper] loadFeed skipped — no childId'); return }
+    if (!childId) { dbg(`loadFeed #${callNum} SKIP no childId`); return }
 
     feedInFlight = true
     const feed = view.querySelector('#k-feed') as HTMLDivElement
@@ -466,7 +470,7 @@ export function initKeeper(): void {
 
     // Timeout: show retry UI if the query hangs
     const feedTimeout = setTimeout(() => {
-      console.warn('[Keeper] loadFeed timed out after 15s')
+      dbg(`loadFeed #${callNum} TIMEOUT 15s`)
       feedInFlight = false
       feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Taking too long. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
       const retry = feed.querySelector('#k-feed-retry')
@@ -486,7 +490,7 @@ export function initKeeper(): void {
     } catch (e: any) {
       clearTimeout(feedTimeout)
       feedInFlight = false
-      console.error('[Keeper] Feed exception:', e)
+      dbg(`loadFeed #${callNum} EXCEPTION: ${e?.message || e}`)
       const msg = e?.name === 'AbortError' ? 'Request timed out.' : 'Could not load whispers.'
       feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">${msg} <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
       const retry = feed.querySelector('#k-feed-retry')
@@ -496,6 +500,7 @@ export function initKeeper(): void {
 
     clearTimeout(feedTimeout)
     feedInFlight = false
+    dbg(`loadFeed #${callNum} QUERY DONE data=${data?.length ?? 'null'} err=${error?.message || 'none'}`)
 
     if (error) {
       feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
@@ -631,7 +636,7 @@ export function initKeeper(): void {
   // Route change listener
   onRouteChange((_from, to) => {
     if (to === 'v-keeper') {
-      console.log(`[Keeper] route changed to v-keeper (from: ${_from})`)
+      dbg(`route→v-keeper (from: ${_from})`)
       const sub = view.querySelector('#k-subtitle')
       if (sub) sub.textContent = `${childName()}'s collection`
       const initial = view.querySelector('#k-child-initial') as HTMLDivElement
@@ -643,11 +648,13 @@ export function initKeeper(): void {
   // Refresh feed when app returns from background
   function refreshIfActive(): void {
     if (view.classList.contains('active')) {
+      dbg('refreshIfActive → loadFeed in 300ms')
       setTimeout(() => loadFeed(), 300)
     }
   }
 
   document.addEventListener('visibilitychange', () => {
+    dbg(`visibilitychange hidden=${document.hidden}`)
     if (!document.hidden) refreshIfActive()
   })
 }
