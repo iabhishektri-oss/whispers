@@ -57,6 +57,14 @@ export function initOnboarding(): void {
       color: var(--gold-hi);
     }
     .ob-opt.sel .ob-check { display: inline-flex; }
+    .input:-webkit-autofill,
+    .input:-webkit-autofill:hover,
+    .input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px #161310 inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      caret-color: var(--gold-hi);
+      transition: background-color 5000s ease-in-out 0s;
+    }
   `
   document.head.appendChild(style)
 
@@ -99,23 +107,27 @@ export function initOnboarding(): void {
       ${obHeader(2, 'ob-s2-back')}
       <div id="s2-ctx" style="font-size:var(--text-caption);color:var(--dim);margin-bottom:1.5rem"></div>
       <div class="headline" style="margin-bottom:0.5rem">When was <span id="s2-name"></span> born?</div>
-      <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">This helps us personalise their collection.</p>
+      <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">So we know how old they are when each whisper arrives.</p>
       <input id="ob-dob" class="input" type="date" style="display:block;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;min-height:3.65rem;margin-bottom:1.5rem" />
       ${footerOpen}
-        <button id="ob-dob-next" class="btn gold" style="margin-bottom:0.75rem">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
-        <span id="ob-dob-skip" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;align-self:center;display:block;text-align:center">Skip for now</span>
+        <button id="ob-dob-next" class="btn gold off">Continue <span style="font-size:1.1em">${iconArrow()}</span></button>
       ${footerClose}
     </div>
   `
   app.appendChild(s2)
 
+  const dobInput = s2.querySelector('#ob-dob') as HTMLInputElement
+  const dobBtn = s2.querySelector('#ob-dob-next') as HTMLButtonElement
+  dobInput.addEventListener('change', () => {
+    dobBtn.classList.toggle('off', !dobInput.value)
+  })
   s2.querySelector('#ob-s2-back')!.addEventListener('click', () => navigate('v-s1'))
-  s2.querySelector('#ob-dob-next')!.addEventListener('click', () => {
-    const dob = (s2.querySelector('#ob-dob') as HTMLInputElement).value
-    if (dob) setState({ dob })
+  dobBtn.addEventListener('click', () => {
+    const dob = dobInput.value
+    if (!dob) return
+    setState({ dob })
     navigate('v-s3')
   })
-  s2.querySelector('#ob-dob-skip')!.addEventListener('click', () => navigate('v-s3'))
 
   // ── S3: Pronouns ──
   const s3 = document.createElement('div')

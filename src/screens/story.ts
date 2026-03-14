@@ -117,8 +117,7 @@ export function initStory(): void {
         </div>
       </div>
       <div class="scta">
-        <button class="btn gold" onclick="window.__storyRecord()">Leave your voice ${arrow()}</button>
-        <span style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="window.__storySkip()">Set up first, record later</span>
+        <button class="btn gold" onclick="window.__storyRecord()">Get started ${arrow()}</button>
       </div>
     </div>
   `
@@ -130,7 +129,7 @@ export function initStory(): void {
 
   // Wire global handlers
   ;(window as any).__storyNext = nextSlide
-  ;(window as any).__storyRecord = () => navigate('v-first-letter')
+  ;(window as any).__storyRecord = () => navigate('v-s1')
   ;(window as any).__storySkip = () => navigate('v-s1')
 }
 
