@@ -35,7 +35,7 @@ export async function saveWhisper(opts: SaveOptions): Promise<SaveResult> {
 
     // Validate file sizes client-side
     if (opts.audioBlob && opts.audioBlob.size > 10 * 1024 * 1024) {
-      return { success: false, error: 'Recording is too large (max 10 MB).' }
+      return { success: false, error: 'Audio is too large (max 10 MB).' }
     }
     if (opts.photoFile && opts.photoFile.size > 5 * 1024 * 1024) {
       return { success: false, error: 'Photo is too large (max 5 MB).' }
@@ -62,7 +62,7 @@ export async function saveWhisper(opts: SaveOptions): Promise<SaveResult> {
         console.error('[saveWhisper] Audio upload failed:', upErr)
         const msg = upErr.message?.includes('not found')
           ? 'Voice storage not configured. Run supabase-setup.sql in your Supabase SQL Editor.'
-          : 'Could not upload voice note. Please try again.'
+          : 'Could not upload audio. Please try again.'
         return { success: false, error: msg }
       }
 

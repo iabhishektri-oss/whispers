@@ -21,7 +21,7 @@ export function iconFamily(size = 20, color = 'currentColor'): string {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="${color}" stroke-width="1.5"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/></svg>`
 }
 
-export function iconCheck(size = 24, color = '#f0b830'): string {
+export function iconCheck(size = 24, color = 'var(--gold-hi)'): string {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 }
 

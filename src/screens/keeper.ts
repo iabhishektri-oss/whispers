@@ -3,7 +3,7 @@ import { getState, childName, keeperName } from '@/lib/state'
 import { getSupabase } from '@/lib/supabase'
 import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
-import { iconHome, iconFamily, iconPlus, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
+import { iconHome, iconFamily, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
 import { escHtml, timeAgo, formatDuration } from '@/lib/utils'
 
 interface WhisperRow {
@@ -43,6 +43,22 @@ export function initKeeper(): void {
         </button>
       </div>
 
+      <!-- Hero summary -->
+      <div id="k-hero" class="card-gold" style="display:flex;align-items:center;justify-content:space-around;text-align:center;margin-bottom:1rem;display:none">
+        <div>
+          <div style="font-family:var(--font-display);font-style:italic;font-size:var(--text-display-md);color:var(--gold-hi)" id="k-hero-count">0</div>
+          <div style="font-size:var(--text-meta);color:var(--dim);text-transform:uppercase;letter-spacing:0.1em">Whispers</div>
+        </div>
+        <div style="width:1px;height:2rem;background:var(--border)"></div>
+        <div>
+          <div style="font-family:var(--font-display);font-style:italic;font-size:var(--text-display-md);color:var(--gold-hi)" id="k-hero-contributors">0</div>
+          <div style="font-size:var(--text-meta);color:var(--dim);text-transform:uppercase;letter-spacing:0.1em">Contributors</div>
+        </div>
+      </div>
+
+      <!-- Avatar row -->
+      <div id="k-avatars" style="display:flex;gap:0.5rem;overflow-x:auto;margin-bottom:1rem;padding-bottom:0.25rem;display:none"></div>
+
       <!-- Feed -->
       <div id="k-feed" style="display:flex;flex-direction:column;gap:0.75rem">
         <div style="text-align:center;padding:3rem 0;color:var(--dim);font-size:var(--text-body)">
@@ -54,9 +70,15 @@ export function initKeeper(): void {
 
     <!-- Bottom nav -->
     <div class="bottom-nav">
-      <div class="nav-item active" id="k-nav-home">${iconHome(22)}</div>
-      <div class="nav-item-center" id="k-nav-compose">${iconPlus(24, 'var(--gold-hi)')}</div>
-      <div class="nav-item" id="k-nav-family">${iconFamily(22)}</div>
+      <div class="nav-item active" id="k-nav-home">
+        ${iconHome(22)}
+        <span class="nav-label">Home</span>
+      </div>
+      <div class="nav-item-center" id="k-nav-compose">${iconMic(24, 'var(--gold-hi)')}</div>
+      <div class="nav-item" id="k-nav-family">
+        ${iconFamily(22)}
+        <span class="nav-label">Family</span>
+      </div>
     </div>
 
     <!-- Compose sheet overlay -->
@@ -469,15 +491,65 @@ export function initKeeper(): void {
       feed.innerHTML = `
         <div style="text-align:center;padding:3rem 0">
           <div class="headline-sm" style="margin-bottom:0.5rem">No whispers yet</div>
-          <p style="color:var(--dim);font-size:var(--text-body)">Tap the + button to leave the first whisper for ${escHtml(childName())}.</p>
+          <p style="color:var(--dim);font-size:var(--text-body)">Tap the mic button to leave the first whisper for ${escHtml(childName())}.</p>
         </div>
       `
       return
     }
 
+    // Update hero card
+    const hero = view.querySelector('#k-hero') as HTMLDivElement
+    const heroCount = view.querySelector('#k-hero-count') as HTMLDivElement
+    const heroContributors = view.querySelector('#k-hero-contributors') as HTMLDivElement
+    if (hero && heroCount && heroContributors) {
+      heroCount.textContent = String(whispers.length)
+      const uniqueContributors = new Set(whispers.filter(w => w.contributor_id).map(w => w.contributor_id))
+      // +1 for the keeper
+      heroContributors.textContent = String(uniqueContributors.size + 1)
+      hero.style.display = 'flex'
+    }
+
+    // Update avatar row
+    const avatarRow = view.querySelector('#k-avatars') as HTMLDivElement
+    if (avatarRow) {
+      const kName = keeperName()
+      const contributorMap = new Map<string, string>()
+      whispers.forEach(w => {
+        if (w.contributor_id && w.contributors?.nickname) {
+          contributorMap.set(w.contributor_id, w.contributors.nickname)
+        }
+      })
+      let avatarHtml = `<div class="avatar avatar-filter active" data-filter="all" style="cursor:pointer"><span style="font-size:var(--text-meta)">All</span></div>`
+      avatarHtml += `<div class="avatar avatar-filter" data-filter="keeper" style="cursor:pointer">${kName[0]?.toUpperCase() || '?'}</div>`
+      contributorMap.forEach((nickname, id) => {
+        avatarHtml += `<div class="avatar avatar-filter" data-filter="${escHtml(id)}" style="cursor:pointer">${nickname[0]?.toUpperCase() || '?'}</div>`
+      })
+      avatarRow.innerHTML = avatarHtml
+      avatarRow.style.display = 'flex'
+
+      // Wire filter clicks
+      avatarRow.querySelectorAll('.avatar-filter').forEach(av => {
+        av.addEventListener('click', () => {
+          avatarRow.querySelectorAll('.avatar-filter').forEach(a => a.classList.remove('active'))
+          av.classList.add('active')
+          const filter = (av as HTMLElement).dataset.filter!
+          const filtered = filter === 'all' ? whispers
+            : filter === 'keeper' ? whispers.filter(w => !w.contributor_id)
+            : whispers.filter(w => w.contributor_id === filter)
+          feed.innerHTML = filtered.map(w => renderWhisperCard(w)).join('')
+          wireAudioButtons()
+        })
+      })
+    }
+
     feed.innerHTML = whispers.map(w => renderWhisperCard(w)).join('')
 
-    // Wire audio play buttons
+    wireAudioButtons()
+    feedLoaded = true
+  }
+
+  function wireAudioButtons(): void {
+    const feed = view.querySelector('#k-feed') as HTMLDivElement
     feed.querySelectorAll('[data-play]').forEach(btn => {
       btn.addEventListener('click', () => {
         const url = (btn as HTMLElement).dataset.play!
@@ -489,8 +561,6 @@ export function initKeeper(): void {
         })
       })
     })
-
-    feedLoaded = true
   }
 
   function renderWhisperCard(w: WhisperRow): string {
@@ -517,7 +587,7 @@ export function initKeeper(): void {
       `
     } else if (w.format === 'photo') {
       body = `
-        ${w.photo_url ? `<img src="${escHtml(w.photo_url)}" style="width:100%;border-radius:var(--radius-card);margin-bottom:0.5rem" />` : ''}
+        ${w.photo_url ? `<img src="${escHtml(w.photo_url)}" style="width:100%;max-height:280px;object-fit:cover;border-radius:14px;margin-bottom:0.5rem" />` : ''}
         ${w.content ? `<p style="font-size:var(--text-body);color:var(--body);line-height:var(--lh-body)">${escHtml(w.content)}</p>` : ''}
       `
     }
@@ -530,7 +600,6 @@ export function initKeeper(): void {
             <div style="font-size:var(--text-body);font-weight:500;color:var(--white)">${escHtml(from)}</div>
             <div style="font-size:var(--text-meta);color:var(--dim)">${escHtml(rel)}${rel ? ' . ' : ''}${ago}</div>
           </div>
-          <span class="label">${w.format}</span>
         </div>
         ${body}
         ${w.sealed ? `<div class="seal-badge">${iconSeal()} Sealed</div>` : ''}

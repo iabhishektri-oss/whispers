@@ -36,7 +36,7 @@ export function initChildMode(): void {
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:2rem">
         <button class="format-tab" id="cm-btn-camera" style="padding:1.25rem 0.5rem">
           ${iconCamera(24)}
-          <span style="font-size:var(--text-label);letter-spacing:0.08em;text-transform:uppercase">Draw</span>
+          <span style="font-size:var(--text-label);letter-spacing:0.08em;text-transform:uppercase">Photo</span>
         </button>
         <button class="format-tab" id="cm-btn-voice" style="padding:1.25rem 0.5rem">
           ${iconMic(24)}
@@ -50,7 +50,7 @@ export function initChildMode(): void {
 
       <!-- Incoming whispers from family -->
       <div style="margin-bottom:1rem">
-        <div class="label" style="margin-bottom:0.75rem">Whispers from your family</div>
+        <div class="label" style="margin-bottom:0.75rem">From the people who love you</div>
         <div id="cm-family-feed" style="display:flex;flex-direction:column;gap:0.6rem">
           <div style="text-align:center;padding:1.5rem 0;color:var(--dim);font-size:var(--text-caption)">Loading...</div>
         </div>
@@ -358,7 +358,7 @@ export function initChildMode(): void {
         `
       } else if (w.format === 'photo') {
         body = `
-          ${w.photo_url ? `<img src="${escHtml(w.photo_url)}" style="width:100%;border-radius:var(--radius-child,12px);margin-top:0.5rem" />` : ''}
+          ${w.photo_url ? `<img src="${escHtml(w.photo_url)}" style="width:100%;max-height:280px;object-fit:cover;border-radius:14px;margin-top:0.5rem" />` : ''}
           ${w.content ? `<p style="font-size:var(--text-body);color:var(--body);line-height:var(--lh-body);margin-top:0.5rem">${escHtml(w.content)}</p>` : ''}
         `
       }
@@ -369,7 +369,7 @@ export function initChildMode(): void {
             <div class="avatar avatar-sm">${from[0]?.toUpperCase() || '?'}</div>
             <div style="flex:1;min-width:0">
               <div style="font-size:var(--text-caption);font-weight:500;color:var(--white)">${escHtml(from)}</div>
-              <div style="font-size:var(--text-meta);color:var(--dim)">${w.format} . ${ago}</div>
+              <div style="font-size:var(--text-meta);color:var(--dim)">${ago}</div>
             </div>
           </div>
           ${body}

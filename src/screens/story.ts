@@ -31,12 +31,12 @@ export function initStory(): void {
         <div class="prog" id="s-prog"></div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:1.25rem;width:100%;animation:rise 0.5s 0.1s both">
           <span class="wordmark">Whispers</span>
-          <div class="headline" style="font-size:var(--text-display-lg);line-height:1.25">A memory box<br>for your child's future.</div>
-          <div style="font-size:var(--text-body);color:var(--body);line-height:var(--lh-body)">Your family leaves whispers.<br>Voice notes, letters and photos.<br><span style="color:var(--dim)">Your child opens them when they're older.</span></div>
+          <div class="headline" style="font-size:var(--text-display-lg);line-height:1.25">Whispers<br>for your child's future.</div>
+          <div style="font-size:var(--text-body);color:var(--body);line-height:var(--lh-body)">Your family leaves whispers.<br>Their voices. Their words. Their photos.<br><span style="color:var(--dim)">Your child opens them when they're older.</span></div>
           <div style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center">
-            <span class="chip">${micIcon()} Voice notes</span>
-            <span class="chip">${writeIcon()} Letters</span>
-            <span class="chip">${cameraIcon()} Photos</span>
+            <span class="chip">${micIcon()} Voice</span>
+            <span class="chip">${writeIcon()} Write</span>
+            <span class="chip">${cameraIcon()} Photo</span>
           </div>
         </div>
       </div>
@@ -57,7 +57,7 @@ export function initStory(): void {
           <div class="quote-card" style="text-align:center">
             <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:0.75rem">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s infinite"></div>
-              <span style="font-size:var(--text-meta);color:var(--dim);letter-spacing:0.06em">Grandma . voice note . 0:34</span>
+              <span style="font-size:var(--text-meta);color:var(--dim);letter-spacing:0.06em">Grandma . whisper . 0:34</span>
             </div>
             <div style="font-size:var(--text-body);color:rgba(255,255,255,0.75);line-height:var(--lh-body);font-style:italic">
               I want to tell you about the day you were born.
@@ -230,7 +230,7 @@ function micIcon(): string {
   return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M5 10a7 7 0 0014 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`
 }
 function micIconLarge(): string {
-  return `<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" fill="rgba(240,184,48,0.15)" stroke="#f0b830" stroke-width="1.5"/><path d="M5 10a7 7 0 0014 0" stroke="#f0b830" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="#f0b830" stroke-width="1.5" stroke-linecap="round"/></svg>`
+  return `<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" fill="var(--gold-dim)" stroke="var(--gold-hi)" stroke-width="1.5"/><path d="M5 10a7 7 0 0014 0" stroke="var(--gold-hi)" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="var(--gold-hi)" stroke-width="1.5" stroke-linecap="round"/></svg>`
 }
 function writeIcon(): string {
   return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.5"/></svg>`

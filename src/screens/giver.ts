@@ -24,12 +24,12 @@ export function initGiver(): void {
           Leave a whisper for<br><span id="gv-childname"></span>
         </div>
         <p style="color:var(--body);font-size:var(--text-body);line-height:var(--lh-body)">
-          <span id="gv-keeper"></span> invited you to leave a voice note, letter, or photo for <span id="gv-childname2"></span>.
+          <span id="gv-keeper"></span> invited you to leave a whisper for <span id="gv-childname2"></span>.
           They'll keep it safe and open it when they're older.
         </p>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center">
           <span class="pill">${iconMic(14)} Voice</span>
-          <span class="pill">${iconWrite(14)} Letter</span>
+          <span class="pill">${iconWrite(14)} Write</span>
           <span class="pill">${iconCamera(14)} Photo</span>
         </div>
       </div>

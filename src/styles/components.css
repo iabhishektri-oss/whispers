@@ -206,6 +206,11 @@
   font-size: var(--text-body);
 }
 
+.avatar-filter.active {
+  border-color: var(--gold-hi);
+  box-shadow: 0 0 0 2px rgba(200, 144, 12, 0.2);
+}
+
 /* ── Back button ── */
 .back {
   width: 36px;
@@ -278,8 +283,10 @@
 .nav-item {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.2rem;
   padding: 0.5rem;
   cursor: pointer;
   color: var(--dim);
@@ -288,6 +295,12 @@
 
 .nav-item.active {
   color: var(--gold-hi);
+}
+
+.nav-label {
+  font-size: var(--text-meta);
+  font-family: var(--font-body);
+  letter-spacing: 0.04em;
 }
 
 .nav-item-center {
