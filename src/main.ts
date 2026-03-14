@@ -23,11 +23,6 @@ async function boot(): Promise<void> {
     return
   }
 
-  // Detect if this is a magic-link auth callback (URL hash contains access_token)
-  const isAuthCallback = window.location.hash.includes('access_token')
-    || window.location.hash.includes('type=magiclink')
-    || window.location.hash.includes('type=recovery')
-
   // Initialize all screens
   initStory()
   initOnboarding()
@@ -35,46 +30,28 @@ async function boot(): Promise<void> {
   initContributors()
   initChildMode()
 
-  // If this is an auth callback, show a loading state instead of the story
-  // and let onAuthStateChange handle navigation
-  if (isAuthCallback) {
-    showLoadingScreen()
-  }
+  // Detect if this is a magic-link auth callback
+  const hash = window.location.hash
+  const isAuthCallback = hash.includes('access_token') || hash.includes('type=magiclink') || hash.includes('type=recovery')
+  if (isAuthCallback) showLoadingScreen()
 
-  // Check auth
-  const { data } = await sb.auth.getSession()
-  if (data.session) {
-    setState({ authUserId: data.session.user.id, email: data.session.user.email || '' })
-    console.log('Authenticated:', data.session.user.email)
+  // Use onAuthStateChange as the SOLE navigation driver.
+  // Register BEFORE getSession so we never miss the SIGNED_IN event
+  // that Supabase fires internally when it processes the URL hash.
+  let handled = false
 
-    // Check for pending onboarding
-    const pending = localStorage.getItem('whispers_onboarding')
-    if (pending) {
-      const saved = JSON.parse(pending)
-      setState(saved)
-      await saveOnboardingData()
-      await saveFirstWhisper()
-      localStorage.removeItem('whispers_onboarding')
-      navigate('v-s7')
-    } else {
-      await loadChildData()
-      if (getState().childId) {
-        navigate('v-keeper')
-      } else {
-        navigate('v-story')
-      }
-    }
-  } else if (!isAuthCallback) {
-    // Only show story if this is NOT a magic-link callback.
-    // If it IS a callback, onAuthStateChange will fire shortly and handle navigation.
-    navigate('v-story')
-  }
-
-  // Listen for auth changes (magic link callback)
   sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) {
+    // INITIAL_SESSION fires immediately with the current session.
+    // SIGNED_IN fires when Supabase finishes processing the magic link hash.
+    if (event !== 'INITIAL_SESSION' && event !== 'SIGNED_IN') return
+    if (handled) return
+    handled = true
+
+    hideLoadingScreen()
+
+    if (session) {
       setState({ authUserId: session.user.id, email: session.user.email || '' })
-      hideLoadingScreen()
+      console.log('Authenticated:', session.user.email)
 
       const pending = localStorage.getItem('whispers_onboarding')
       if (pending) {
@@ -86,9 +63,19 @@ async function boot(): Promise<void> {
         navigate('v-s7')
       } else {
         await loadChildData()
-        if (getState().childId) navigate('v-keeper')
-        else navigate('v-story')
+        if (getState().childId) {
+          navigate('v-keeper')
+        } else {
+          navigate('v-story')
+        }
       }
+    } else if (!isAuthCallback) {
+      // No session, not waiting for magic link — show story
+      navigate('v-story')
+    } else {
+      // Auth callback but INITIAL_SESSION has no session yet.
+      // Supabase is still processing the hash — wait for SIGNED_IN.
+      handled = false
     }
   })
 }
