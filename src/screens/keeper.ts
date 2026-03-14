@@ -85,7 +85,9 @@ export function initKeeper(): void {
 
   // Nav
   view.querySelector('#k-nav-home')!.addEventListener('click', () => {
+    console.log('[Keeper] Home nav tapped')
     navigate('v-keeper')
+    loadFeed()
   })
   view.querySelector('#k-nav-family')!.addEventListener('click', () => {
     navigate('v-contributors')
@@ -417,6 +419,7 @@ export function initKeeper(): void {
         }
 
         if (result.success) {
+          console.log('[Keeper] whisper saved successfully, refreshing feed')
           closeSheet()
           clearRecording()
           await loadFeed()
@@ -450,6 +453,7 @@ export function initKeeper(): void {
 
   // Feed loading
   async function loadFeed(): Promise<void> {
+    console.log('[Keeper] loadFeed called')
     const { childId } = getState()
     if (!childId) return
 
@@ -467,18 +471,19 @@ export function initKeeper(): void {
       data = res.data
       error = res.error
     } catch (e) {
-      console.error('Feed exception:', e)
+      console.error('[Keeper] Feed exception:', e)
       feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers.</div>`
       return
     }
 
     if (error) {
       feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers.</div>`
-      console.error('Feed error:', error)
+      console.error('[Keeper] Feed error:', error)
       return
     }
 
     const whispers = (data || []) as WhisperRow[]
+    console.log(`[Keeper] data fetched, ${whispers.length} whispers`)
     if (whispers.length === 0) {
       feed.innerHTML = `
         <div style="text-align:center;padding:3rem 0">
@@ -535,6 +540,7 @@ export function initKeeper(): void {
     }
 
     feed.innerHTML = renderTimeline(whispers, getState().dob, renderWhisperCard)
+    console.log('[Keeper] timeline rendered')
 
     wireAudioButtons()
     feedLoaded = true
@@ -602,6 +608,7 @@ export function initKeeper(): void {
   // Route change listener
   onRouteChange((_from, to) => {
     if (to === 'v-keeper') {
+      console.log(`[Keeper] route changed to v-keeper (from: ${_from})`)
       const sub = view.querySelector('#k-subtitle')
       if (sub) sub.textContent = `${childName()}'s collection`
       const initial = view.querySelector('#k-child-initial') as HTMLDivElement
@@ -612,14 +619,17 @@ export function initKeeper(): void {
 
   // Refresh feed when app returns from background
   function refreshIfActive(): void {
-    if (view.classList.contains('active')) {
+    const isActive = view.classList.contains('active')
+    console.log(`[Keeper] refreshIfActive — keeper active: ${isActive}`)
+    if (isActive) {
       // Small delay to let Supabase session refresh after wake
       setTimeout(() => loadFeed(), 300)
     }
   }
 
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) refreshIfActive()
+    console.log(`[Keeper] visibilitychange — state: ${document.visibilityState}`)
+    if (document.visibilityState === 'visible') refreshIfActive()
   })
 
   // Fallback: iOS Safari may restore from bfcache without firing visibilitychange
