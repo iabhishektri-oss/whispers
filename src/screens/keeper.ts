@@ -1,7 +1,6 @@
 import { navigate, onRouteChange } from '@/lib/router'
 import { getState, childName, keeperName } from '@/lib/state'
 import { getSupabase } from '@/lib/supabase'
-import { dbg } from '@/lib/debug'
 import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconHome, iconFamily, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
@@ -86,7 +85,6 @@ export function initKeeper(): void {
 
   // Nav
   view.querySelector('#k-nav-home')!.addEventListener('click', () => {
-    console.log('[Keeper] Home nav tapped')
     navigate('v-keeper')
     // loadFeed() fires via the route change handler — no duplicate call
   })
@@ -454,28 +452,16 @@ export function initKeeper(): void {
 
   // Feed loading
   let feedInFlight = false
-  let feedCallCount = 0
 
   async function loadFeed(): Promise<void> {
-    if (feedInFlight) { dbg('loadFeed SKIPPED (in flight)'); return }
-    feedCallCount++
-    const callNum = feedCallCount
-    dbg(`loadFeed #${callNum} START`)
+    if (feedInFlight) return
     const { childId } = getState()
-    if (!childId) { dbg(`loadFeed #${callNum} SKIP no childId`); return }
+    if (!childId) return
 
     feedInFlight = true
     const feed = view.querySelector('#k-feed') as HTMLDivElement
     const sb = getSupabase()
-
-    // Timeout: show retry UI if the query hangs
-    const feedTimeout = setTimeout(() => {
-      dbg(`loadFeed #${callNum} TIMEOUT 15s`)
-      feedInFlight = false
-      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Taking too long. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
-      const retry = feed.querySelector('#k-feed-retry')
-      if (retry) retry.addEventListener('click', () => loadFeed())
-    }, 15_000)
+    const hadContent = feedLoaded // don't overwrite good content on failure
 
     let data, error
     try {
@@ -488,30 +474,28 @@ export function initKeeper(): void {
       data = res.data
       error = res.error
     } catch (e: any) {
-      clearTimeout(feedTimeout)
       feedInFlight = false
-      dbg(`loadFeed #${callNum} EXCEPTION: ${e?.message || e}`)
-      const msg = e?.name === 'AbortError' ? 'Request timed out.' : 'Could not load whispers.'
-      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">${msg} <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
-      const retry = feed.querySelector('#k-feed-retry')
-      if (retry) retry.addEventListener('click', () => loadFeed())
+      // If we already have content showing, silently fail — don't nuke the feed
+      if (!hadContent) {
+        const msg = e?.name === 'AbortError' ? 'Connection timed out.' : 'Could not load whispers.'
+        feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">${msg} <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
+        feed.querySelector('#k-feed-retry')?.addEventListener('click', () => loadFeed())
+      }
       return
     }
 
-    clearTimeout(feedTimeout)
     feedInFlight = false
-    dbg(`loadFeed #${callNum} QUERY DONE data=${data?.length ?? 'null'} err=${error?.message || 'none'}`)
 
     if (error) {
-      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
-      const retry = feed.querySelector('#k-feed-retry')
-      if (retry) retry.addEventListener('click', () => loadFeed())
+      if (!hadContent) {
+        feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers. <span style="text-decoration:underline;cursor:pointer" id="k-feed-retry">Retry</span></div>`
+        feed.querySelector('#k-feed-retry')?.addEventListener('click', () => loadFeed())
+      }
       console.error('[Keeper] Feed error:', error)
       return
     }
 
     const whispers = (data || []) as WhisperRow[]
-    console.log(`[Keeper] data fetched, ${whispers.length} whispers`)
     if (whispers.length === 0) {
       feed.innerHTML = `
         <div style="text-align:center;padding:3rem 0">
@@ -568,8 +552,6 @@ export function initKeeper(): void {
     }
 
     feed.innerHTML = renderTimeline(whispers, getState().dob, renderWhisperCard)
-    console.log('[Keeper] timeline rendered')
-
     wireAudioButtons()
     feedLoaded = true
   }
@@ -636,7 +618,6 @@ export function initKeeper(): void {
   // Route change listener
   onRouteChange((_from, to) => {
     if (to === 'v-keeper') {
-      dbg(`route→v-keeper (from: ${_from})`)
       const sub = view.querySelector('#k-subtitle')
       if (sub) sub.textContent = `${childName()}'s collection`
       const initial = view.querySelector('#k-child-initial') as HTMLDivElement
@@ -648,13 +629,11 @@ export function initKeeper(): void {
   // Refresh feed when app returns from background
   function refreshIfActive(): void {
     if (view.classList.contains('active')) {
-      dbg('refreshIfActive → loadFeed in 300ms')
       setTimeout(() => loadFeed(), 300)
     }
   }
 
   document.addEventListener('visibilitychange', () => {
-    dbg(`visibilitychange hidden=${document.hidden}`)
     if (!document.hidden) refreshIfActive()
   })
 }

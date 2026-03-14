@@ -240,6 +240,8 @@ export function initContributors(): void {
   share.querySelector('#ct-share-done')!.addEventListener('click', () => navigate('v-contributors'))
 
   // Load contributors
+  let contributorsLoaded = false
+
   async function loadContributors(): Promise<void> {
     const { childId } = getState()
     if (!childId) {
@@ -250,40 +252,36 @@ export function initContributors(): void {
 
     const list = view.querySelector('#ct-list') as HTMLDivElement
     const sb = getSupabase()
-
-    // Show loading state with a timeout fallback
-    const loadingTimeout = setTimeout(() => {
-      list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Taking too long. <span style="text-decoration:underline;cursor:pointer" id="ct-retry">Retry</span></div>`
-      const retry = list.querySelector('#ct-retry')
-      if (retry) retry.addEventListener('click', () => loadContributors())
-    }, 20_000)
+    const hadContent = contributorsLoaded
 
     let contributors: any[] | null = null
     let whisperCounts: any[] | null = null
 
     try {
-      // Run both queries in parallel for faster loading
       const [contribRes, countsRes] = await Promise.all([
         sb.from('contributors').select('*').eq('child_id', childId).order('created_at', { ascending: false }),
         sb.from('whispers').select('contributor_id').eq('child_id', childId),
       ])
 
       if (contribRes.error) {
-        clearTimeout(loadingTimeout)
         console.error('Contributors query error:', contribRes.error)
-        list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors.</div>`
+        if (!hadContent) {
+          list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors. <span style="text-decoration:underline;cursor:pointer" id="ct-retry">Retry</span></div>`
+          list.querySelector('#ct-retry')?.addEventListener('click', () => loadContributors())
+        }
         return
       }
       contributors = contribRes.data
       whisperCounts = countsRes.data
     } catch (e) {
-      clearTimeout(loadingTimeout)
       console.error('Contributors exception:', e)
-      list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">Could not load contributors.</div>`
+      if (!hadContent) {
+        const msg = (e as any)?.name === 'AbortError' ? 'Connection timed out.' : 'Could not load contributors.'
+        list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:#e85454;font-size:var(--text-body)">${msg} <span style="text-decoration:underline;cursor:pointer" id="ct-retry">Retry</span></div>`
+        list.querySelector('#ct-retry')?.addEventListener('click', () => loadContributors())
+      }
       return
     }
-
-    clearTimeout(loadingTimeout)
 
     const countMap: Record<string, number> = {}
     if (whisperCounts) {
@@ -352,6 +350,7 @@ export function initContributors(): void {
     }
 
     list.innerHTML = html
+    contributorsLoaded = true
 
     // Wire copy/share buttons
     list.querySelectorAll('[data-copy-link]').forEach(btn => {

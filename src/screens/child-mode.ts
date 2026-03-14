@@ -312,12 +312,15 @@ export function initChildMode(): void {
     setTimeout(() => msg.remove(), 3000)
   }
 
+  let familyFeedLoaded = false
+
   async function loadFamilyWhispers(): Promise<void> {
     const { childId } = getState()
     if (!childId) return
 
     const feed = view.querySelector('#cm-family-feed') as HTMLDivElement
     const sb = getSupabase()
+    const hadContent = familyFeedLoaded
 
     let data, error
     try {
@@ -331,13 +334,17 @@ export function initChildMode(): void {
       error = res.error
     } catch (e) {
       console.error('Child mode feed exception:', e)
-      feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load whispers.</div>`
+      if (!hadContent) {
+        feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load whispers.</div>`
+      }
       return
     }
 
     if (error) {
       console.error('Child mode feed error:', error)
-      feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load.</div>`
+      if (!hadContent) {
+        feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load.</div>`
+      }
       return
     }
 
@@ -386,6 +393,7 @@ export function initChildMode(): void {
     }
 
     feed.innerHTML = renderTimeline(whispers, getState().dob, renderChildCard)
+    familyFeedLoaded = true
 
     // Wire audio play buttons
     feed.querySelectorAll('[data-play]').forEach(btn => {
