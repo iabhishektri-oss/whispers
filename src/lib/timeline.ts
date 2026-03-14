@@ -73,10 +73,11 @@ export function renderTimeline(
     if (hasDob && age !== null && age !== prevAge) {
       const startYear = dob.getFullYear() + age
       const endYear = startYear + 1
+      const ageLabel = age === 0 ? 'Newborn' : `Age ${age}`
       html += `
         <div style="position:relative;padding:20px 0 12px">
-          <div style="position:absolute;left:14.5px;top:22px;width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(200,144,12,0.3)"></div>
-          <span style="font-family:var(--font-display);font-style:italic;font-size:1rem;color:var(--gold-hi)">Age ${age}</span>
+          <div style="position:absolute;left:-33px;top:22px;width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(200,144,12,0.3)"></div>
+          <span style="font-family:var(--font-display);font-style:italic;font-size:1rem;color:var(--gold-hi)">${ageLabel}</span>
           <span style="font-size:0.65rem;color:var(--dim);margin-left:0.5rem">${startYear}\u2013${endYear}</span>
         </div>
       `
@@ -90,7 +91,7 @@ export function renderTimeline(
       const label = formatDateMarker(createdAt)
       html += `
         <div style="position:relative;padding:14px 0 6px">
-          <div style="position:absolute;left:17px;top:17px;width:6px;height:6px;border-radius:50%;background:rgba(200,144,12,0.35)"></div>
+          <div style="position:absolute;left:-30px;top:17px;width:6px;height:6px;border-radius:50%;background:rgba(200,144,12,0.35)"></div>
           <span style="font-size:0.65rem;color:var(--dim)">${escHtml(label)}</span>
         </div>
       `
@@ -100,8 +101,8 @@ export function renderTimeline(
     // Whisper card with branch connector
     html += `
       <div style="position:relative;padding:4px 0">
-        <div style="position:absolute;left:17.5px;top:50%;width:5px;height:5px;border-radius:50%;background:rgba(200,144,12,0.35);transform:translateY(-50%)"></div>
-        <div style="position:absolute;left:20px;top:50%;width:22px;height:1.5px;background:rgba(200,144,12,0.12);transform:translateY(-50%)"></div>
+        <div style="position:absolute;left:-30px;top:50%;width:5px;height:5px;border-radius:50%;background:rgba(200,144,12,0.35);transform:translateY(-50%)"></div>
+        <div style="position:absolute;left:-25px;top:50%;width:25px;height:1.5px;background:rgba(200,144,12,0.12);transform:translateY(-50%)"></div>
         ${renderCard(w)}
       </div>
     `
