@@ -359,35 +359,79 @@ export function initOnboarding(): void {
   s8.className = 'view'
   s8.innerHTML = `
     <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:1rem;padding-bottom:0">
-      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem">
-        <button class="back" id="ob-s8-back">${iconBack()}</button>
+      ${obHeader(6, 'ob-s8-back')}
+      <div class="headline" style="margin-bottom:0.5rem">Who is leaving<br>their first whisper?</div>
+      <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">They get a private link. No account needed.</p>
+
+      <div class="label" style="margin-bottom:0.5rem">What does your child call them?</div>
+      <input id="ob-inv-nick" class="input" type="text" placeholder="e.g. Nani, Dadi, Granny, Pop..." style="margin-bottom:0.35rem" maxlength="40" autocomplete="off" />
+      <p style="color:var(--dim);font-size:var(--text-caption);margin-bottom:1.5rem">This is how their name appears on every whisper.</p>
+
+      <div class="label" style="margin-bottom:0.5rem">Their relationship to your child</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.5rem">
+        <div class="format-tab" data-rel="Maternal grandmother" style="padding:0.75rem 0.5rem">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Maternal grandmother</span>
+        </div>
+        <div class="format-tab" data-rel="Paternal grandmother" style="padding:0.75rem 0.5rem">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Paternal grandmother</span>
+        </div>
+        <div class="format-tab" data-rel="Maternal grandfather" style="padding:0.75rem 0.5rem">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Maternal grandfather</span>
+        </div>
+        <div class="format-tab" data-rel="Paternal grandfather" style="padding:0.75rem 0.5rem">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Paternal grandfather</span>
+        </div>
+        <div class="format-tab" data-rel="Aunt" style="padding:0.75rem 0.5rem">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Aunt</span>
+        </div>
+        <div class="format-tab" data-rel="Uncle" style="padding:0.75rem 0.5rem">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Uncle</span>
+        </div>
+        <div class="format-tab" data-rel="Godparent" style="padding:0.75rem 0.5rem">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Godparent</span>
+        </div>
+        <div class="format-tab" data-rel="Family friend" style="padding:0.75rem 0.5rem">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Family friend</span>
+        </div>
+        <div class="format-tab" data-rel="Other" style="padding:0.75rem 0.5rem;grid-column:1 / -1">
+          <span style="font-size:var(--text-body-sm);color:var(--white)">Other</span>
+        </div>
       </div>
-      <div class="headline" style="margin-bottom:0.5rem">Invite someone who loves <span id="s8-name"></span></div>
-      <p style="color:var(--dim);font-size:var(--text-body);margin-bottom:2rem">Grandparents, aunts, uncles, family friends. They can leave a whisper without an account.</p>
-      <input id="ob-inv-nick" class="input" type="text" placeholder="Their name (e.g. Grandma)" style="margin-bottom:0.75rem" maxlength="40" autocomplete="off" />
-      <input id="ob-inv-rel" class="input" type="text" placeholder="Relationship (e.g. Grandmother)" style="margin-bottom:1.5rem" maxlength="40" autocomplete="off" />
+
       ${footerOpen}
-        <button id="ob-inv-create" class="btn gold off" style="margin-bottom:0.75rem">Create invite link <span style="font-size:1.1em">${iconArrow()}</span></button>
+        <button id="ob-inv-create" class="btn gold off" style="margin-bottom:0.75rem">Generate their link <span style="font-size:1.1em">${iconArrow()}</span></button>
         <div id="ob-inv-status" style="font-size:var(--text-caption);color:var(--dim);display:none;text-align:center"></div>
       ${footerClose}
     </div>
   `
   app.appendChild(s8)
 
+  let s8SelectedRel = ''
   const invNick = s8.querySelector('#ob-inv-nick') as HTMLInputElement
-  const invRel = s8.querySelector('#ob-inv-rel') as HTMLInputElement
   const invCreate = s8.querySelector('#ob-inv-create') as HTMLButtonElement
   const invStatus = s8.querySelector('#ob-inv-status') as HTMLDivElement
 
-  invNick.addEventListener('input', () => {
-    invCreate.classList.toggle('off', invNick.value.trim().length === 0)
+  function updateS8Button(): void {
+    invCreate.classList.toggle('off', !s8SelectedRel || invNick.value.trim().length === 0)
+  }
+
+  // Wire relationship cards
+  s8.querySelectorAll('.format-tab[data-rel]').forEach(card => {
+    card.addEventListener('click', () => {
+      s8.querySelectorAll('.format-tab[data-rel]').forEach(c => c.classList.remove('active'))
+      card.classList.add('active')
+      s8SelectedRel = (card as HTMLElement).dataset.rel || ''
+      updateS8Button()
+    })
   })
+
+  invNick.addEventListener('input', updateS8Button)
 
   s8.querySelector('#ob-s8-back')!.addEventListener('click', () => navigate('v-s7'))
   invCreate.addEventListener('click', async () => {
     const nick = invNick.value.trim()
-    if (!nick) return
-    const rel = invRel.value.trim()
+    if (!nick || !s8SelectedRel) return
+    const rel = s8SelectedRel
     const { childId } = getState()
     if (!childId) return
 
@@ -407,7 +451,7 @@ export function initOnboarding(): void {
       invStatus.style.display = 'block'
       invStatus.style.color = '#e85454'
       invStatus.textContent = 'Could not create invite. Try again.'
-      invCreate.innerHTML = `Create invite link <span style="font-size:1.1em">${iconArrow()}</span>`
+      invCreate.innerHTML = `Generate their link <span style="font-size:1.1em">${iconArrow()}</span>`
       invCreate.classList.remove('off')
     } else {
       const link = `${window.location.origin}?token=${token}`
@@ -473,8 +517,9 @@ export function initOnboarding(): void {
 
   s9.querySelector('#s9-another')!.addEventListener('click', () => {
     invNick.value = ''
-    invRel.value = ''
-    invCreate.innerHTML = `Create invite link <span style="font-size:1.1em">${iconArrow()}</span>`
+    s8SelectedRel = ''
+    s8.querySelectorAll('.format-tab[data-rel]').forEach(c => c.classList.remove('active'))
+    invCreate.innerHTML = `Generate their link <span style="font-size:1.1em">${iconArrow()}</span>`
     invCreate.classList.add('off')
     invStatus.style.display = 'none'
     navigate('v-s8')
@@ -487,7 +532,7 @@ export function initOnboarding(): void {
     const name = s.name || 'your child'
 
     // Update all name spans
-    const nameSpanIds = ['s2-name', 's3-name', 's3-name2', 's4-name', 's5-name', 's7-childname', 's7-childname2', 's7-childname3', 's8-name']
+    const nameSpanIds = ['s2-name', 's3-name', 's3-name2', 's4-name', 's5-name', 's7-childname', 's7-childname2', 's7-childname3']
     for (const id of nameSpanIds) {
       const el = document.getElementById(id)
       if (el) el.textContent = name
