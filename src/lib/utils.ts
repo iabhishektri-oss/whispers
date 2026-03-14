@@ -68,19 +68,19 @@ export function formatDuration(seconds: number): string {
   return `${mins}:${String(secs).padStart(2, '0')}`
 }
 
-// Daily prompts for child mode
+// Daily prompts for child mode — {name} is replaced with the child's name
 const PROMPTS = [
-  "What made you laugh today?",
-  "What's your favourite thing about your best friend?",
-  "If you could have any superpower what would it be?",
-  "What's the funniest thing that happened this week?",
-  "What do you want to be when you grow up?",
-  "What's the best thing about being you?",
-  "What would you build if you could build anything?",
-  "What made you feel proud this week?",
+  "{name}, what made you laugh today?",
+  "{name}, what's your favourite thing about your best friend?",
+  "{name}, if you could have any superpower what would it be?",
+  "{name}, what's the funniest thing that happened this week?",
+  "{name}, what do you want to be when you grow up?",
+  "{name}, what's the best thing about being you?",
+  "{name}, what would you build if you could build anything?",
+  "{name}, what made you feel proud this week?",
 ]
 
-export function dailyPrompt(): string {
+export function dailyPrompt(name: string): string {
   const day = Math.floor(Date.now() / (1000 * 60 * 60 * 24))
-  return PROMPTS[day % PROMPTS.length]
+  return PROMPTS[day % PROMPTS.length].replace('{name}', name)
 }
