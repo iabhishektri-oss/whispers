@@ -1,6 +1,6 @@
 import './styles/global.css'
 import { getSupabase } from './lib/supabase'
-import { navigate } from './lib/router'
+import { navigate, getCurrentRoute } from './lib/router'
 import { setState, getState } from './lib/state'
 import { initStory } from './screens/story'
 import { initOnboarding } from './screens/onboarding'
@@ -85,6 +85,26 @@ async function boot(): Promise<void> {
     navigate('v-story')
   }
   // If isAuthCallback and no session yet, onAuthStateChange handles it above
+
+  // Re-trigger feed load when returning to app on mobile
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && getState().childId) {
+      const route = getCurrentRoute()
+      if (route) {
+        navigate(route)
+      }
+    }
+  })
+
+  // Safari bfcache: page restored from back/forward cache
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted && getState().childId) {
+      const route = getCurrentRoute()
+      if (route) {
+        navigate(route)
+      }
+    }
+  })
 }
 
 async function loadChildData(): Promise<void> {
