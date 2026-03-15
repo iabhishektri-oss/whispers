@@ -595,6 +595,37 @@ export function initKeeper(): void {
     `
   }
 
+  // One-time welcome card after onboarding
+  function showWelcomeCard(): void {
+    if (localStorage.getItem('whispers_welcome_seen')) return
+    const feed = view.querySelector('#k-feed') as HTMLDivElement
+    if (!feed) return
+
+    const card = document.createElement('div')
+    card.className = 'card'
+    card.style.animation = 'rise 0.4s both'
+    card.style.marginBottom = '0.75rem'
+    card.innerHTML = `
+      <div style="margin-bottom:1.25rem">
+        <div style="font-size:var(--text-body);font-weight:500;color:var(--white);margin-bottom:0.35rem">This is your view</div>
+        <p style="font-size:var(--text-caption);color:var(--body);line-height:var(--lh-body);margin:0">You see everything. Leave whispers, invite family, and capture the things ${escHtml(childName())} says that you never want to forget. One day you'll play these back and hear the voice they've already outgrown.</p>
+      </div>
+      <div style="border-top:1px solid var(--input-bd);padding-top:1.25rem;margin-bottom:1rem">
+        <div style="font-size:var(--text-body);font-weight:500;color:var(--gold-hi);margin-bottom:0.35rem">Give ${escHtml(childName())} the phone</div>
+        <p style="font-size:var(--text-caption);color:var(--body);line-height:var(--lh-body);margin:0">Tap <span style="color:var(--white)">Child mode</span> and hand it over. ${escHtml(childName())} can journal, take photos of their drawings, and record their own voice. Their questions, their stories, their words, all saved. They won't sound like this forever.</p>
+      </div>
+      <button class="btn" id="k-welcome-dismiss" style="width:100%">Got it</button>
+    `
+    feed.insertBefore(card, feed.firstChild)
+    card.querySelector('#k-welcome-dismiss')!.addEventListener('click', () => {
+      localStorage.setItem('whispers_welcome_seen', '1')
+      card.style.animation = 'none'
+      card.style.opacity = '0'
+      card.style.transition = 'opacity 0.3s'
+      setTimeout(() => card.remove(), 300)
+    })
+  }
+
   // Route change listener
   onRouteChange((_from, to) => {
     if (to === 'v-keeper') {
@@ -602,7 +633,7 @@ export function initKeeper(): void {
       if (sub) sub.textContent = `${childName()}'s collection`
       const initial = view.querySelector('#k-child-initial') as HTMLDivElement
       if (initial) initial.textContent = (childName()[0] || '?').toUpperCase()
-      loadFeed()
+      loadFeed().then(() => showWelcomeCard())
     }
   })
 
