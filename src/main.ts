@@ -1,6 +1,6 @@
 import './styles/global.css'
 import { getSupabase } from './lib/supabase'
-import { navigate } from './lib/router'
+import { navigate, getCurrentRoute } from './lib/router'
 import { setState, getState } from './lib/state'
 import { initStory } from './screens/story'
 import { initOnboarding } from './screens/onboarding'
@@ -317,6 +317,21 @@ function hideLoadingScreen(): void {
   const el = document.getElementById('v-loading')
   if (el) el.style.display = 'none'
 }
+
+// Re-trigger feed load when returning to app on mobile
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && getState().childId) {
+    const route = getCurrentRoute()
+    if (route) navigate(route)
+  }
+})
+
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted && getState().childId) {
+    const route = getCurrentRoute()
+    if (route) navigate(route)
+  }
+})
 
 // Boot
 boot().catch(console.error)
