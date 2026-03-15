@@ -11,3 +11,7 @@ export function getSupabase(): SupabaseClient {
   }
   return client
 }
+
+export function resetSupabase(): void {
+  client = null
+}

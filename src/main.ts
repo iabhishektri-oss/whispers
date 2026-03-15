@@ -1,5 +1,5 @@
 import './styles/global.css'
-import { getSupabase } from './lib/supabase'
+import { getSupabase, resetSupabase } from './lib/supabase'
 import { navigate, getCurrentRoute } from './lib/router'
 import { setState, getState } from './lib/state'
 import { initStory } from './screens/story'
@@ -321,7 +321,7 @@ function hideLoadingScreen(): void {
 // Re-trigger feed load when returning to app on mobile
 document.addEventListener("visibilitychange", async () => {
   if (!document.hidden && getState().childId) {
-    // no-op: let Supabase handle token refresh internally
+    resetSupabase()
     const route = getCurrentRoute()
     if (route) navigate(route)
   }
