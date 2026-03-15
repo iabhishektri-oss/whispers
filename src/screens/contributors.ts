@@ -204,7 +204,7 @@ export function initContributors(): void {
       </div>
 
       <div style="margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:0.75rem;padding-top:2rem">
-        <button id="ct-share-send" class="btn gold">Send and go to my whispers <span style="font-size:1.1em">${iconArrow()}</span></button>
+        <button id="ct-share-send" class="btn gold off">Share the link first</button>
         <span id="ct-share-done" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Skip, I'll do this later</span>
       </div>
     </div>
@@ -220,6 +220,9 @@ export function initContributors(): void {
       await navigator.clipboard.writeText(link)
       shareCopy.textContent = 'Copied!'
       setTimeout(() => { shareCopy.textContent = 'Copy' }, 2000)
+      const sendBtn = share.querySelector('#ct-share-send') as HTMLButtonElement
+      sendBtn.classList.remove('off')
+      sendBtn.innerHTML = `Done, go to my whispers <span style="font-size:1.1em">${iconArrow()}</span>`
     } catch {
       const range = document.createRange()
       range.selectNodeContents(shareLinkText)
@@ -240,6 +243,9 @@ export function initContributors(): void {
     const note = (share.querySelector('#ct-share-note') as HTMLTextAreaElement)?.value || ''
     const text = note ? `${note}\n\n${link}` : `You're invited to leave a whisper for ${childName()}.\n\n${link}`
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+    const sendBtn = share.querySelector('#ct-share-send') as HTMLButtonElement
+    sendBtn.classList.remove('off')
+    sendBtn.innerHTML = `Done, go to my whispers <span style="font-size:1.1em">${iconArrow()}</span>`
   })
 
   share.querySelector('#ct-share-imessage')!.addEventListener('click', () => {
@@ -247,6 +253,9 @@ export function initContributors(): void {
     const note = (share.querySelector('#ct-share-note') as HTMLTextAreaElement)?.value || ''
     const text = note ? `${note} ${link}` : `You're invited to leave a whisper for ${childName()}. ${link}`
     window.open(`sms:&body=${encodeURIComponent(text)}`, '_self')
+    const sendBtn = share.querySelector('#ct-share-send') as HTMLButtonElement
+    sendBtn.classList.remove('off')
+    sendBtn.innerHTML = `Done, go to my whispers <span style="font-size:1.1em">${iconArrow()}</span>`
   })
 
   // Load contributors
