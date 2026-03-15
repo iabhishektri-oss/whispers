@@ -21,6 +21,7 @@ interface SaveResult {
 export async function saveWhisper(opts: SaveOptions): Promise<SaveResult> {
   try {
     const sb = getSupabase()
+    await sb.auth.refreshSession()
     const { childId } = getState()
 
     if (!childId) {
