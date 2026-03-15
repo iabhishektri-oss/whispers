@@ -21,11 +21,6 @@ interface SaveResult {
 export async function saveWhisper(opts: SaveOptions): Promise<SaveResult> {
   try {
     const sb = getSupabase()
-    // Lightweight session check (no lock contention)
-    const { data: { session } } = await sb.auth.getSession()
-    if (!session) {
-      return { success: false, error: "Please refresh the page to sign in again." }
-    }
     const { childId } = getState()
 
     if (!childId) {
