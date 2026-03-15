@@ -212,15 +212,14 @@ export function initContributors(): void {
   app.appendChild(share)
 
   const shareCopy = share.querySelector('#ct-share-copy') as HTMLButtonElement
-  const shareNative = share.querySelector('#ct-share-native') as HTMLButtonElement
   const shareLinkText = share.querySelector('#ct-share-link-text') as HTMLSpanElement
 
   shareCopy.addEventListener('click', async () => {
     const link = shareLinkText.textContent || ''
     try {
       await navigator.clipboard.writeText(link)
-      shareCopy.innerHTML = `Copied ${iconCheck(16)}`
-      setTimeout(() => { shareCopy.innerHTML = 'Copy link' }, 2000)
+      shareCopy.textContent = 'Copied!'
+      setTimeout(() => { shareCopy.textContent = 'Copy' }, 2000)
     } catch {
       const range = document.createRange()
       range.selectNodeContents(shareLinkText)
@@ -229,18 +228,6 @@ export function initContributors(): void {
       sel?.addRange(range)
     }
   })
-
-  if (typeof navigator.share === 'function') {
-    shareNative.style.display = ''
-    shareNative.addEventListener('click', () => {
-      const link = shareLinkText.textContent || ''
-      navigator.share({
-        title: `Leave a whisper for ${childName()}`,
-        text: `You're invited to leave a whisper for ${childName()}.`,
-        url: link,
-      }).catch(() => {})
-    })
-  }
 
   share.querySelector('#ct-share-send')!.addEventListener('click', () => {
     navigate('v-keeper')
