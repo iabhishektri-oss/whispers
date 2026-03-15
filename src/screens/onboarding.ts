@@ -466,20 +466,34 @@ export function initOnboarding(): void {
   s9.id = 'v-s9'
   s9.className = 'view'
   s9.innerHTML = `
-    <div class="shell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;text-align:center;padding-top:2rem;padding-bottom:2rem">
-      <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;align-items:center;gap:1.25rem;width:100%">
-        <div style="color:var(--gold-hi)">${iconCheck(48)}</div>
-        <div class="headline" style="margin-bottom:0.25rem">Invite created</div>
-        <p style="color:var(--body);font-size:var(--text-body);line-height:var(--lh-body)">Share this link. They can leave a whisper in under two minutes.</p>
-        <div class="card" style="width:100%;word-break:break-all;font-size:var(--text-caption);color:var(--gold-hi);text-align:left;cursor:pointer" id="s9-link-card">
-          <span id="s9-link-text"></span>
+    <div class="shell" style="display:flex;flex-direction:column;min-height:100dvh;padding-top:2rem;padding-bottom:2rem">
+      <button class="back" id="s9-back">${iconBack()}</button>
+      <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;gap:1.25rem;width:100%;margin-top:1.5rem">
+        <div class="headline">Send them their link.</div>
+        <p style="color:var(--dim);font-size:var(--text-body);line-height:var(--lh-body)">They open it, leave a whisper. No account needed.</p>
+
+        <div class="card" style="width:100%;display:flex;align-items:center;gap:0.75rem;word-break:break-all" id="s9-link-card">
+          <span id="s9-link-text" style="flex:1;font-size:var(--text-body);color:var(--body)"></span>
+          <button id="s9-copy" style="flex-shrink:0;padding:0.45rem 1rem;border:1px solid var(--border);border-radius:var(--radius-button);background:transparent;color:var(--gold-hi);font-family:var(--font-body);font-size:var(--text-caption);font-weight:500;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap">Copy</button>
         </div>
-        <button id="s9-copy" class="btn" style="margin-top:0.5rem">Copy link</button>
-        <button id="s9-share" class="btn" style="display:none">Share</button>
+
+        <div style="display:flex;flex-direction:column;gap:0.6rem">
+          <button id="s9-whatsapp" style="padding:0.85rem 1rem;border:1px solid rgba(37,211,102,0.3);border-radius:var(--radius-button);background:rgba(37,211,102,0.08);color:#25D366;font-family:var(--font-body);font-size:var(--text-body-sm);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.612.638l4.716-1.244A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.143 0-4.144-.663-5.787-1.8l-.404-.263-3.088.814.83-3.032-.29-.462A9.96 9.96 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
+            Send via WhatsApp
+          </button>
+          <button id="s9-imessage" style="padding:0.85rem 1rem;border:1px solid var(--input-bd);border-radius:var(--radius-button);background:var(--input-bg);color:var(--body);font-family:var(--font-body);font-size:var(--text-body-sm);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 5.813 2 10.5c0 2.51 1.17 4.757 3.007 6.342C4.672 18.6 3.9 20.3 2 22c2.7 0 5.3-1.3 6.7-2.5.86.17 1.74.3 2.63.3h.67c5.523 0 10-3.813 10-8.5S17.523 2 12 2z"/></svg>
+            Send via iMessage
+          </button>
+        </div>
+
+        <textarea id="s9-note" class="textarea" placeholder="Add a note (optional)" style="margin-top:0.5rem"></textarea>
       </div>
-      <div style="position:absolute;bottom:2.75rem;left:1.5rem;right:1.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;padding-bottom:env(safe-area-inset-bottom)">
-        <button id="s9-another" class="btn">Invite another <span style="font-size:1.1em">${iconArrow()}</span></button>
-        <span id="s9-done" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Go to home</span>
+
+      <div style="margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:0.75rem;padding-top:2rem;padding-bottom:env(safe-area-inset-bottom)">
+        <button id="s9-send" class="btn gold off">Share the link first</button>
+        <span id="s9-done" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Skip, I'll do this later</span>
       </div>
     </div>
   `
@@ -487,14 +501,16 @@ export function initOnboarding(): void {
 
   const s9LinkText = s9.querySelector('#s9-link-text') as HTMLSpanElement
   const s9Copy = s9.querySelector('#s9-copy') as HTMLButtonElement
-  const s9Share = s9.querySelector('#s9-share') as HTMLButtonElement
 
   s9Copy.addEventListener('click', async () => {
     const link = s9LinkText.textContent || ''
     try {
       await navigator.clipboard.writeText(link)
-      s9Copy.innerHTML = `Copied ${iconCheck(16)}`
-      setTimeout(() => { s9Copy.innerHTML = 'Copy link' }, 2000)
+      s9Copy.textContent = 'Copied!'
+      setTimeout(() => { s9Copy.textContent = 'Copy' }, 2000)
+      const sendBtn = s9.querySelector('#s9-send') as HTMLButtonElement
+      sendBtn.classList.remove('off')
+      sendBtn.innerHTML = `Done, go to my whispers <span style="font-size:1.1em">${iconArrow()}</span>`
     } catch {
       const range = document.createRange()
       range.selectNodeContents(s9LinkText)
@@ -504,26 +520,32 @@ export function initOnboarding(): void {
     }
   })
 
-  if (typeof navigator.share === 'function') {
-    s9Share.style.display = ''
-    s9Share.addEventListener('click', () => {
-      const link = s9LinkText.textContent || ''
-      navigator.share({
-        title: `Leave a whisper for ${childName()}`,
-        text: `${getState().keeper} invited you to leave a whisper for ${childName()}.`,
-        url: link,
-      }).catch(() => {})
-    })
-  }
+  s9.querySelector('#s9-back')!.addEventListener('click', () => navigate('v-s8'))
 
-  s9.querySelector('#s9-another')!.addEventListener('click', () => {
-    invNick.value = ''
-    s8SelectedRel = ''
-    s8.querySelectorAll('.format-tab[data-rel]').forEach(c => c.classList.remove('active'))
-    invCreate.innerHTML = `Generate their link <span style="font-size:1.1em">${iconArrow()}</span>`
-    invCreate.classList.add('off')
-    invStatus.style.display = 'none'
-    navigate('v-s8')
+  s9.querySelector('#s9-whatsapp')!.addEventListener('click', () => {
+    const link = s9LinkText.textContent || ''
+    const note = (s9.querySelector('#s9-note') as HTMLTextAreaElement)?.value || ''
+    const text = note ? `${note}\n\n${link}` : `You're invited to leave a whisper for ${childName()}.\n\n${link}`
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+    const sendBtn = s9.querySelector('#s9-send') as HTMLButtonElement
+    sendBtn.classList.remove('off')
+    sendBtn.innerHTML = `Done, go to my whispers <span style="font-size:1.1em">${iconArrow()}</span>`
+  })
+
+  s9.querySelector('#s9-imessage')!.addEventListener('click', () => {
+    const link = s9LinkText.textContent || ''
+    const note = (s9.querySelector('#s9-note') as HTMLTextAreaElement)?.value || ''
+    const text = note ? `${note} ${link}` : `You're invited to leave a whisper for ${childName()}. ${link}`
+    window.open(`sms:&body=${encodeURIComponent(text)}`, '_self')
+    const sendBtn = s9.querySelector('#s9-send') as HTMLButtonElement
+    sendBtn.classList.remove('off')
+    sendBtn.innerHTML = `Done, go to my whispers <span style="font-size:1.1em">${iconArrow()}</span>`
+  })
+
+  s9.querySelector('#s9-send')!.addEventListener('click', () => {
+    const sendBtn = s9.querySelector('#s9-send') as HTMLButtonElement
+    if (sendBtn.classList.contains('off')) return
+    navigate('v-keeper')
   })
   s9.querySelector('#s9-done')!.addEventListener('click', () => navigate('v-keeper'))
 
