@@ -182,20 +182,20 @@ export function initContributors(): void {
       <button class="back" id="ct-share-back">${iconBack()}</button>
 
       <div style="animation:rise 0.6s 0.1s both;display:flex;flex-direction:column;width:100%;margin-top:1rem">
-        <div class="headline" style="margin-bottom:0.35rem">Invite created</div>
-        <p style="color:var(--dim);font-size:var(--text-body);line-height:var(--lh-body);margin-bottom:1.5rem">Share this link. They can leave a whisper in under two minutes.</p>
+        <div class="headline" style="margin-bottom:0.35rem">Send them<br>their link.</div>
+        <p style="color:var(--dim);font-size:var(--text-body);line-height:var(--lh-body);margin-bottom:1.5rem">They open it, leave a whisper. No account needed.</p>
 
         <div class="card" style="width:100%;display:flex;align-items:center;gap:0.75rem;word-break:break-all;margin-bottom:1rem" id="ct-share-link-card">
-          <span id="ct-share-link-text" style="flex:1;font-size:var(--text-caption);color:var(--gold-hi);cursor:pointer"></span>
+          <span id="ct-share-link-text" style="flex:1;font-size:var(--text-body);color:var(--body)"></span>
           <button id="ct-share-copy" style="flex-shrink:0;padding:0.45rem 1rem;border:1px solid var(--border);border-radius:var(--radius-button);background:transparent;color:var(--gold-hi);font-family:var(--font-body);font-size:var(--text-caption);font-weight:500;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap">Copy</button>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.5rem">
-          <button id="ct-share-whatsapp" class="btn" style="font-size:var(--text-body-sm);letter-spacing:0.08em;text-transform:none">
+          <button id="ct-share-whatsapp" style="padding:0.85rem 1rem;border:1px solid rgba(37,211,102,0.3);border-radius:var(--radius-button);background:rgba(37,211,102,0.08);color:#25D366;font-family:var(--font-body);font-size:var(--text-body-sm);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all var(--duration)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#25D366"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" stroke="#25D366" stroke-width="1.5"/></svg>
             WhatsApp
           </button>
-          <button id="ct-share-imessage" class="btn" style="font-size:var(--text-body-sm);letter-spacing:0.08em;text-transform:none">
+          <button id="ct-share-imessage" style="padding:0.85rem 1rem;border:1px solid var(--input-bd);border-radius:var(--radius-button);background:var(--input-bg);color:var(--body);font-family:var(--font-body);font-size:var(--text-body-sm);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all var(--duration)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             iMessage
           </button>
@@ -206,8 +206,8 @@ export function initContributors(): void {
       </div>
 
       <div style="margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:0.75rem">
-        <button id="ct-share-another" class="btn gold">Invite another <span style="font-size:1.1em">${iconArrow()}</span></button>
-        <span id="ct-share-done" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer">Back to family</span>
+        <button id="ct-share-send" class="btn gold">Send and go to my whispers <span style="font-size:1.1em">${iconArrow()}</span></button>
+        <span id="ct-share-done" style="font-size:var(--text-caption);color:var(--dim);cursor:pointer">Skip, I'll do this later</span>
       </div>
     </div>
   `
@@ -252,7 +252,8 @@ export function initContributors(): void {
 
   share.querySelector('#ct-share-back')!.addEventListener('click', () => navigate('v-ct-invite'))
 
-  share.querySelector('#ct-share-another')!.addEventListener('click', () => {
+  share.querySelector('#ct-share-send')!.addEventListener('click', () => {
+    // Reset invite form for next use
     invNick.value = ''
     selectedRel = ''
     shareNote.value = ''
@@ -260,9 +261,12 @@ export function initContributors(): void {
     invCreate.innerHTML = `Create invite link <span style="font-size:1.1em">${iconArrow()}</span>`
     invCreate.classList.add('off')
     invStatus.style.display = 'none'
-    navigate('v-ct-invite')
+    navigate('v-keeper')
   })
-  share.querySelector('#ct-share-done')!.addEventListener('click', () => navigate('v-contributors'))
+  share.querySelector('#ct-share-done')!.addEventListener('click', () => {
+    shareNote.value = ''
+    navigate('v-keeper')
+  })
 
   // Load contributors
   let contributorsLoaded = false
