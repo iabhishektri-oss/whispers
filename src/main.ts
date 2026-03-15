@@ -9,6 +9,7 @@ import { initGiver } from './screens/giver'
 import { initContributors } from './screens/contributors'
 import { initChildMode } from './screens/child-mode'
 import { initFirstWhisper } from './screens/first-whisper'
+import { getBlob, deleteBlob } from './lib/blob-store'
 
 async function boot(): Promise<void> {
   const sb = getSupabase()
@@ -192,7 +193,23 @@ async function saveFirstWhisper(): Promise<void> {
     if (fw.format === 'write' && fw.content) {
       await saveWhisper({ format: 'write', content: fw.content })
       setState({ hasFirstWhisper: true })
-      console.log('First whisper saved')
+      console.log('First whisper saved (write)')
+    } else if (fw.format === 'voice') {
+      const blob = await getBlob('first-whisper-audio')
+      if (blob) {
+        await saveWhisper({ format: 'voice', audioBlob: blob })
+        await deleteBlob('first-whisper-audio')
+        setState({ hasFirstWhisper: true })
+        console.log('First whisper saved (voice)')
+      }
+    } else if (fw.format === 'photo') {
+      const blob = await getBlob('first-whisper-photo')
+      if (blob) {
+        await saveWhisper({ format: 'photo', photoFile: blob })
+        await deleteBlob('first-whisper-photo')
+        setState({ hasFirstWhisper: true })
+        console.log('First whisper saved (photo)')
+      }
     }
     localStorage.removeItem('whispers_first_whisper')
   } catch (e) {

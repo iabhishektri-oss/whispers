@@ -3,6 +3,7 @@ import { getState, setState } from '@/lib/state'
 import { iconMic, iconWrite, iconCamera, iconBack } from '@/lib/icons'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { formatDuration } from '@/lib/utils'
+import { storeBlob } from '@/lib/blob-store'
 
 let recordTimer: ReturnType<typeof setInterval> | null = null
 let recordSeconds = 0
@@ -208,31 +209,51 @@ export function initFirstWhisper(): void {
 
     const isPostOnboarding = !!getState().childId
 
+    saveBtn.innerHTML = '<div class="spinner"></div>'
+    saveBtn.classList.add('off')
+
+    if (isPostOnboarding) {
+      try {
+        const { saveWhisper } = await import('@/lib/whispers')
+        if (activeFormat === 'write') {
+          const text = (body.querySelector('#fl-text') as HTMLTextAreaElement)?.value.trim()
+          if (text) await saveWhisper({ format: 'write', content: text })
+        } else if (activeFormat === 'voice') {
+          const blob = getRecordingBlob()
+          if (blob) await saveWhisper({ format: 'voice', audioBlob: blob })
+        } else if (activeFormat === 'photo') {
+          const file = (body.querySelector('#fl-photo-file') as HTMLInputElement)?.files?.[0]
+          if (file) await saveWhisper({ format: 'photo', photoFile: file })
+        }
+        setState({ hasFirstWhisper: true })
+      } catch (e) {
+        console.error('Could not save whisper:', e)
+      }
+      navigate('v-s7')
+      return
+    }
+
+    // Pre-auth: store to localStorage + IndexedDB for after magic link
     if (activeFormat === 'write') {
       const text = (body.querySelector('#fl-text') as HTMLTextAreaElement)?.value.trim()
       if (text) {
-        if (isPostOnboarding) {
-          // Already authenticated — save directly to DB
-          saveBtn.innerHTML = '<div class="spinner"></div>'
-          saveBtn.classList.add('off')
-          try {
-            const { saveWhisper } = await import('@/lib/whispers')
-            await saveWhisper({ format: 'write', content: text })
-            setState({ hasFirstWhisper: true })
-          } catch (e) {
-            console.error('Could not save whisper:', e)
-          }
-          navigate('v-s7')
-          return
-        } else {
-          localStorage.setItem('whispers_first_whisper', JSON.stringify({ format: 'write', content: text }))
-        }
+        localStorage.setItem('whispers_first_whisper', JSON.stringify({ format: 'write', content: text }))
+      }
+    } else if (activeFormat === 'voice') {
+      const blob = getRecordingBlob()
+      if (blob) {
+        localStorage.setItem('whispers_first_whisper', JSON.stringify({ format: 'voice' }))
+        await storeBlob('first-whisper-audio', blob)
+      }
+    } else if (activeFormat === 'photo') {
+      const file = (body.querySelector('#fl-photo-file') as HTMLInputElement)?.files?.[0]
+      if (file) {
+        localStorage.setItem('whispers_first_whisper', JSON.stringify({ format: 'photo' }))
+        await storeBlob('first-whisper-photo', file)
       }
     }
-    // Voice and photo blobs can't be stored in localStorage —
-    // they'll be saved after auth if session stays alive
 
-    navigate(isPostOnboarding ? 'v-s7' : 'v-s1')
+    navigate('v-s1')
   })
 
   // Render initial panel
