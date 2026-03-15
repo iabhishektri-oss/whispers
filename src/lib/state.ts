@@ -14,6 +14,10 @@ export interface AppState {
   childId: string | null
   authUserId: string | null
 
+  // Trial & plan
+  trialStart: string | null
+  plan: string | null
+
   // Onboarding flags
   hasFirstWhisper: boolean
 
@@ -34,6 +38,8 @@ const state: AppState = {
   email: '',
   childId: null,
   authUserId: null,
+  trialStart: null,
+  plan: null,
   hasFirstWhisper: false,
   isGiverMode: false,
   giverContributorId: null,

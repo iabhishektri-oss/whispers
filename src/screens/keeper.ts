@@ -5,6 +5,7 @@ import { saveWhisper } from '@/lib/whispers'
 import { startRecording, stopRecording, getRecordingBlob, clearRecording, isRecording } from '@/lib/recorder'
 import { iconHome, iconFamily, iconMic, iconWrite, iconCamera, iconCheck, iconSeal, iconLock } from '@/lib/icons'
 import { escHtml, timeAgo, formatDuration } from '@/lib/utils'
+import { getTrialStatus } from '@/lib/trial'
 import { renderTimeline, TimelineWhisper } from '@/lib/timeline'
 
 type WhisperRow = TimelineWhisper
@@ -95,6 +96,12 @@ export function initKeeper(): void {
   const sheetContent = view.querySelector('#k-sheet-content') as HTMLDivElement
 
   view.querySelector('#k-nav-compose')!.addEventListener('click', () => {
+    const { trialStart, plan } = getState()
+    const trial = getTrialStatus(trialStart, plan)
+    if (trial.expired) {
+      openPaywall()
+      return
+    }
     openComposeSheet()
   })
 
@@ -595,6 +602,67 @@ export function initKeeper(): void {
     `
   }
 
+  // Paywall screen for expired trials
+  function openPaywall(): void {
+    const overlay = view.querySelector('#k-sheet-overlay') as HTMLDivElement
+    const sheetContent = view.querySelector('#k-sheet-content') as HTMLDivElement
+
+    sheetContent.innerHTML = `
+      <div style="text-align:center;padding:0.5rem 0">
+        <div class="headline-sm" style="margin-bottom:0.75rem">Keep ${escHtml(childName())}'s collection growing</div>
+        <p style="color:var(--body);font-size:var(--text-body);line-height:var(--lh-body);margin-bottom:1.5rem">Your trial has ended. Subscribe to keep adding whispers, inviting family, and preserving what matters.</p>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.5rem">
+          <button class="btn gold" id="pw-yearly" style="position:relative">
+            <span style="position:absolute;top:-10px;right:12px;background:var(--gold-hi);color:#000;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;letter-spacing:0.05em">BEST VALUE</span>
+            \u00a329.99/year
+          </button>
+          <button class="btn" id="pw-monthly">\u00a33.99/month</button>
+        </div>
+        <p style="font-size:var(--text-meta);color:var(--dim)">You can still read and play all existing whispers.</p>
+      </div>
+    `
+
+    sheetContent.querySelector('#pw-yearly')!.addEventListener('click', () => {
+      window.open('https://checkout.stripe.com/pay/price_1TBBiIGRIO9Z3ItooNpiCMVG?client_reference_id=' + getState().childId, '_blank')
+    })
+    sheetContent.querySelector('#pw-monthly')!.addEventListener('click', () => {
+      window.open('https://checkout.stripe.com/pay/price_1TBBiIGRIO9Z3ItomAC1ig52?client_reference_id=' + getState().childId, '_blank')
+    })
+
+    overlay.classList.add('open')
+  }
+
+  // Trial nudge card (days 10-14)
+  function showTrialNudge(): void {
+    const { trialStart, plan } = getState()
+    const trial = getTrialStatus(trialStart, plan)
+    if (!trial.showNudge || trial.isPaid) return
+    if (localStorage.getItem('whispers_nudge_dismissed')) return
+
+    const feed = view.querySelector('#k-feed') as HTMLDivElement
+    if (!feed) return
+
+    const card = document.createElement('div')
+    card.className = 'card'
+    card.style.animation = 'rise 0.4s both'
+    card.style.marginBottom = '0.75rem'
+    card.style.borderColor = 'rgba(200,144,12,0.3)'
+    card.innerHTML = `
+      <div style="display:flex;align-items:flex-start;gap:0.75rem">
+        <div style="flex:1">
+          <div style="font-size:var(--text-body);font-weight:500;color:var(--gold-hi);margin-bottom:0.25rem">${trial.daysLeft} day${trial.daysLeft === 1 ? '' : 's'} left</div>
+          <p style="font-size:var(--text-caption);color:var(--body);line-height:var(--lh-body);margin:0">Keep ${escHtml(childName())}'s collection safe. Subscribe to continue adding whispers.</p>
+        </div>
+        <button class="pill active" id="k-nudge-sub" style="white-space:nowrap;cursor:pointer">Subscribe</button>
+      </div>
+    `
+    feed.insertBefore(card, feed.firstChild)
+
+    card.querySelector('#k-nudge-sub')!.addEventListener('click', () => {
+      openPaywall()
+    })
+  }
+
   // One-time welcome card after onboarding
   function showWelcomeCard(): void {
     if (localStorage.getItem('whispers_welcome_seen')) return
@@ -633,7 +701,7 @@ export function initKeeper(): void {
       if (sub) sub.textContent = `${childName()}'s collection`
       const initial = view.querySelector('#k-child-initial') as HTMLDivElement
       if (initial) initial.textContent = (childName()[0] || '?').toUpperCase()
-      loadFeed().then(() => showWelcomeCard())
+      loadFeed().then(() => { showWelcomeCard(); showTrialNudge() })
     }
   })
 

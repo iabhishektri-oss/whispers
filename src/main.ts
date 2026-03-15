@@ -138,6 +138,8 @@ async function loadChildData(): Promise<void> {
       name: child.name,
       dob: child.dob || '',
       pronoun: child.pronoun || 'they',
+      trialStart: child.trial_start || null,
+      plan: child.plan || null,
     })
     console.log('Child loaded:', child.name, 'ID:', child.id)
   }
@@ -173,6 +175,8 @@ async function saveOnboardingData(): Promise<void> {
     name: s.name,
     dob: s.dob || null,
     pronoun: s.pronoun,
+    trial_start: new Date().toISOString(),
+    plan: 'free',
   }).select().single()
 
   if (error) {
