@@ -321,7 +321,7 @@ function hideLoadingScreen(): void {
 // Re-trigger feed load when returning to app on mobile
 document.addEventListener("visibilitychange", async () => {
   if (!document.hidden && getState().childId) {
-    await getSupabase().auth.refreshSession()
+    // no-op: let Supabase handle token refresh internally
     const route = getCurrentRoute()
     if (route) navigate(route)
   }
