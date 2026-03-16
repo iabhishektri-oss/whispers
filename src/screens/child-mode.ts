@@ -17,7 +17,9 @@ export function initChildMode(): void {
   view.id = 'v-child-mode'
   view.className = 'view'
   view.innerHTML = `
-    <div style="min-height:100dvh;background:linear-gradient(180deg, #1a1510 0%, #1e1712 40%, #241a12 100%);position:relative;overflow:hidden">
+    <div style="min-height:100dvh;background:linear-gradient(180deg, #1a1510 0%, #211814 30%, #2a1c14 60%, #1a1510 100%);position:relative;overflow:hidden">
+      <div style="position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,183,77,0.06) 0%,transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:20%;left:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(200,144,12,0.04) 0%,transparent 70%);pointer-events:none"></div>
       <!-- Decorative atmosphere circles -->
       <div style="position:absolute;top:60px;right:30px;width:12px;height:12px;border-radius:50%;background:rgba(255,183,77,0.08);pointer-events:none"></div>
       <div style="position:absolute;top:140px;left:20px;width:8px;height:8px;border-radius:50%;background:rgba(206,147,216,0.08);pointer-events:none"></div>

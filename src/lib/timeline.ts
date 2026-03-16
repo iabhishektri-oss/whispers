@@ -75,8 +75,8 @@ export function renderTimeline(
       const endYear = startYear + 1
       const ageLabel = age === 0 ? 'Newborn' : `Age ${age}`
       html += `
-        <div style="position:relative;padding:20px 0 12px">
-          <div style="position:absolute;left:-33px;top:22px;width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(200,144,12,0.3)"></div>
+        <div style="position:relative;padding:20px 0 12px;display:flex;align-items:center">
+          <div style="position:absolute;left:-33px;width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(200,144,12,0.3)"></div>
           <span style="font-family:var(--font-display);font-style:italic;font-size:1rem;color:var(--gold-hi)">${ageLabel}</span>
           <span style="font-size:0.65rem;color:var(--dim);margin-left:0.5rem">${startYear}\u2013${endYear}</span>
         </div>
@@ -90,8 +90,8 @@ export function renderTimeline(
     if (dk !== prevDateKey) {
       const label = formatDateMarker(createdAt)
       html += `
-        <div style="position:relative;padding:14px 0 6px">
-          <div style="position:absolute;left:-30px;top:17px;width:6px;height:6px;border-radius:50%;background:rgba(200,144,12,0.35)"></div>
+        <div style="position:relative;padding:14px 0 6px;display:flex;align-items:center">
+          <div style="position:absolute;left:-30px;width:6px;height:6px;border-radius:50%;background:rgba(200,144,12,0.35)"></div>
           <span style="font-size:0.65rem;color:var(--dim)">${escHtml(label)}</span>
         </div>
       `
@@ -107,6 +107,14 @@ export function renderTimeline(
       </div>
     `
   }
+
+  // Add "Joined Whispers" origin marker at the bottom
+  html += `
+    <div style="position:relative;padding:20px 0 8px;display:flex;align-items:center">
+      <div style="position:absolute;left:-33px;width:11px;height:11px;border-radius:50%;background:rgba(200,144,12,0.2);border:1.5px solid rgba(200,144,12,0.4)"></div>
+      <span style="font-size:0.65rem;color:var(--dim);font-style:italic">Joined Whispers</span>
+    </div>
+  `
 
   // Wrap in timeline container with vertical line
   return `
