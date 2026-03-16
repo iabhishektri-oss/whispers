@@ -78,7 +78,6 @@ export function renderTimeline(
         <div style="position:relative;padding:20px 0 12px;display:flex;align-items:center">
           <div style="position:absolute;left:-33px;width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(200,144,12,0.3)"></div>
           <span style="font-family:var(--font-display);font-style:italic;font-size:1rem;color:var(--gold-hi)">${ageLabel}</span>
-          <span style="font-size:0.65rem;color:var(--dim);margin-left:0.5rem">${startYear}\u2013${endYear}</span>
         </div>
       `
       prevAge = age
