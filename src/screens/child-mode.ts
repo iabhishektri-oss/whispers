@@ -35,7 +35,6 @@ export function initChildMode(): void {
 
         <!-- Daily prompt -->
         <div style="text-align:center;margin-bottom:1.5rem;padding:var(--card-padding);background:linear-gradient(135deg, rgba(255,183,77,0.12), rgba(200,144,12,0.08));border:1px solid rgba(255,183,77,0.15);border-radius:20px">
-          <div style="font-size:0.65rem;color:rgba(255,183,77,0.5);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.5rem">Today's prompt</div>
           <div style="font-family:var(--font-display);font-style:italic;font-size:1.2rem;color:var(--body);line-height:var(--lh-headline)" id="cm-prompt"></div>
         </div>
 
@@ -404,7 +403,7 @@ export function initChildMode(): void {
       const title = view.querySelector('#cm-title')
       if (title) title.textContent = `${childName()}'s space`
       const prompt = view.querySelector('#cm-prompt')
-      if (prompt) prompt.textContent = dailyPrompt()
+      if (prompt) prompt.textContent = `${childName()}, ${dailyPrompt().charAt(0).toLowerCase()}${dailyPrompt().slice(1)}`
       loadFamilyWhispers()
     }
   })
