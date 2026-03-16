@@ -327,13 +327,13 @@ export function initChildMode(): void {
       error = res.error
     } catch (e) {
       console.error('Child mode feed exception:', e)
-      feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load whispers.</div>`
+      setTimeout(() => loadFamilyWhispers(), 1000)
       return
     }
 
     if (error) {
       console.error('Child mode feed error:', error)
-      feed.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--dim);font-size:var(--text-caption)">Could not load.</div>`
+      setTimeout(() => loadFamilyWhispers(), 1000)
       return
     }
 

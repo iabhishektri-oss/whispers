@@ -471,13 +471,13 @@ export function initKeeper(): void {
       error = res.error
     } catch (e) {
       console.error('Feed exception:', e)
-      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers.</div>`
+      setTimeout(() => loadFeed(), 1000)
       return
     }
 
     if (error) {
-      feed.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#e85454;font-size:var(--text-body)">Could not load whispers.</div>`
       console.error('Feed error:', error)
+      setTimeout(() => loadFeed(), 1000)
       return
     }
 
