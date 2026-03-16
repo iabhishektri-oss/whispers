@@ -1,4 +1,7 @@
 import './styles/global.css'
+import { inject } from '@vercel/analytics'
+
+inject()
 import { getSupabase, resetSupabase } from './lib/supabase'
 import { navigate, getCurrentRoute } from './lib/router'
 import { setState, getState } from './lib/state'

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.1",
+    "@vercel/analytics": "^2.0.1",
     "typescript": "^5.9.3",
     "vite": "^8.0.0"
   }
